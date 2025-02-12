@@ -74,8 +74,7 @@ class scrutteurAnalog:
             self.endLoopImmediately()
 
         self.checkThread = threading.Thread(
-            target=self.checkAnalog,
-            args=(self.checkWaitTime,),
+            target=self.checkAnalog, args=(self, self.checkWaitTime)
         )
         self.checkThread.start()
 

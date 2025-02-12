@@ -5,4 +5,4 @@ import scrutteurDigital
 
 myDel = basicPortControlSystem(4)
 
-myDel.flash(10, 0.5, 1)
+myDel.pulse(10, 0.5, 1)

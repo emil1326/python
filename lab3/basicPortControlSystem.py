@@ -1,3 +1,4 @@
+import threading
 import time
 import grovepi  # type: ignore
 
@@ -31,11 +32,19 @@ class basicPortControlSystem:
         else:
             grovepi.digitalWrite(self.port, self.curState)
 
-    def flash(self, times, intime, outtime=None, intensity=None):
+    def pulse(self, times, intime, outtime=None, intensity=None):
         if outtime is None:
             outtime = intime
         if intensity is not None:
             self.curState = intensity
+
+        t1 = threading.Thread(
+            target=self.__pulseAsync, args=(self, times, intime, outtime)
+        )
+        t1.start()
+
+    # si lancer directement, va bloquer juste qua la fin des pulses
+    def __pusleAsync(self, times, intime, outtime=None):
 
         for i in range(times):
             self.curState = not self.curState
