@@ -2,7 +2,7 @@ import time
 import grovepi  # type: ignore
 
 
-class delController:
+class basicPortControlSystem:
     allowedPorts = [2, 3, 4, 7, 8]
     pwmPorts = [3, 5, 6, 9]
     usePWM = False

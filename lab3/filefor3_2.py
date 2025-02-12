@@ -1,8 +1,8 @@
 import grovepi # type: ignore
-from delController import delController
-from scrutteurDigital import scrutteurDigital
+import basicPortControlSystem
+import scrutteurDigital
 
-myDel = delController(4)
+myDel = basicPortControlSystem(4)
 bouton = scrutteurDigital(5)
 
 bouton.setFuncOnPress(lambda: myDel.changeState(1))

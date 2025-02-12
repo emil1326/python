@@ -1,8 +1,8 @@
-import grovepi # type: ignore
-import delController
+import grovepi  # type: ignore
+import basicPortControlSystem
 import scrutteurDigital
 
 
-myDel = delController(4)
+myDel = basicPortControlSystem(4)
 
 myDel.flash(10, 0.5, 1)
