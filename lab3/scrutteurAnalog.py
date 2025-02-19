@@ -12,16 +12,16 @@ class scrutteurAnalog:
     checkThread = None  # ==> thread object
     checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
     pauseChecks = False  # ==> pause le check
-    endLoop = False  # ==> end loop
+    endLoopFlag = False  # ==> end loop
     timeCriticalMode = False
     # time critical mode, is on on utulise le start time pour avoir le debut de la loop a un moment precis,
     # pour jamais devier, mieux que off pour regulariter mais plus de prosseceur utuliser
     timeCriticalStartTime = 0
 
-    funcOnMin = lambda value: None  # ==> fonction si valeur est en dessous de min
-    funcOnMax = lambda value: None  # ==> fonction si valeur est au dessus de max
-    funcOnChange = lambda value: None  # ==> fonction a appeler si la valeur change
-    funcOnCheck = lambda value: None  # ==> fonction a appeler a chaque check
+    funcOnMin = None  # ==> fonction si valeur est en dessous de min
+    funcOnMax = None  # ==> fonction si valeur est au dessus de max
+    funcOnChange = None  # ==> fonction a appeler si la valeur change
+    funcOnCheck = None  # ==> fonction a appeler a chaque check
 
     valueRange = {"min": 0, "max": 1023}  # default pot range ?
 
@@ -33,9 +33,20 @@ class scrutteurAnalog:
 
         self.timeCriticalMode = timeCriticalMode
         self.timeCriticalStartTime = timeCriticalStartTime
+        
+        self.funcOnMin = self.passFunc
+        self.funcOnMax = self.passFunc
+        self.funcOnChange = self.passFunc
+        self.funcOnCheck = self.passFunc
 
         grovepi.pinMode(self.port, "INPUT")
-        self.check()
+                
+        if self.verbose:
+            print("Creer object analog scrutteur")
+        
+    
+    def passFunc(self, value):
+        pass
 
     def setFuncOnMin(self, func):
         self.funcOnMin = func
@@ -61,31 +72,31 @@ class scrutteurAnalog:
 
     def endLoop(self):
         if self.checkThread is not None:
-            self.endLoop = True
+            self.endLoopFlag = True
 
     def endLoopImmediately(self):  # wait the end else of letting it finish
-        self.endLoop = True
+        self.endLoopFlag = True
         if self.checkThread is not None:
             self.checkThread.join()
 
-    def check(self):
+    def monitor(self):
         # if the thread is already running  ==> reset le checkwaittime
         if self.checkThread is not None:
             self.endLoopImmediately()
 
         self.checkThread = threading.Thread(
-            target=self.checkAnalog, args=(self, self.checkWaitTime)
+            target=self.checkAnalog, args=(self.checkWaitTime,)
         )
         self.checkThread.start()
 
     def reSetCheckWaitTime(self, checkWaitTime):
         self.checkWaitTime = checkWaitTime
-        self.check()
+        self.monitor()
 
     def checkAnalog(self, checkWaitTime):  # => min, max, on change, on check
         oldValue = 0
 
-        while not self.endLoop:
+        while not self.endLoopFlag:
             currentValue = grovepi.analogRead(self.port)
             if currentValue <= self.valueRange["min"]:
                 self.funcOnMin(currentValue)
@@ -120,4 +131,4 @@ class scrutteurAnalog:
             while self.pauseChecks:
                 time.sleep(0.1)
 
-        self.endLoop = False  # reset a la fin pour pouvoir relancer le thread
+        self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread

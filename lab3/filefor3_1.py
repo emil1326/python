@@ -1,8 +1,11 @@
 import grovepi  # type: ignore
-import basicPortControlSystem
-import scrutteurDigital
+from basicPortControlSystem import basicPortControlSystem
+from scrutteurDigital import scrutteurDigital
+from scrutteurAnalog import scrutteurAnalog
 
 
 myDel = basicPortControlSystem(4)
 
-myDel.pulse(10, 0.5, 1)
+myDel.verbose = True
+
+myDel.pulse(10, 0.2, 1)

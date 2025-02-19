@@ -1,7 +1,7 @@
 import grovepi  # type: ignore
-import basicPortControlSystem
-import scrutteurDigital
-import scrutteurAnalog
+from basicPortControlSystem import basicPortControlSystem
+from scrutteurDigital import scrutteurDigital
+from scrutteurAnalog import scrutteurAnalog
 
 # declare hardware
 
@@ -15,6 +15,18 @@ def setDelIntensity(value):
     myDel.changeState(value / 1023)  # ==> value between 0 and 1
 
 
+# start monitoring
+
+potentiometre.monitor()
+
 # link hardware functions
 
 potentiometre.setFuncOnChange(setDelIntensity)
+
+# wait for end
+
+input("finish?")
+
+# finish monitoring
+
+potentiometre.endLoop()

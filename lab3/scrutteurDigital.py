@@ -4,22 +4,23 @@ import grovepi  # type: ignore
 
 
 class scrutteurDigital:
-    allowedPorts = [2, 3, 4, 7, 8]
+    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
+
     verbose = False
 
     # port                  #==> port de la pin
     checkThread = None  # ==> thread object
     checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
     pauseChecks = False  # ==> pause le check
-    endLoop = False  # ==> end loop
+    endLoopFlag = False  # ==> end loop
     timeCriticalMode = False
     # time critical mode, is on on utulise le start time pour avoir le debut de la loop a un moment precis,
     # pour jamais devier, mieux que off pour regulariter mais plus de prosseceur utuliser
     timeCriticalStartTime = 0
 
-    funcOnPress = lambda: None  # ==> fonction si le bouton est presse
-    funcOnRelease = lambda: None  # ==> fonction si le bouton est relache
-    funcOnHold = lambda: None  # ==> fonction si le bouton est presser
+    funcOnPress = None  # ==> fonction si le bouton est presse
+    funcOnRelease = None  # ==> fonction si le bouton est relache
+    funcOnHold = None  # ==> fonction si le bouton est presser
 
     def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
         if self.allowedPorts.__contains__(port):
@@ -31,44 +32,77 @@ class scrutteurDigital:
         self.timeCriticalStartTime = timeCriticalStartTime
 
         grovepi.pinMode(self.port, "INPUT")
-        self.check()
+
+        self.funcOnPress = self.passFunc
+        self.funcOnRelease = self.passFunc
+        self.funcOnHold = self.passFunc
+
+        if self.verbose:
+            print("Creer object digi scrutteur")
+            
+
+    def passFunc(self):
+        pass
 
     def setFuncOnPress(self, func):
-        self.setFuncOnPress = func
+        self.funcOnPress = func
+
+        if self.verbose:
+            print("setted function", func, "on press")
 
     def setFuncOnRelease(self, func):
-        self.setFuncOnRelease = func
+        self.funcOnRelease = func
+
+        if self.verbose:
+            print("setted function", func, "on release")
 
     def setFuncOnHold(self, func):
-        self.setFuncOnHold = func
+        self.funcOnHold = func
+
+        if self.verbose:
+            print("setted function", func, "on hold")
 
     def endLoop(self):
         if self.checkThread is not None:
-            self.endLoop = True
+            self.endLoopFlag = True
+
+            if self.verbose:
+                print("Ended loop pour digi scrutteur")
+        if self.verbose:
+            print("tryied to change flag")
 
     def endLoopImmediately(self):  # wait the end else of letting it finish
-        self.endLoop = True
+        self.endLoopFlag = True
         if self.checkThread is not None:
             self.checkThread.join()
 
-    def check(self):
+            if self.verbose:
+                print("Ended loop Immediately pour digi scrutteur")
+
+    def monitor(self):
         # if the thread is already running  ==> reset le checkwaittime
         if self.checkThread is not None:
             self.checkThread.join()
 
         self.checkThread = threading.Thread(
-            target=self.checkDigital, args=(self, self.checkWaitTime)
+            target=self.checkDigital, args=(self.checkWaitTime,)
         )
         self.checkThread.start()
 
+        if self.verbose:
+            print("check procedure lancer")
+
     def resetCheckWaitTime(self, checkWaitTime):
         self.checkWaitTime = checkWaitTime
-        self.check()
+        self.monitor()
+
+        if self.verbose:
+            print("resetter le checkwaittime a", checkWaitTime)
 
     def checkDigital(self, checkWaitTime):  # => press, release & hold
         isPressed = False
 
-        while not self.endLoop:
+        while not self.endLoopFlag:
             if grovepi.digitalRead(self.port) == 1:
                 if not isPressed:
                     isPressed = True
@@ -96,4 +130,4 @@ class scrutteurDigital:
             while self.pauseChecks:
                 time.sleep(0.1)
 
-        self.endLoop = False  # reset a la fin pour pouvoir relancer le thread
+        self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread

@@ -4,7 +4,7 @@ import grovepi  # type: ignore
 
 
 class basicPortControlSystem:
-    allowedPorts = [2, 3, 4, 7, 8]
+    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
     pwmPorts = [3, 5, 6, 9]
     usePWM = False
     verbose = False
@@ -24,6 +24,8 @@ class basicPortControlSystem:
             else:
                 raise ValueError("Port not allowed")
 
+        self.__update()
+
         grovepi.pinMode(self.port, "OUTPUT")
 
     def __update(self):
@@ -39,24 +41,29 @@ class basicPortControlSystem:
             self.curState = intensity
 
         t1 = threading.Thread(
-            target=self.__pulseAsync, args=(self, times, intime, outtime)
+            target=self.__pulseAsync,
+            args=(
+                times,
+                intime,
+                outtime,
+            ),
         )
         t1.start()
 
     # si lancer directement, va bloquer juste qua la fin des pulses
-    def __pusleAsync(self, times, intime, outtime=None):
+    def __pulseAsync(self, times, intime, outtime=None):
 
         for i in range(times):
-            self.curState = not self.curState
+            if self.verbose:
+                print("Pulse ", i + 1, " of ", times)
+
+            self.curState = 1 - self.curState
             self.__update()
             time.sleep(intime)
 
-            self.curState = not self.curState
+            self.curState = 1 - self.curState
             self.__update()
             time.sleep(outtime)
-
-            if self.verbose:
-                print("Flash ", i + 1, " of ", times)
 
     def changeState(self, state):
         if not state >= 0 and not state <= 1:
