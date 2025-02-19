@@ -37,7 +37,7 @@ potentiometre.setFuncOnChange(setDelIntensity)
 
 input("finish?")
 
-# finish monitoring
+# finish
 
 potentiometre.endLoop()
 myDel.shutDown()
