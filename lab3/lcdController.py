@@ -28,3 +28,6 @@ class lcdController:
             setText(text)
         else:
             setText_norefresh(text)
+
+    def setColor(self, r, g, b):
+        setRGB(r, g, b)

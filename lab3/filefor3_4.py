@@ -6,15 +6,23 @@ from scrutteurAnalog import scrutteurAnalog
 # declare hardware
 
 potentiometre = scrutteurAnalog(1)
-myDel = basicPortControlSystem(5, True)  # ==> need pwm port
+potentiometre.steps = 10
+myDel = basicPortControlSystem(3, True)  # ==> need pwm port
+
+# test hardware
+
+myDel.pulseSync(5, 0.2, 0.2)
+
+input("test done")
 
 # declare hardware functions
 
 
 def setDelIntensity(value):
-    myDel.changeState(value / 1023)  # ==> value between 0 and 1
+    val = value / 1023
+    myDel.changeState(val)  # ==> value between 0 and 1
 
-    print("did value", value, "=>", value / 1023)
+    print("did value", value, "=>", val)
 
 
 # start monitoring
@@ -32,3 +40,4 @@ input("finish?")
 # finish monitoring
 
 potentiometre.endLoop()
+myDel.shutDown()

@@ -26,3 +26,4 @@ bouton.monitor()
 
 input("finir?")
 bouton.endLoop()
+myDel.shutDown()

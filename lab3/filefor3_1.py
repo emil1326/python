@@ -8,4 +8,6 @@ myDel = basicPortControlSystem(4)
 
 myDel.verbose = True
 
-myDel.pulse(10, 0.2, 1)
+myDel.pulseSync(10, 0.2, 1)
+
+myDel.shutDown()

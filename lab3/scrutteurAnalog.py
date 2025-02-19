@@ -9,6 +9,8 @@ class scrutteurAnalog:
     verbose = False
     allVerbose = False
 
+    steps = None
+
     # port                  #==> port de la pin
     checkThread = None  # ==> thread object
     checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
@@ -93,11 +95,22 @@ class scrutteurAnalog:
         self.checkWaitTime = checkWaitTime
         self.monitor()
 
+    def __getStepped(self, steps, value):
+        val = value / steps
+        val = round(val)
+        val = val * steps
+
+        return val
+
     def checkAnalog(self, checkWaitTime):  # => min, max, on change, on check
         oldValue = 0
 
         while not self.endLoopFlag:
             currentValue = grovepi.analogRead(self.port)
+
+            if self.steps != None:
+                currentValue = self.__getStepped(self.steps, currentValue)
+
             if currentValue <= self.valueRange["min"]:
                 self.funcOnMin(currentValue)
                 if self.verbose:

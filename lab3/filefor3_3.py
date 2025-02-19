@@ -18,3 +18,4 @@ bouton.setFuncOnPress(change)
 
 input("end?")
 bouton.endLoop()
+myDel.shutDown()

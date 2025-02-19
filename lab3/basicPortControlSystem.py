@@ -6,12 +6,14 @@ import grovepi  # type: ignore
 class basicPortControlSystem:
     allowedPorts = [2, 3, 4, 5, 6, 7, 8]
     pwmPorts = [3, 5, 6, 9]
-    usePWM = False
+    # usePWM = False
     verbose = False
 
-    curState = 0  # 0 = off, 1 = on, if on pwm do * 255, only in __Update
+    # curState = 0  # 0 = off, 1 = on, if on pwm do * 255, only in __Update
 
     def __init__(self, port, usePWM=False):
+        self.curState = 0
+        
         self.usePWM = usePWM
         if usePWM:
             if port in self.pwmPorts:
@@ -30,18 +32,21 @@ class basicPortControlSystem:
 
     def __update(self):
         if self.usePWM:
-            grovepi.analogWrite(self.port, self.curState * 255)
+            grovepi.analogWrite(self.port, round(self.curState * 255))
         else:
-            grovepi.digitalWrite(self.port, self.curState)
+            grovepi.digitalWrite(self.port, round(self.curState))
 
-    def pulse(self, times, intime, outtime=None, intensity=None):
+    def shutDown(self):
+        self.changeState(0)
+
+    def pulseAsync(self, times, intime, outtime=None, intensity=None):
         if outtime is None:
             outtime = intime
         if intensity is not None:
             self.curState = intensity
 
         t1 = threading.Thread(
-            target=self.__pulseAsync,
+            target=self.pulseSync,
             args=(
                 times,
                 intime,
@@ -51,7 +56,9 @@ class basicPortControlSystem:
         t1.start()
 
     # si lancer directement, va bloquer juste qua la fin des pulses
-    def __pulseAsync(self, times, intime, outtime=None):
+    def pulseSync(self, times, intime, outtime=None):
+        if outtime is None:
+            outtime = intime
 
         for i in range(times):
             if self.verbose:
