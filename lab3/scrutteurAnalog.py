@@ -7,6 +7,7 @@ class scrutteurAnalog:
     allowedPorts = [0, 1, 2]
 
     verbose = False
+    allVerbose = False
 
     # port                  #==> port de la pin
     checkThread = None  # ==> thread object
@@ -33,18 +34,17 @@ class scrutteurAnalog:
 
         self.timeCriticalMode = timeCriticalMode
         self.timeCriticalStartTime = timeCriticalStartTime
-        
+
         self.funcOnMin = self.passFunc
         self.funcOnMax = self.passFunc
         self.funcOnChange = self.passFunc
         self.funcOnCheck = self.passFunc
 
         grovepi.pinMode(self.port, "INPUT")
-                
+
         if self.verbose:
             print("Creer object analog scrutteur")
-        
-    
+
     def passFunc(self, value):
         pass
 
@@ -111,11 +111,11 @@ class scrutteurAnalog:
             else:
                 if currentValue != oldValue:
                     self.funcOnChange(currentValue)
-                    if self.verbose:
+                    if self.verbose and self.allVerbose:
                         print("Value changed:", currentValue)
 
                 self.funcOnCheck(currentValue)
-                if self.verbose:
+                if self.verbose and self.allVerbose:
                     print("Value checked:", currentValue)
 
             oldValue = currentValue

@@ -14,6 +14,8 @@ myDel = basicPortControlSystem(5, True)  # ==> need pwm port
 def setDelIntensity(value):
     myDel.changeState(value / 1023)  # ==> value between 0 and 1
 
+    print("did value", value, "=>", value / 1023)
+
 
 # start monitoring
 
