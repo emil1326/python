@@ -4,10 +4,16 @@ import grovepi  # type: ignore
 from grove_rgb_lcd import *
 
 
+# only works with v4 screens
+# 16 * 2
 class lcdController:
     allowedPorts = [0, 1, 2]
 
-    text = ""
+    defaultText = "                "
+    defaultText2 = "                "
+
+    # text = defaultText  # both lines
+    # text2 = defaultText
 
     # Define color constants
     COLOR_RED = (255, 0, 0)
@@ -25,19 +31,27 @@ class lcdController:
         else:
             raise ValueError("Port not allowed")
 
+        self.text = self.defaultText
+        self.text2 = self.defaultText2
+
     def moveTextLeft(self, position):
         pass
 
     def setText(self, text, clearOld=True, position=0):
-        if position != 0:
-            text = text.rjust(len(text) + position)
-
-        self.text = text
-
         if clearOld:
-            setText(text)
-        else:
-            setText_norefresh(text)
+            clearOld()
+            
+        
+
+        self.printOnScreen()
+
+    def printOnScreen(self):
+        final = self.text + self.text2
+        setText(final)
+
+    def clearText(self):
+        self.text = self.defaultText
+        self.text2 = self.defaultText2
 
     def setColor(self, r, g, b):
         setRGB(r, g, b)

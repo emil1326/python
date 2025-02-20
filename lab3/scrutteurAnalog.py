@@ -9,24 +9,24 @@ class scrutteurAnalog:
     verbose = False
     allVerbose = False
 
-    steps = None
+    steps = None  # ==> espacement entre les valeures analogiques possible
 
-    # port                  #==> port de la pin
-    checkThread = None  # ==> thread object
-    checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
-    pauseChecks = False  # ==> pause le check
-    endLoopFlag = False  # ==> end loop
-    timeCriticalMode = False
+    # port                  # ==> port de la pin
+    # checkThread = None  # ==> thread object
+    # checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
+    # pauseChecks = False  # ==> pause le check
+    # endLoopFlag = False  # ==> end loop
+    # timeCriticalMode = False
     # time critical mode, is on on utulise le start time pour avoir le debut de la loop a un moment precis,
     # pour jamais devier, mieux que off pour regulariter mais plus de prosseceur utuliser
-    timeCriticalStartTime = 0
+    # timeCriticalStartTime = 0
 
-    funcOnMin = None  # ==> fonction si valeur est en dessous de min
-    funcOnMax = None  # ==> fonction si valeur est au dessus de max
-    funcOnChange = None  # ==> fonction a appeler si la valeur change
-    funcOnCheck = None  # ==> fonction a appeler a chaque check
+    # funcOnMin = None  # ==> fonction si valeur est en dessous de min
+    # funcOnMax = None  # ==> fonction si valeur est au dessus de max
+    # funcOnChange = None  # ==> fonction a appeler si la valeur change
+    # funcOnCheck = None  # ==> fonction a appeler a chaque check
 
-    valueRange = {"min": 0, "max": 1023}  # default pot range ?
+    # valueRange = {"min": 0, "max": 1023}  # default pot range ?
 
     def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
         if self.allowedPorts.__contains__(port):
@@ -34,8 +34,15 @@ class scrutteurAnalog:
         else:
             raise ValueError("Port not allowed")
 
+        self.checkThread = None
+        self.checkWaitTime = 0.05
+        self.pauseChecks = False
+        self.endLoopFlag = False
+
         self.timeCriticalMode = timeCriticalMode
         self.timeCriticalStartTime = timeCriticalStartTime
+
+        self.valueRange = {"min": 0, "max": 1023}
 
         self.funcOnMin = self.passFunc
         self.funcOnMax = self.passFunc

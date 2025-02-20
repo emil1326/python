@@ -9,18 +9,18 @@ class scrutteurDigital:
     verbose = False
 
     # port                  #==> port de la pin
-    checkThread = None  # ==> thread object
-    checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
-    pauseChecks = False  # ==> pause le check
-    endLoopFlag = False  # ==> end loop
-    timeCriticalMode = False
+    # checkThread = None  # ==> thread object
+    # checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
+    # pauseChecks = False  # ==> pause le check
+    # endLoopFlag = False  # ==> end loop
+    # timeCriticalMode = False
     # time critical mode, is on on utulise le start time pour avoir le debut de la loop a un moment precis,
     # pour jamais devier, mieux que off pour regulariter mais plus de prosseceur utuliser
-    timeCriticalStartTime = 0
+    # timeCriticalStartTime = 0
 
-    funcOnPress = None  # ==> fonction si le bouton est presse
-    funcOnRelease = None  # ==> fonction si le bouton est relache
-    funcOnHold = None  # ==> fonction si le bouton est presser
+    # funcOnPress = None  # ==> fonction si le bouton est presse
+    # funcOnRelease = None  # ==> fonction si le bouton est relache
+    # funcOnHold = None  # ==> fonction si le bouton est presser
 
     def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
         if self.allowedPorts.__contains__(port):
@@ -28,18 +28,22 @@ class scrutteurDigital:
         else:
             raise ValueError("Port not allowed")
 
+        self.checkThread = None
+        self.checkWaitTime = 0.05
+        self.pauseChecks = False
+        self.endLoopFlag = False
+
         self.timeCriticalMode = timeCriticalMode
         self.timeCriticalStartTime = timeCriticalStartTime
-
-        grovepi.pinMode(self.port, "INPUT")
 
         self.funcOnPress = self.passFunc
         self.funcOnRelease = self.passFunc
         self.funcOnHold = self.passFunc
 
+        grovepi.pinMode(self.port, "INPUT")
+
         if self.verbose:
             print("Creer object digi scrutteur")
-            
 
     def passFunc(self):
         pass
