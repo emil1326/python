@@ -6,7 +6,7 @@ from scrutteurAnalog import scrutteurAnalog
 # declare hardware
 
 potentiometre = scrutteurAnalog(1)
-potentiometre.steps = 10
+potentiometre.steps = 10 # type: ignore
 myDel = basicPortControlSystem(3, True)  # ==> need pwm port
 
 # test hardware

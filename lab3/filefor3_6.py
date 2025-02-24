@@ -6,6 +6,4 @@ from lcdController import lcdController
 
 screen = lcdController(1)
 
-screen.setText("my text")
-
-screen.setColorByName("green")
+screen.setText("Pis si y mouille y mouillera, pis si y neige on pellt'ra.")

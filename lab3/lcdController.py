@@ -14,6 +14,8 @@ class lcdController:
 
     # text = defaultText  # both lines
     # text2 = defaultText
+    
+    # allText  ==> on le prend et puis avc la position on chiosi quoi show
 
     # Define color constants
     COLOR_RED = (255, 0, 0)
