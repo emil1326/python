@@ -9,6 +9,7 @@ from lcdController import lcdController
 
 lumiere = scrutteurAnalog(0, True)
 lumiere.checkWaitTime = 1
+screen = lcdController(1)
 
 # lumiere.steps = 10 # type: ignore
 
@@ -25,8 +26,10 @@ def writeToDisk(value):
     val = (float)(1023 - value) * 10 / value
 
     f.write(f"{datetime.now()} , {value}\n")
-
-    print("did value", value, "=>", val)
+    
+    s = "did value", value, "=>", val
+    print(s)
+    screen.setText(s)
 
 
 # start monitoring

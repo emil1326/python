@@ -40,7 +40,7 @@ class scrutteurHysteresique:
             self.scrutteur.verbose = True
             print("fait un objet scrutteur hysterique")
 
-    def passFunc(self):
+    def passFunc(self, value):
         pass
 
     def setFuncOnUpperBound(self, func):
@@ -58,6 +58,7 @@ class scrutteurHysteresique:
 
         if self.lastRecordTime - timeRN >= self.waitTimeEntreStates:
             self.currBound = 0
+            self.funcOnUpperBound(value)
 
     def lowerBoundHit(self, value):
         timeRN = time.perf_counter()
@@ -68,6 +69,7 @@ class scrutteurHysteresique:
 
         if self.lastRecordTime - timeRN >= self.waitTimeEntreStates:
             self.currBound = 1
+            self.funcOnLowerBound(value)
 
     def upperBoundHit(self, value):
         timeRN = time.perf_counter()
