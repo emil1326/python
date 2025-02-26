@@ -25,6 +25,7 @@ class scrutteurAnalog:
     # funcOnMax = None  # ==> fonction si valeur est au dessus de max
     # funcOnChange = None  # ==> fonction a appeler si la valeur change
     # funcOnCheck = None  # ==> fonction a appeler a chaque check
+    # funcOnBetween = none
 
     # valueRange = {"min": 0, "max": 1023}  # default pot range ?
 
@@ -48,6 +49,7 @@ class scrutteurAnalog:
         self.funcOnMax = self.passFunc
         self.funcOnChange = self.passFunc
         self.funcOnCheck = self.passFunc
+        self.funcOnBetween = self.passFunc
 
         grovepi.pinMode(self.port, "INPUT")
 
@@ -62,6 +64,9 @@ class scrutteurAnalog:
 
     def setFuncOnMax(self, func):
         self.funcOnMax = func
+
+    def setFuncOnBetween(self, func):
+        self.funcOnBetween = func
 
     def setFuncOnChange(self, func):
         self.funcOnChange = func
@@ -118,6 +123,8 @@ class scrutteurAnalog:
             if self.steps != None:
                 currentValue = self.__getStepped(self.steps, currentValue)
 
+            #
+
             if currentValue <= self.valueRange["min"]:
                 self.funcOnMin(currentValue)
                 if self.verbose:
@@ -127,16 +134,21 @@ class scrutteurAnalog:
                 self.funcOnMax(currentValue)
                 if self.verbose:
                     print("Max value reached:", currentValue)
-
             else:
-                if currentValue != oldValue:
-                    self.funcOnChange(currentValue)
-                    if self.verbose and self.allVerbose:
-                        print("Value changed:", currentValue)
+                self.funcOnBetween
+                if self.verbose:
+                    print("Is in between value:", currentValue)
 
-                self.funcOnCheck(currentValue)
+            #
+
+            if currentValue != oldValue:
+                self.funcOnChange(currentValue)
                 if self.verbose and self.allVerbose:
-                    print("Value checked:", currentValue)
+                    print("Value changed:", currentValue)
+
+            self.funcOnCheck(currentValue)
+            if self.verbose and self.allVerbose:
+                print("Value checked:", currentValue)
 
             oldValue = currentValue
 
