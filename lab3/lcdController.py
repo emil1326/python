@@ -9,8 +9,8 @@ from grove_rgb_lcd import *
 class lcdController:
     allowedPorts = [0, 1, 2]  # unused rn
 
-    defaultText = "                "
-    defaultText2 = "                "
+    defaultText = "                "  # sets lenght pour les 2 lignes
+    defaultText2 = " emils screen   "
 
     # text = defaultText  # both lines
     # text2 = defaultText
@@ -82,6 +82,8 @@ class lcdController:
         self.text2 = list(self.defaultText2)
         self.allText = self.text + self.text2
         self.charMemorySlots = [False] * 7
+
+        # self.clearText()
 
     # si wrap around sa remet les char enlever de lautre bord
     # si first line on marche juste sur la premiere ligne
@@ -181,9 +183,12 @@ class lcdController:
         if clearOldText:
             self.clearText()
 
+        text = str(text)
+
         # text fits within the buffer
         if len(text) + position > len(self.allText):
-            raise ValueError("Text too long to be written", text)
+            print("Text too long to be written", text)
+            text = text[: 16 - position]
 
         for i in range(len(text)):
             curI = i + position
@@ -217,10 +222,13 @@ class lcdController:
                 create_char(startpos + i, list(chars[i]))
                 self.charMemorySlots[startpos + i] = True
 
-    def writeSpecialChar(self, position, char):
+    def writeSpecialChar(self, char, position=0, line=0):
         create_char(7, char)
 
-        self.allText[position] = "\x07"
+        if line == 0:
+            self.text[position] = chr(7)
+        else:
+            self.text2[position] = chr(7)
 
         self.printOnScreen()
 

@@ -8,9 +8,9 @@ class scrutteurHysteresique:
 
     verbose = False
 
-    waitTimeEntreStates = 10
-    lowerBound = 0.4
-    upperBound = 0.6
+    waitTimeEntreStates = 5
+    lowerBound = 150
+    upperBound = 500
 
     # scrutteur = None ==> le scrutteure actif sur cet objet
 
@@ -35,6 +35,7 @@ class scrutteurHysteresique:
 
         self.funcOnLowerBound = self.passFunc
         self.funcOnUpperBound = self.passFunc
+        self.funcOnMiddleBound = self.passFunc
 
         if self.verbose:
             self.scrutteur.verbose = True
@@ -49,37 +50,51 @@ class scrutteurHysteresique:
     def setFuncOnLowerBound(self, func):
         self.funcOnLowerBound = func
 
+    def setFuncOnMiddleBound(self, func):
+        self.funcOnMiddleBound = func
+
     def inBetween(self, value):
         timeRN = time.perf_counter()
+        self.currValue = value
+
+        if self.currBoundCurrently == 0:
+            self.lastRecordTime = timeRN
 
         if self.currBoundCurrently != 0:
-            self.lastRecordTime = timeRN
             self.currBoundCurrently = 0
 
-        if self.lastRecordTime - timeRN >= self.waitTimeEntreStates:
-            self.currBound = 0
-            self.funcOnUpperBound(value)
+        # if timeRN - self.lastRecordTime >= self.waitTimeEntreStates:
+        self.funcOnMiddleBound(value)
 
     def lowerBoundHit(self, value):
         timeRN = time.perf_counter()
+        self.currValue = value
 
         if self.currBoundCurrently != 1:
-            self.lastRecordTime = timeRN
             self.currBoundCurrently = 1
 
-        if self.lastRecordTime - timeRN >= self.waitTimeEntreStates:
+        if (
+            timeRN - self.lastRecordTime >= self.waitTimeEntreStates
+            and self.currBound != 1
+        ):
+            self.lastRecordTime = timeRN
             self.currBound = 1
             self.funcOnLowerBound(value)
 
     def upperBoundHit(self, value):
         timeRN = time.perf_counter()
+        self.currValue = value
 
         if self.currBoundCurrently != 2:
-            self.lastRecordTime = timeRN
             self.currBoundCurrently = 2
 
-        if self.lastRecordTime - timeRN >= self.waitTimeEntreStates:
+        if (
+            timeRN - self.lastRecordTime >= self.waitTimeEntreStates
+            and self.currBound != 2
+        ):
+            self.lastRecordTime = timeRN
             self.currBound = 2
+            self.funcOnUpperBound(value)
 
     def getCurrState(self):
         if self.currBound == 0:
@@ -94,3 +109,6 @@ class scrutteurHysteresique:
         self.scrutteur.setFuncOnBetween(self.inBetween)
 
         self.scrutteur.monitor()
+
+    def StopScrutteur(self):
+        self.scrutteur.endLoop()

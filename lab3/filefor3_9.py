@@ -26,10 +26,10 @@ def writeToDisk(value):
     val = (float)(1023 - value) * 10 / value
 
     f.write(f"{datetime.now()} , {value}\n")
-    
+
     s = "did value", value, "=>", val
     print(s)
-    screen.setText(s)
+    screen.setText(value)
 
 
 # start monitoring

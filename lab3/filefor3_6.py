@@ -7,7 +7,7 @@ from lcdController import lcdController
 
 screen = lcdController(1)
 
-phrase = "Pis si y mouille y mouillera, pis si y neige on pellt'ra.                "
+phrase = "Pis si y mouille y mouillera, pis si y neige on pellt'ra.                 "
 
 for i in range(0, len(phrase) - 16):
 
