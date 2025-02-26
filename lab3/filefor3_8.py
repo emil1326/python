@@ -50,3 +50,5 @@ humSensor.endLoop()
 #               Temperature		    1	°C
 # Repeatability	Humidity			±1%	RH
 #               Temperature		    ±1	°C
+
+# ==> works
