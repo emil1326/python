@@ -46,4 +46,4 @@ screen.addCharToMemory(animatedChar2)
 
 for i in range(0,100):
     screen.setText("\x0{i}") # type: ignore
-    
+    time.sleep(.2)
