@@ -73,7 +73,7 @@ class scrutteurDigitalDHT:
         )
         self.checkThread.start()
 
-    def reSetCheckWaitTime(self, checkWaitTime):
+    def reSetCheckWaitTimeAndStart(self, checkWaitTime):
         self.checkWaitTime = checkWaitTime
         self.monitor()
 
