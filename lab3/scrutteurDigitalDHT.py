@@ -12,7 +12,7 @@ class scrutteurDigitalDHT:
 
     # port                  # ==> port de la pin
     # checkThread = None  # ==> thread object
-    # checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
+    # checkWaitTime = 0.5  # ==> changer sert a rien sans faire check(), peu pas etre trop bas pc1q aussi non sa return null
     # pauseChecks = False  # ==> pause le check
     # endLoopFlag = False  # ==> end loop
     # timeCriticalMode = False
@@ -30,7 +30,7 @@ class scrutteurDigitalDHT:
             raise ValueError("Port not allowed")
 
         self.checkThread = None
-        self.checkWaitTime = 0.05
+        self.checkWaitTime = 0.5
         self.pauseChecks = False
         self.endLoopFlag = False
 
