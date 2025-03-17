@@ -21,6 +21,7 @@ class scrutteurDigital:
     # funcOnPress = None  # ==> fonction si le bouton est presse
     # funcOnRelease = None  # ==> fonction si le bouton est relache
     # funcOnHold = None  # ==> fonction si le bouton est presser
+    # funcOnCheck = None
 
     def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
         if self.allowedPorts.__contains__(port):
@@ -39,6 +40,7 @@ class scrutteurDigital:
         self.funcOnPress = self.passFunc
         self.funcOnRelease = self.passFunc
         self.funcOnHold = self.passFunc
+        self.funcOnCheck = self.passFunc
 
         grovepi.pinMode(self.port, "INPUT")
 
@@ -65,6 +67,12 @@ class scrutteurDigital:
 
         if self.verbose:
             print("setted function", func, "on hold")
+            
+    def setFuncOnCheck(self, func):
+        self.funcOnCheck = func
+
+        if self.verbose:
+            print("setted function", func, "on check")
 
     def endLoop(self):
         if self.checkThread is not None:
@@ -87,6 +95,8 @@ class scrutteurDigital:
         # if the thread is already running  ==> reset le checkwaittime
         if self.checkThread is not None:
             self.checkThread.join()
+
+        self.endLoopFlag = False
 
         self.checkThread = threading.Thread(
             target=self.checkDigital, args=(self.checkWaitTime,)
@@ -123,6 +133,8 @@ class scrutteurDigital:
                     if self.verbose:
                         print("Button released")
                     self.funcOnRelease()
+            
+            self.funcOnCheck()
 
             if self.timeCriticalMode:
                 elapsedTime = time.time() - self.timeCriticalStartTime

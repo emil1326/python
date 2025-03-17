@@ -13,7 +13,7 @@ class basicPortControlSystem:
 
     def __init__(self, port, usePWM=False):
         self.curState = 0
-        
+
         self.usePWM = usePWM
         if usePWM:
             if port in self.pwmPorts:
@@ -70,6 +70,7 @@ class basicPortControlSystem:
 
             self.curState = 1 - self.curState
             self.__update()
+
             time.sleep(outtime)
 
     def changeState(self, state):
