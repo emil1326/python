@@ -1,8 +1,8 @@
 from os import error
 import time
 import paho.mqtt.client as mqtt  # type: ignore
-from lab3.lcdController import lcdController
-from lab3.scrutteurDigitalDHT import scrutteurDigitalDHT
+from lcdController import lcdController
+from scrutteurDigitalDHT import scrutteurDigitalDHT
 
 localname = input("Nom local")
 distantname = input("Nom distant")
@@ -56,7 +56,7 @@ def on_publish(client, userdata, mid):
         print("Message mid does not match")
 
 
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "emildevclientlionelgroulxkf1")
 client.on_connect = on_connect
 client.on_message = on_message
 client.on_subscribe = on_subscribe
