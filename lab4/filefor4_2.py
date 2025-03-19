@@ -10,17 +10,20 @@ distantname = input("Nom distant")
 hasSub = False
 
 screen = lcdController(1)
-screen.setColorByName("blue")
+# screen.setColorByName("blue")
+time.sleep(0.2)
 screen.setText("Test")
 
+print("did test")
 time.sleep(0.5)
 
 
 # Callback function quand on connect successful
-def on_connect(client, userdata, flags, rc):
+def on_connect(client, userdata, flags, rc, empty):
     print("Connected with result code " + str(rc))
     screen.setText("conn: " + str(rc))
 
+    global hasSub
     hasSub = True
 
 
@@ -37,7 +40,7 @@ client.on_message = on_message
 
 # => vas faire on_connect si sa marche
 # faut metter le bon ip de la machine => faire ipconfig?
-client.connect("192.168.137.1", 6463, 10)
+client.connect("192.168.137.1", 1883, 10)
 
 client.loop_start()
 
@@ -57,7 +60,7 @@ def doTemp(value):
     screen.setText(tempstr)
     client.publish(topic, tempstr)
 
-    temp.endLoop()
+    # temp.endLoop()
 
 
 temp.setFuncOnCheck(doTemp)
@@ -67,6 +70,9 @@ temp.reSetCheckWaitTimeAndStart(1)
 
 # get la temperature distante
 
+print("wait for conn")
+time.sleep(3)
+
 if hasSub:
     client.subscribe(f"clg/kf1/{distantname}/temp")
 else:
@@ -74,5 +80,6 @@ else:
 
 input("EndProgram")
 
+temp.endLoopImmediately()
 client.loop_stop()
 client.disconnect()

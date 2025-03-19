@@ -53,7 +53,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # => vas faire on_connect si sa marche
-client.connect("broker.hivemq.com", 1883, 200)
+client.connect("broker.hivemq.com", 1883, 10)
 
 client.loop_start()
 
@@ -84,13 +84,14 @@ temp.reSetCheckWaitTimeAndStart(1)
 # get la temperature distante
 
 if hasSub is None:  # timeout pour checker si sa a connecter correctement
-    time.sleep(5)
+    time.sleep(3)
 
     if hasSub != True:
         hasSub = False
 
 if hasSub:
     client.subscribe(f"clg/kf1/{distantname}/temp")
+    print(f"connceted at : clg/kf1/{distantname}/temp")
 else:
     print("Couldnt connect err")
 
@@ -100,9 +101,9 @@ temp.reSetCheckWaitTimeAndStart(1)
 
 input("EndProgram")
 
+temp.endLoopImmediately()
 client.loop_stop()
 client.disconnect()
-temp.endLoop()
 
 
 # pas de verrou mortel possible puisquil ny a aucun verrou utuliser dans mon code?
