@@ -4,7 +4,7 @@ import grovepi  # type: ignore
 from scrutteurAnalog import scrutteurAnalog
 
 
-class scrutteurHysteresique:
+class scrutteurHysteresiqueDHT:
 
     verbose = False
 

@@ -346,3 +346,7 @@ class lcdController:
             self.setColor(*color_map[color_name])
         else:
             raise ValueError("Color not recognized")
+
+    def shutDown(self):
+        self.clearText()
+        self.setColorByName("gray")
