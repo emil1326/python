@@ -8,9 +8,9 @@ class scrutteurHysteresique:
 
     verbose = False
 
-    waitTimeEntreStates = 5
-    lowerBound = 150
-    upperBound = 500
+    # waitTimeEntreStates = 5
+    # lowerBound = 150
+    # upperBound = 500
 
     # scrutteur = None ==> le scrutteure actif sur cet objet
 
@@ -36,6 +36,10 @@ class scrutteurHysteresique:
         self.funcOnLowerBound = self.passFunc
         self.funcOnUpperBound = self.passFunc
         self.funcOnMiddleBound = self.passFunc
+        
+        self.waitTimeEntreStates = 5
+        self.lowerBound = 150
+        self.upperBound = 500
 
         if self.verbose:
             self.scrutteur.verbose = True
