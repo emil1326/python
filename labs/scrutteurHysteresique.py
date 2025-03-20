@@ -23,7 +23,7 @@ class scrutteurHysteresique:
 
     # currValue
 
-    def __init__(self, port, timeCriticalMode=True, timeCriticalStartTime=0):
+    def __init__(self, port, timeCriticalMode=True, timeCriticalStartTime=0.0):
         # start un scrutteur analogue avc mode crtical time on de base
         self.scrutteur = scrutteurAnalog(port, timeCriticalMode, timeCriticalStartTime)
 

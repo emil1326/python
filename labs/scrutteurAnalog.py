@@ -28,8 +28,9 @@ class scrutteurAnalog:
     # funcOnBetween = none
 
     # valueRange = {"min": 0, "max": 1023}  # default pot range ?
+    # oldValue = 0 # => old value for calculating onchange
 
-    def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
+    def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0.0):
         if self.allowedPorts.__contains__(port):
             self.port = port
         else:
@@ -50,6 +51,8 @@ class scrutteurAnalog:
         self.funcOnChange = self.passFunc
         self.funcOnCheck = self.passFunc
         self.funcOnBetween = self.passFunc
+
+        self.oldValue = 0
 
         grovepi.pinMode(self.port, "INPUT")
 
@@ -115,15 +118,29 @@ class scrutteurAnalog:
         return val
 
     def checkAnalog(self, checkWaitTime):  # => min, max, on change, on check
-        oldValue = 0
 
         while not self.endLoopFlag:
-            currentValue = grovepi.analogRead(self.port)
 
-            if self.steps != None:
-                currentValue = self.__getStepped(self.steps, currentValue)
+            self.doCheckOnce()
 
-            #
+            if self.timeCriticalMode:
+                elapsedTime = time.time() - self.timeCriticalStartTime
+                sleepTime = max(0, checkWaitTime - (elapsedTime % checkWaitTime))
+                time.sleep(sleepTime)
+            else:
+                time.sleep(checkWaitTime)
+            # check wait time ici pour empecher les changements externe
+
+            while self.pauseChecks:
+                time.sleep(0.1)
+
+        self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
+
+    def doCheckOnce(self):
+        currentValue = grovepi.analogRead(self.port)
+
+        if self.steps != None:
+            currentValue = self.__getStepped(self.steps, currentValue)
 
             if currentValue <= self.valueRange["min"]:
                 self.funcOnMin(currentValue)
@@ -141,7 +158,7 @@ class scrutteurAnalog:
 
             #
 
-            if currentValue != oldValue:
+            if currentValue != self.oldValue:
                 self.funcOnChange(currentValue)
                 if self.verbose and self.allVerbose:
                     print("Value changed:", currentValue)
@@ -150,17 +167,4 @@ class scrutteurAnalog:
             if self.verbose and self.allVerbose:
                 print("Value checked:", currentValue)
 
-            oldValue = currentValue
-
-            if self.timeCriticalMode:
-                elapsedTime = time.time() - self.timeCriticalStartTime
-                sleepTime = max(0, checkWaitTime - (elapsedTime % checkWaitTime))
-                time.sleep(sleepTime)
-            else:
-                time.sleep(checkWaitTime)
-            # check wait time ici pour empecher les changements externe
-
-            while self.pauseChecks:
-                time.sleep(0.1)
-
-        self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
+            self.oldValue = currentValue

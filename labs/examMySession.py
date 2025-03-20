@@ -1,5 +1,4 @@
 from time import sleep
-import grovepi  # type: ignore
 from basicPortControlSystem import basicPortControlSystem
 from scrutteurDigital import scrutteurDigital
 

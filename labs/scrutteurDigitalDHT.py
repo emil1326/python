@@ -23,7 +23,9 @@ class scrutteurDigitalDHT:
     # funcOnChange = None  # ==> fonction a appeler si la valeur change
     # funcOnCheck = None  # ==> fonction a appeler a chaque check
 
-    def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0):
+    # oldvalue = none #==> prend les value temp/humidity de capteur dht
+
+    def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0.0):
         if self.allowedPorts.__contains__(port):
             self.port = port
         else:
@@ -39,6 +41,8 @@ class scrutteurDigitalDHT:
 
         self.funcOnChange = self.passFunc
         self.funcOnCheck = self.passFunc
+
+        self.oldValue = None
 
         grovepi.pinMode(self.port, "INPUT")
 
@@ -78,24 +82,10 @@ class scrutteurDigitalDHT:
         self.monitor()
 
     def checkAnalog(self, checkWaitTime):  # => min, max, on change, on check
-        oldValue = None
 
         while not self.endLoopFlag:
-            [temp, humidity] = grovepi.dht(self.port, 0)
-            # ==> 0 is blue sensor, 1 is green
-            if math.isnan(temp) and math.isnan(humidity):
-                print("cant read temp / humidity data on port", self.port)
-            else:
-                if [temp, humidity] != oldValue:
-                    self.funcOnChange([temp, humidity])
-                    if self.verbose and self.allVerbose:
-                        print("Value changed:", [temp, humidity])
 
-                self.funcOnCheck([temp, humidity])
-                if self.verbose and self.allVerbose:
-                    print("Value checked:", [temp, humidity])
-
-                oldValue = [temp, humidity]
+            self.doCheckOnce()
 
             if self.timeCriticalMode:
                 elapsedTime = time.time() - self.timeCriticalStartTime
@@ -109,3 +99,22 @@ class scrutteurDigitalDHT:
                 time.sleep(0.1)
 
         self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
+
+    def doCheckOnce(self):
+        [temp, humidity] = grovepi.dht(self.port, 0)
+
+        # ==> 0 is blue sensor, 1 is green
+
+        if math.isnan(temp) and math.isnan(humidity):
+            print("cant read temp / humidity data on port", self.port)
+        else:
+            if [temp, humidity] != self.oldValue:
+                self.funcOnChange([temp, humidity])
+                if self.verbose and self.allVerbose:
+                    print("Value changed:", [temp, humidity])
+
+            self.funcOnCheck([temp, humidity])
+            if self.verbose and self.allVerbose:
+                print("Value checked:", [temp, humidity])
+
+            self.oldValue = [temp, humidity]

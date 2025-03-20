@@ -1,5 +1,4 @@
 import time
-import grovepi  # type: ignore
 from basicPortControlSystem import basicPortControlSystem
 from scrutteurHysteresique import scrutteurHysteresique
 from scrutteurDigital import scrutteurDigital

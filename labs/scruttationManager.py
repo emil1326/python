@@ -1,14 +1,15 @@
 import threading
 import time
-import grovepi  # type: ignore
 
 
-class scrutteurDigital:
-    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
-
+class scruttationManager:
     verbose = False
 
-    # port                  #==> port de la pin
+    # takes in scrutteurs and thread them better when a lot of scrutteures work together
+    # devrais pas avoir plusieur fois se component
+
+    # scrutteures = [] # ==> liste de tout les scrutteurs
+
     # checkThread = None  # ==> thread object
     # checkWaitTime = 0.05  # ==> changer sert a rien sans faire check()
     # pauseChecks = False  # ==> pause le check
@@ -18,18 +19,11 @@ class scrutteurDigital:
     # pour jamais devier, mieux que off pour regulariter mais plus de prosseceur utuliser
     # timeCriticalStartTime = 0
 
-    # funcOnPress = None  # ==> fonction si le bouton est presse
-    # funcOnRelease = None  # ==> fonction si le bouton est relache
-    # funcOnHold = None  # ==> fonction si le bouton est presser
     # funcOnCheck = None
 
-    # isPressed = false # ==> forLogic is pressed
+    def __init__(self, timeCriticalMode=False, timeCriticalStartTime=0.0):
 
-    def __init__(self, port, timeCriticalMode=False, timeCriticalStartTime=0.0):
-        if self.allowedPorts.__contains__(port):
-            self.port = port
-        else:
-            raise ValueError("Port not allowed")
+        self.scrutteures = []
 
         self.checkThread = None
         self.checkWaitTime = 0.05
@@ -39,14 +33,7 @@ class scrutteurDigital:
         self.timeCriticalMode = timeCriticalMode
         self.timeCriticalStartTime = timeCriticalStartTime
 
-        self.funcOnPress = self.passFunc
-        self.funcOnRelease = self.passFunc
-        self.funcOnHold = self.passFunc
         self.funcOnCheck = self.passFunc
-
-        self.isPressed = False
-
-        grovepi.pinMode(self.port, "INPUT")
 
         if self.verbose:
             print("Creer object digi scrutteur")
@@ -54,29 +41,18 @@ class scrutteurDigital:
     def passFunc(self):
         pass
 
-    def setFuncOnPress(self, func):
-        self.funcOnPress = func
-
-        if self.verbose:
-            print("setted function", func, "on press")
-
-    def setFuncOnRelease(self, func):
-        self.funcOnRelease = func
-
-        if self.verbose:
-            print("setted function", func, "on release")
-
-    def setFuncOnHold(self, func):
-        self.funcOnHold = func
-
-        if self.verbose:
-            print("setted function", func, "on hold")
-
     def setFuncOnCheck(self, func):
         self.funcOnCheck = func
 
         if self.verbose:
             print("setted function", func, "on check")
+
+    def addScrutteur(self, scrutteur):
+        scrutteur.endLoop()
+        self.scrutteures.append(scrutteur)
+
+    def removeScrutteur(self, scrutteur):
+        self.scrutteures.remove(scrutteur)
 
     def endLoop(self):
         if self.checkThread is not None:
@@ -103,7 +79,7 @@ class scrutteurDigital:
         self.endLoopFlag = False
 
         self.checkThread = threading.Thread(
-            target=self.checkDigital, args=(self.checkWaitTime,)
+            target=self.monitorSync, args=(self.checkWaitTime,)
         )
         self.checkThread.start()
 
@@ -117,7 +93,7 @@ class scrutteurDigital:
         if self.verbose:
             print("resetter le checkwaittime a", checkWaitTime)
 
-    def checkDigital(self, checkWaitTime):  # => press, release & hold
+    def monitorSync(self, checkWaitTime):  # => press, release & hold
         while not self.endLoopFlag:
 
             self.doCheckOnce()
@@ -135,21 +111,9 @@ class scrutteurDigital:
         self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
 
     def doCheckOnce(self):
-        if grovepi.digitalRead(self.port) == 1:
-            if not self.isPressed:
-                self.isPressed = True
-                if self.verbose:
-                    print("Button pressed")
-                self.funcOnPress()
-            else:  # button pressed rn
-                if self.verbose:
-                    print("Button still pressed")
-                self.funcOnHold()
-        else:
-            if self.isPressed:
-                self.isPressed = False
-                if self.verbose:
-                    print("Button released")
-                self.funcOnRelease()
+
+        # ==> check tout les scrutteurs, si err sa veut dire tas mis une classe qui marche pas avc sa
+        for s in self.scrutteures:
+            s.doCheckOnce()
 
         self.funcOnCheck()
