@@ -272,10 +272,10 @@ client.loop_start()
 
 button.setFuncOnPress(onButtonPress)
 potentiometre.funcOnChange(lastPotVal)
-temp.setFuncOnTempLowerBound(onTempLowerBound)
-temp.setFuncOnTempUpperBound(onTempUpperBound)
-temp.setFuncOnHumLowerBound(onHumLowerBound)
-temp.setFuncOnHumUpperBound(onHumUpperBound)
+temp.setFuncOnLowerBoundTemp(onTempLowerBound)
+temp.setFuncOnUpperBoundTemp(onTempUpperBound)
+temp.setFuncOnLowerBoundHum(onHumLowerBound)
+temp.setFuncOnUpperBoundHum(onHumUpperBound)
 
 # wait for end
 
@@ -307,6 +307,6 @@ exitApp()
 
 
 # todo
-# scrutteur hysterique dht => juste la class elle meme, le reste est implementer
+
 # functions ??
 # distant get/send
