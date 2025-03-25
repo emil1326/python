@@ -1,7 +1,7 @@
 import threading
 import time
 import grovepi  # type: ignore
-from labs.ScrutteurAnalogDHT import scrutteurAnalogDHT
+from ScrutteurAnalogDHT import scrutteurAnalogDHT
 from scrutteurAnalog import scrutteurAnalog
 
 
@@ -33,6 +33,8 @@ class scrutteurHysteresiqueDHT:
 
         self.lastRecordTimeTemp = time.perf_counter()
         self.lastRecordTimeHum = self.lastRecordTimeTemp
+        self.LastCheckTime = self.lastRecordTimeTemp  # peu pas checker trop souvent
+        self.minCheckTime = 0.5  # peu pas le faire plus souvent
 
         self.currBoundCurrentlyTemp = 0
         self.currBoundTemp = None
@@ -212,5 +214,11 @@ class scrutteurHysteresiqueDHT:
     def StopScrutteur(self):
         self.scrutteur.endLoop()
 
+    def endLoop(self):
+        self.scrutteur.endLoop()
+
     def doCheckOnce(self):
-        self.scrutteur.doCheckOnce()
+        # need limit checks
+        if self.minCheckTime > self.LastCheckTime:
+            self.LastCheckTime = time.perf_counter()
+            self.scrutteur.doCheckOnce()

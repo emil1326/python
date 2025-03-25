@@ -3,7 +3,7 @@ from scrutteurDigital import scrutteurDigital
 from scrutteurAnalog import scrutteurAnalog
 
 
-myDel = basicPortControlSystem(4)
+myDel = basicPortControlSystem(5)
 
 myDel.verbose = True
 

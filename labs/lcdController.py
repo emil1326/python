@@ -1,3 +1,4 @@
+from tabnanny import verbose
 import threading
 import time
 import grovepi  # type: ignore
@@ -10,9 +11,11 @@ class lcdController:
     allowedPorts = [0, 1, 2]  # unused rn
 
     defaultText = "                "  # sets lenght pour les 2 lignes
-    defaultText2 = " emils screen   "
+    defaultText2 = "                "
 
     verbose = False
+
+    screenLock = threading.Lock()
 
     # text = defaultText  # both lines
     # text2 = defaultText
@@ -91,7 +94,7 @@ class lcdController:
         self.lastPrintTime = time.perf_counter()
         self.lastShowText = ""
 
-        self.clearText()
+        self.shutDown()
 
     # si wrap around sa remet les char enlever de lautre bord
     # si first line on marche juste sur la premiere ligne
@@ -222,7 +225,7 @@ class lcdController:
             if self.lastShowText != final:
                 if time.perf_counter() - self.lastPrintTime > self.tempsMinEntrePrint:
                     self.lastPrintTime = time.perf_counter()
-                    setText(final)
+                    self.SendInfoToScreen(finalText=final)
                     self.lastShowText = final
                 else:
                     # retry juste une fois, si y peu pas veu dire sa spam
@@ -242,7 +245,7 @@ class lcdController:
             if self.lastShowText != final:
                 if time.perf_counter() - self.lastPrintTime > self.tempsMinEntrePrint:
                     self.lastPrintTime = time.perf_counter()
-                    setText(final)
+                    self.SendInfoToScreen(finalText=final)
                     self.lastShowText = final
                 else:
                     if self.verbose:
@@ -259,6 +262,20 @@ class lcdController:
             func()
 
         threading.Thread(target=wrapper).start()
+
+    def SendInfoToScreen(self, isColor=False, r=0, g=0, b=0, finalText=""):
+        # try:
+            with self.screenLock:
+                time.sleep(0.005)
+                if isColor:
+                    setRGB(r, g, b)
+                else:
+                    setText(finalText)
+        # except:
+            # self.SendInfoToScreen(isColor, r, g, b, finalText)
+            if self.verbose:
+                print("failed to set text / color")
+            pass
 
     def clearText(self, apply=True, do1=True, do2=True):
         if do1:
@@ -287,7 +304,7 @@ class lcdController:
         self.printOnScreen()
 
     def setColor(self, r, g, b):
-        setRGB(r, g, b)
+        self.SendInfoToScreen(True, r, g, b)
 
     def setColorByName(self, color_name):
         color_map = {

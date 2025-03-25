@@ -115,5 +115,6 @@ class scruttationManager:
         # ==> check tout les scrutteurs, si err sa veut dire tas mis une classe qui marche pas avc sa
         for s in self.scrutteures:
             s.doCheckOnce()
+            time.sleep(0.001)
 
         self.funcOnCheck()

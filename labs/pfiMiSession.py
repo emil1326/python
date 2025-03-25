@@ -1,9 +1,9 @@
+from time import sleep
 from basicPortControlSystem import basicPortControlSystem
 from scrutteurDigital import scrutteurDigital
 from scrutteurAnalog import scrutteurAnalog
 from lcdController import lcdController
 from scruttationManager import scruttationManager
-from scrutteurHysteresique import scrutteurHysteresique
 from scrutteurHysteresiqueDHT import scrutteurHysteresiqueDHT
 import paho.mqtt.client as mqtt  # type: ignore
 
@@ -19,13 +19,13 @@ client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "emildevclientlionelgroul
 
 potentiometre = scrutteurAnalog(0)
 button = scrutteurDigital(2)
-temp = scrutteurHysteresiqueDHT(3)  # digital
+tempHum = scrutteurHysteresiqueDHT(4)  # digital
 movementSensor = scrutteurDigital(7)
 
 # out
 
 screen = lcdController(1)
-lumiereChauffage = basicPortControlSystem(4, True)  # Rouge
+lumiereChauffage = basicPortControlSystem(3, True)  # Rouge
 lumiereDeshumidificateur = basicPortControlSystem(5, True)  # Bleu
 lumiereMovement = basicPortControlSystem(6, True)  # vert => 10sec
 
@@ -56,12 +56,12 @@ distantname = "other/pfimises/clg/kf1"
 
 # test hardware
 
+screen.setColorByName("white")
+screen.setText("test - emil")
+
 lumiereChauffage.pulseSync(2, 0.1, 0.2)
 lumiereDeshumidificateur.pulseSync(2, 0.1, 0.2)
 lumiereMovement.pulseSync(2, 0.1, 0.2)
-
-screen.setColorByName("blue")
-screen.setText("test - emil")
 
 potentiometre.doCheckOnce()
 print(f"pot test val: {potentiometre.oldValue}")
@@ -82,6 +82,8 @@ input("test done")
 def onButtonPress():
     global currPage
 
+    print("Clicked on button")
+
     # avant de update currpage on est encore sur la bonne selon le nb, donc pas besoin de faire -1 dessus
 
     # exit been choosen
@@ -99,6 +101,8 @@ def onButtonPress():
         pass
 
     currPage = currPage + 1
+    if currPage > 3:
+        currPage = 0
 
     updateUI()
 
@@ -107,6 +111,8 @@ def onPotChange(value):
     global lastPotVal
 
     lastPotVal = value
+
+    print(f"change val pot to: {value}")
 
     updateUI()
 
@@ -125,17 +131,25 @@ def onMotionStillDetected():
 def onTempLowerBound(value):
     lumiereChauffage.changeState(1)
 
+    onTempChanged(value)
+
 
 def onTempUpperBound(value):
     lumiereChauffage.changeState(0)
+
+    onTempChanged(value)
 
 
 def onHumLowerBound(value):
     lumiereDeshumidificateur.changeState(0)
 
+    onHumChanged(value)
+
 
 def onHumUpperBound(value):
     lumiereDeshumidificateur.changeState(1)
+
+    onHumChanged(value)
 
 
 def onTempChanged(value):
@@ -143,6 +157,8 @@ def onTempChanged(value):
     tempCurr = value
     if currPage - 1 == 0:
         updateUI()
+    
+    print(f"Temp changed {value}")
 
 
 def onHumChanged(value):
@@ -151,6 +167,7 @@ def onHumChanged(value):
     if currPage - 1 == 0:
         updateUI()
 
+    print(f"hum changed {value}")
 
 # mqtt func
 
@@ -186,11 +203,14 @@ def on_publish(client, userdata, mid, other, other2):
 
 
 def updateUI():
+    screen.clearText()
+
     if currPage == 0:  # see data
         if currMode == 0:
             screen.setColorByName("green")
             screen.setText("curr data:")
-            screen.setText("temp: ", line=2)
+            # limite le nb de char ici, faut les 2 aye moin de 5 char each
+            screen.setText(f"t: {tempCurr}, h: {humCurr}", line=2)
         elif currMode == 1:
             screen.setColorByName("yellow")
             screen.setText("curr data:")
@@ -236,24 +256,22 @@ def potValToMenu(value):
 # start monitoring
 
 scrutManager.addScrutteur(movementSensor)
-scrutManager.addScrutteur(temp)
+scrutManager.addScrutteur(tempHum)
 scrutManager.addScrutteur(button)
 scrutManager.addScrutteur(potentiometre)
 
 scrutManager.monitor()
 
-temp.lowerBoundTemp = tempCible
-temp.upperBoundTemp = tempCanRestart
-temp.waitTimeEntreStatesTemp = tempWaitTime
+tempHum.lowerBoundTemp = tempCible
+tempHum.upperBoundTemp = tempCanRestart
+tempHum.waitTimeEntreStatesTemp = tempWaitTime
 
-temp.lowerBoundHum = humCanRestart
-temp.upperBoundHum = humCible
-temp.waitTimeEntreStatesHum = humWaitTime
+tempHum.lowerBoundHum = humCanRestart
+tempHum.upperBoundHum = humCible
+tempHum.waitTimeEntreStatesHum = humWaitTime
 
 button.setFuncOnPress(onButtonPress)
 
-movementSensor.setFuncOnPress(onMotionDetected)
-movementSensor.setFuncOnHold(onMotionStillDetected)
 
 # mqtt
 
@@ -264,18 +282,24 @@ client.on_publish = on_publish
 
 # client.username_pw_set("nomusager", "password")
 
-client.connect("broker.hivemq.com", 1883, 10)
+# client.connect("broker.hivemq.com", 1883, 10)
 
-client.loop_start()
+# client.loop_start()
 
 # link hardware functions
 
 button.setFuncOnPress(onButtonPress)
-potentiometre.funcOnChange(lastPotVal)
-temp.setFuncOnLowerBoundTemp(onTempLowerBound)
-temp.setFuncOnUpperBoundTemp(onTempUpperBound)
-temp.setFuncOnLowerBoundHum(onHumLowerBound)
-temp.setFuncOnUpperBoundHum(onHumUpperBound)
+potentiometre.setFuncOnChange(onPotChange)
+
+tempHum.setFuncOnLowerBoundTemp(onTempLowerBound)
+tempHum.setFuncOnMiddleBoundTemp(onTempChanged)
+tempHum.setFuncOnUpperBoundTemp(onTempUpperBound)
+tempHum.setFuncOnLowerBoundHum(onHumLowerBound)
+tempHum.setFuncOnMiddleBoundHum(onHumChanged)
+tempHum.setFuncOnUpperBoundHum(onHumUpperBound)
+
+movementSensor.setFuncOnPress(onMotionDetected)
+movementSensor.setFuncOnHold(onMotionStillDetected)
 
 # wait for end
 
