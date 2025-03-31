@@ -38,6 +38,9 @@ class basicPortControlSystem:
 
     def shutDown(self):
         self.changeState(0)
+        
+    def setOnForTime(self, time):
+        pass        
 
     def pulseAsync(self, times, intime, outtime=None, intensity=None):
         if outtime is None:

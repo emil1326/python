@@ -23,10 +23,12 @@ class lcdController:
     # allText  ==> on le prend et puis avc la position on chiosi quoi show
     # lastShowText ==> le texte actuel, pour savoir si un refresh est nessecaire
 
+    # RGBInternal ==> internal color before sending to screen
+
     # charMemorySlots ==> whats inside all the slots 0-6 ==> 7 kept for dynamic
 
     # lastPrintTime = time.first
-    tempsMinEntrePrint = 0.3
+    tempsMinEntrePrint = 0.01
 
     # Define color constants
     # region Color Constants
@@ -93,6 +95,7 @@ class lcdController:
         self.charMemorySlots = [False] * 7
         self.lastPrintTime = time.perf_counter()
         self.lastShowText = ""
+        self.RGBInternal = [0, 0, 0]
 
         self.shutDown()
 
@@ -190,7 +193,7 @@ class lcdController:
 
         return text1, text2
 
-    def setText(self, text, clearOldText=False, position=0, line=1):
+    def setText(self, text, clearOldText=False, position=0, line=1, wait=False):
         # if clearOldText:
         # self.clearText(False, line == 0, line == 1)
 
@@ -216,16 +219,18 @@ class lcdController:
 
         # Update allText
         self.allText = self.text + self.text2
-        self.printOnScreen()
 
-    def printOnScreen(self):
+        if wait == False:
+            self.printOnScreen()
+
+    def printOnScreen(self):  # stop spam
         final = "".join(self.text[:16]) + "".join(self.text2[:16])
 
         try:
             if self.lastShowText != final:
                 if time.perf_counter() - self.lastPrintTime > self.tempsMinEntrePrint:
                     self.lastPrintTime = time.perf_counter()
-                    self.SendInfoToScreen(finalText=final)
+                    self.SendInfoToScreen()
                     self.lastShowText = final
                 else:
                     # retry juste une fois, si y peu pas veu dire sa spam
@@ -236,7 +241,7 @@ class lcdController:
         except:
             if self.verbose:
                 print("Got err at write text")
-            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.05)
+            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.005)
 
     def printOnScreen2(self):
         final = "".join(self.text[:16]) + "".join(self.text2[:16])
@@ -245,7 +250,7 @@ class lcdController:
             if self.lastShowText != final:
                 if time.perf_counter() - self.lastPrintTime > self.tempsMinEntrePrint:
                     self.lastPrintTime = time.perf_counter()
-                    self.SendInfoToScreen(finalText=final)
+                    self.SendInfoToScreen()
                     self.lastShowText = final
                 else:
                     if self.verbose:
@@ -254,7 +259,7 @@ class lcdController:
         except:
             if self.verbose:
                 print("Got err at write text")
-            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.05)
+            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.005)
 
     def set_timeout(self, func, delay):
         def wrapper():
@@ -263,19 +268,18 @@ class lcdController:
 
         threading.Thread(target=wrapper).start()
 
-    def SendInfoToScreen(self, isColor=False, r=0, g=0, b=0, finalText=""):
+    def SendInfoToScreen(self):
         # try:
-            with self.screenLock:
-                time.sleep(0.005)
-                if isColor:
-                    setRGB(r, g, b)
-                else:
-                    setText(finalText)
+        with self.screenLock:
+            time.sleep(0.005)
+            setRGB(self.RGBInternal[0], self.RGBInternal[1], self.RGBInternal[2])
+            time.sleep(0.005)
+            setText(self.allText)
         # except:
-            # self.SendInfoToScreen(isColor, r, g, b, finalText)
-            if self.verbose:
-                print("failed to set text / color")
-            pass
+        # self.SendInfoToScreen(isColor, r, g, b, finalText)
+        if self.verbose:
+            print("failed to set text / color")
+        pass
 
     def clearText(self, apply=True, do1=True, do2=True):
         if do1:
@@ -303,10 +307,13 @@ class lcdController:
 
         self.printOnScreen()
 
-    def setColor(self, r, g, b):
-        self.SendInfoToScreen(True, r, g, b)
+    def setColor(self, r, g, b, wait=False):
+        self.RGBInternal = [r, g, b]
 
-    def setColorByName(self, color_name):
+        if wait == False:
+            self.SendInfoToScreen()
+
+    def setColorByName(self, color_name, wait=False):
         color_map = {
             "red": self.COLOR_RED,
             "green": self.COLOR_GREEN,
@@ -360,10 +367,11 @@ class lcdController:
         }
 
         if color_name in color_map:
-            self.setColor(*color_map[color_name])
+            self.setColor(*color_map[color_name], wait=True)
+            pass
         else:
             raise ValueError("Color not recognized")
 
     def shutDown(self):
-        self.clearText()
+        self.clearText(False)
         self.setColorByName("gray")

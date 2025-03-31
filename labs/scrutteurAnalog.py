@@ -144,29 +144,29 @@ class scrutteurAnalog:
         if self.steps != None:
             currentValue = self.__getStepped(self.steps, currentValue)
 
-            if currentValue <= self.valueRange["min"]:
-                self.funcOnMin(currentValue)
-                if self.verbose:
-                    print("Min value reached:", currentValue)
+        if currentValue <= self.valueRange["min"]:
+            self.funcOnMin(currentValue)
+            if self.verbose:
+                print("Min value reached:", currentValue)
 
-            elif currentValue >= self.valueRange["max"]:
-                self.funcOnMax(currentValue)
-                if self.verbose:
-                    print("Max value reached:", currentValue)
-            else:
-                self.funcOnBetween
-                if self.verbose:
-                    print("Is in between value:", currentValue)
+        elif currentValue >= self.valueRange["max"]:
+            self.funcOnMax(currentValue)
+            if self.verbose:
+                print("Max value reached:", currentValue)
+        else:
+            self.funcOnBetween
+            if self.verbose:
+                print("Is in between value:", currentValue)
 
-            #
+        #
 
-            if currentValue != self.oldValue:
-                self.funcOnChange(currentValue)
-                if self.verbose and self.allVerbose:
-                    print("Value changed:", currentValue)
-
-            self.funcOnCheck(currentValue)
+        if currentValue != self.oldValue:
+            self.funcOnChange(currentValue)
             if self.verbose and self.allVerbose:
-                print("Value checked:", currentValue)
+                print("Value changed:", currentValue)
 
-            self.oldValue = currentValue
+        self.funcOnCheck(currentValue)
+        if self.verbose and self.allVerbose:
+            print("Value checked:", currentValue)
+
+        self.oldValue = currentValue

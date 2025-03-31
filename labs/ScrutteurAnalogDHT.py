@@ -5,7 +5,7 @@ import grovepi  # type: ignore
 
 
 class scrutteurAnalogDHT:
-    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
+    allowedPorts = [2, 3, 4, 5, 6]
 
     verbose = False
     allVerbose = False
@@ -39,7 +39,7 @@ class scrutteurAnalogDHT:
             raise ValueError("Port not allowed")
 
         self.checkThread = None
-        self.checkWaitTime = 0.05
+        self.checkWaitTime = 1
         self.pauseChecks = False
         self.endLoopFlag = False
 
@@ -62,7 +62,7 @@ class scrutteurAnalogDHT:
 
         self.oldValueTemp = 0
         self.oldValueHum = 0
-        
+
         self.steps = None
 
         grovepi.pinMode(self.port, "INPUT")
@@ -116,7 +116,7 @@ class scrutteurAnalogDHT:
     def setMaxHum(self, max_val):
         self.valueRange["maxHum"] = max_val
 
-    def setMinMax(self,min_val_temp, max_val_temp, min_val_hum, max_val_hum):
+    def setMinMax(self, min_val_temp, max_val_temp, min_val_hum, max_val_hum):
         self.setMinTemp(min_val_temp)
         self.setMaxTemp(max_val_temp)
         self.setMinHum(min_val_hum)
@@ -173,70 +173,72 @@ class scrutteurAnalogDHT:
         self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
 
     def doCheckOnce(self):
-        val = [temp, humidity] = grovepi.dht(self.port, 0)
+        [temp, humidity] = grovepi.dht(self.port, 0)
 
         # ==> 0 is blue sensor, 1 is green
 
         if math.isnan(temp) and math.isnan(humidity):
             print("cant read temp / humidity data on port", self.port)
-        else:
-            # need do temp then hum
+            humidity = self.oldValueHum
+            temp = self.oldValueTemp
 
-            if self.steps != None:
-                temp = self.__getStepped(self.steps, temp)
-                humidity = self.__getStepped(self.steps, humidity)
+        # need do temp then hum
 
-            # temp ------
+        if self.steps != None:
+            temp = self.__getStepped(self.steps, temp)
+            humidity = self.__getStepped(self.steps, humidity)
 
-            if temp <= self.valueRange["minTemp"]:
-                self.funcOnMinTemp(temp)
+        # temp ------
+
+        if temp <= self.valueRange["minTemp"]:
+            self.funcOnMinTemp(temp)
+            if self.verbose:
+                print("Min temp value reached:", temp)
+
+        elif temp >= self.valueRange["maxTemp"]:
+            self.funcOnMaxTemp(temp)
+            if self.verbose:
+                print("Max temp value reached:", temp)
+            else:
+                self.funcOnBetweenTemp(temp)
                 if self.verbose:
-                    print("Min temp value reached:", temp)
+                    print("Is in between temp value:", temp)
 
-            elif temp >= self.valueRange["maxTemp"]:
-                self.funcOnMaxTemp(temp)
-                if self.verbose:
-                    print("Max temp value reached:", temp)
-                else:
-                    self.funcOnBetweenTemp(temp)
-                    if self.verbose:
-                        print("Is in between temp value:", temp)
+        #
 
-            #
-
-            if temp != self.oldValueTemp:
-                self.funcOnChangeTemp(temp)
-                if self.verbose and self.allVerbose:
-                    print("Temp Value changed:", temp)
-
-            # hum -------
-            
-            if humidity <= self.valueRange["minHum"]:
-                self.funcOnMinHum(humidity)
-                if self.verbose:
-                    print("Min hum value reached:", humidity)
-
-            elif humidity >= self.valueRange["maxHum"]:
-                self.funcOnMaxHum(humidity)
-                if self.verbose:
-                    print("Max Hum value reached:", humidity)
-                else:
-                    self.funcOnBetweenHum(humidity)
-                    if self.verbose:
-                        print("Is in between Hum value:", humidity)
-
-            #
-
-            if humidity != self.oldValueHum:
-                self.funcOnChangeHum(humidity)
-                if self.verbose and self.allVerbose:
-                    print("Hum Value changed:", humidity)
-
-            # check
-
-            self.funcOnCheck(val)
+        if temp != self.oldValueTemp:
+            self.funcOnChangeTemp(temp)
             if self.verbose and self.allVerbose:
-                print("Value checked:", val)
+                print("Temp Value changed:", temp)
 
-            self.oldValueHum = humidity
-            self.oldValueTemp = temp
+        # hum -------
+
+        if humidity <= self.valueRange["minHum"]:
+            self.funcOnMinHum(humidity)
+            if self.verbose:
+                print("Min hum value reached:", humidity)
+
+        elif humidity >= self.valueRange["maxHum"]:
+            self.funcOnMaxHum(humidity)
+            if self.verbose:
+                print("Max Hum value reached:", humidity)
+            else:
+                self.funcOnBetweenHum(humidity)
+                if self.verbose:
+                    print("Is in between Hum value:", humidity)
+
+        #
+
+        if humidity != self.oldValueHum:
+            self.funcOnChangeHum(humidity)
+            if self.verbose and self.allVerbose:
+                print("Hum Value changed:", humidity)
+
+        # check
+
+        self.funcOnCheck([temp, humidity])
+        if self.verbose and self.allVerbose:
+            print("Value checked:", [temp, humidity])
+
+        self.oldValueHum = humidity
+        self.oldValueTemp = temp

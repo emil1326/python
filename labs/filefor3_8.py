@@ -1,5 +1,6 @@
 import math
 from basicPortControlSystem import basicPortControlSystem
+from ScrutteurAnalogDHT import scrutteurAnalogDHT
 from scrutteurDigital import scrutteurDigital
 from scrutteurAnalog import scrutteurAnalog
 from lcdController import lcdController
@@ -7,7 +8,7 @@ from scrutteurDigitalDHT import scrutteurDigitalDHT
 
 # declare hardware
 
-humSensor = scrutteurDigitalDHT(2)
+humSensor = scrutteurAnalogDHT(4)
 humSensor.checkWaitTime = 1  # peu pas faire moin ????
 
 # test hardware

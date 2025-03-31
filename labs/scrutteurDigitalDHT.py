@@ -5,7 +5,7 @@ import grovepi  # type: ignore
 
 
 class scrutteurDigitalDHT:
-    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
+    allowedPorts = [2, 3, 4, 5, 6]
 
     verbose = False
     allVerbose = False
@@ -32,7 +32,7 @@ class scrutteurDigitalDHT:
             raise ValueError("Port not allowed")
 
         self.checkThread = None
-        self.checkWaitTime = 0.5
+        self.checkWaitTime = 1
         self.pauseChecks = False
         self.endLoopFlag = False
 

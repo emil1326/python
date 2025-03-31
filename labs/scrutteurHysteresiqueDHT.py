@@ -24,6 +24,7 @@ class scrutteurHysteresiqueDHT:
     # currBoundCurrently    ==> ou c mais actually rn
 
     # currValue
+    # always refresh = true => will call funcs when hitting bounds or alwayswhne in the right bound
 
     def __init__(self, port, timeCriticalMode=True, timeCriticalStartTime=0.0):
         # start un scrutteur analogue avc mode crtical time on de base
@@ -34,7 +35,7 @@ class scrutteurHysteresiqueDHT:
         self.lastRecordTimeTemp = time.perf_counter()
         self.lastRecordTimeHum = self.lastRecordTimeTemp
         self.LastCheckTime = self.lastRecordTimeTemp  # peu pas checker trop souvent
-        self.minCheckTime = 0.5  # peu pas le faire plus souvent
+        self.minCheckTime = 1  # peu pas le faire plus souvent
 
         self.currBoundCurrentlyTemp = 0
         self.currBoundTemp = None
@@ -59,6 +60,8 @@ class scrutteurHysteresiqueDHT:
         self.upperBoundTemp = 500
         self.lowerBoundHum = 150
         self.upperBoundHum = 500
+
+        self.alwaysRefresh = True
 
         if self.verbose:
             self.scrutteur.verbose = True
@@ -118,6 +121,13 @@ class scrutteurHysteresiqueDHT:
             self.lastRecordTimeTemp = timeRN
             self.currBoundTemp = 1
             self.funcOnLowerBoundTemp(value)
+        elif (
+            timeRN - self.lastRecordTimeTemp >= self.waitTimeEntreStatesTemp
+            and self.alwaysRefresh
+        ):
+            self.lastRecordTimeTemp = timeRN
+            self.currBoundTemp = 1
+            self.funcOnLowerBoundTemp(value)
 
     def upperBoundHitTemp(self, value):
         timeRN = time.perf_counter()
@@ -129,6 +139,13 @@ class scrutteurHysteresiqueDHT:
         if (
             timeRN - self.lastRecordTimeTemp >= self.waitTimeEntreStatesTemp
             and self.currBoundTemp != 2
+        ):
+            self.lastRecordTimeTemp = timeRN
+            self.currBoundTemp = 2
+            self.funcOnUpperBoundTemp(value)
+        elif (
+            timeRN - self.lastRecordTimeTemp >= self.waitTimeEntreStatesTemp
+            and self.alwaysRefresh
         ):
             self.lastRecordTimeTemp = timeRN
             self.currBoundTemp = 2
@@ -163,6 +180,13 @@ class scrutteurHysteresiqueDHT:
             self.lastRecordTimeHum = timeRN
             self.currBoundHum = 1
             self.funcOnLowerBoundHum(value)
+        elif (
+            timeRN - self.lastRecordTimeHum >= self.waitTimeEntreStatesHum
+            and self.alwaysRefresh
+        ):
+            self.lastRecordTimeHum = timeRN
+            self.currBoundHum = 1
+            self.funcOnLowerBoundHum(value)
 
     def upperBoundHitHum(self, value):
         timeRN = time.perf_counter()
@@ -174,6 +198,13 @@ class scrutteurHysteresiqueDHT:
         if (
             timeRN - self.lastRecordTimeHum >= self.waitTimeEntreStatesHum
             and self.currBoundHum != 2
+        ):
+            self.lastRecordTimeHum = timeRN
+            self.currBoundHum = 2
+            self.funcOnUpperBoundHum(value)
+        elif (
+            timeRN - self.lastRecordTimeHum >= self.waitTimeEntreStatesHum
+            and self.alwaysRefresh
         ):
             self.lastRecordTimeHum = timeRN
             self.currBoundHum = 2
@@ -193,7 +224,7 @@ class scrutteurHysteresiqueDHT:
 
     # monitor
 
-    def Monitor(self):
+    def Monitor(self, startChild=True):
         self.scrutteur.setMinMax(
             self.lowerBoundTemp,
             self.upperBoundTemp,
@@ -209,7 +240,8 @@ class scrutteurHysteresiqueDHT:
         self.scrutteur.setFuncOnMaxHum(self.upperBoundHitHum)
         self.scrutteur.setFuncOnBetweenHum(self.inBetweenHum)
 
-        self.scrutteur.monitor()
+        if startChild == True:
+            self.scrutteur.monitor()
 
     def StopScrutteur(self):
         self.scrutteur.endLoop()
@@ -219,6 +251,7 @@ class scrutteurHysteresiqueDHT:
 
     def doCheckOnce(self):
         # need limit checks
-        if self.minCheckTime > self.LastCheckTime:
-            self.LastCheckTime = time.perf_counter()
+        tNow = time.perf_counter()
+        if self.minCheckTime < tNow - self.LastCheckTime:
+            self.LastCheckTime = tNow
             self.scrutteur.doCheckOnce()
