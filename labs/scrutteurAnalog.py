@@ -51,8 +51,8 @@ class scrutteurAnalog:
         self.funcOnChange = self.passFunc
         self.funcOnCheck = self.passFunc
         self.funcOnBetween = self.passFunc
-        
-        self.steps = None # => none fais que sa ignore
+
+        self.steps = None  # => none fais que sa ignore
 
         self.oldValue = 0
 

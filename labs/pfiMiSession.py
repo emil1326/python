@@ -1,4 +1,4 @@
-import sys
+from re import split
 from time import sleep
 from basicPortControlSystem import basicPortControlSystem
 from scrutteurDigital import scrutteurDigital
@@ -21,6 +21,9 @@ client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "emildevclientlionelgroul
 potentiometre = scrutteurAnalog(1)
 button = scrutteurDigital(2)
 tempHum = scrutteurHysteresiqueDHT(4)  # digital
+tempHum.alwaysRefresh = True
+tempHum.scrutteur.verbose
+tempHum.scrutteur.allVerbose
 movementSensor = scrutteurDigital(7)
 
 # out
@@ -41,8 +44,8 @@ tempCanRestart = 18
 tempWaitTime = 5  # lower => test
 tempCurr = 0
 
-humCible = 50
-humCanRestart = 55  # upper ici pcq on remove
+humCible = 55
+humCanRestart = 50
 humWaitTime = 5
 humCurr = 0
 
@@ -55,8 +58,10 @@ currPage = 0  # 0 = see vals, 1 = mod temp, 2 = mod hum, 3 = mod le mod / quit
 currMode = 0  # 0 = local, 1 = distant, 2 = quit
 lastPotVal = 0
 
+# name used to send
 localname = "emil/pfimises/clg/kf1"
-distantname = "other/pfimises/clg/kf1"
+# name used to receive => change selon la personne
+distantname = "emil/pfimises/clg/kf1"
 
 # test hardware
 
@@ -76,7 +81,10 @@ print(f"button ispressed: {button.isPressed}")
 movementSensor.doCheckOnce()
 print(f"someone near moved? {button.isPressed}")
 
-input("test done")
+# input("test done")
+print("test done")
+sleep(1)
+
 
 # declare functions
 
@@ -87,9 +95,7 @@ def onButtonPress():
     global currPage
     global currMode
 
-    print("Clicked on button")
-    print(currPage)
-    print(currMode)
+    print(f"Clicked on button . page: {currPage} . mode: {currMode}")
 
     # avant de update currpage on est encore sur la bonne selon le nb, donc pas besoin de faire -1 dessus
 
@@ -105,9 +111,11 @@ def onButtonPress():
         if currPage == 1:
             global tempCible
             tempCible = round(lastPotVal / 34.1)
+            MonitorTemp()
         elif currPage == 2:
             global humCible
             humCible = round(lastPotVal / 10.23)
+            MonitorTemp()
         pass
 
     currPage = currPage + 1
@@ -135,7 +143,14 @@ def onMotionDetected():
 
 def onMotionStillDetected():
     # flash once 10s at max light, si un autre se met pardessu sa change rien, juste instanci plus de thread todo fix that?
-    # lumiereMovement.pulseAsync(1, 10, 0, 1)
+    lumiereMovement.setOnForTime(timeOnMovment, 1)
+    pass
+
+
+def onTempHumChangedNow(temp_humidity):
+    # temp, humidity = temp_humidity
+    # onTempChanged(temp)
+    # onHumChanged(humidity)
     pass
 
 
@@ -171,12 +186,13 @@ def onHumUpperBound(value):
     onHumChanged(value)
 
 
+# les 2 on change se font caller en meme temps, juste pas le meme trajet vers
 def onTempChanged(value):
     global tempCurr
     tempCurr = value
     if currPage == 0 and currMode == 0:
         # updateUI()
-        pass 
+        pass
     # already do in hum, is always together
 
     # print(f"Temp changed {value}")
@@ -190,43 +206,65 @@ def onHumChanged(value):
 
     print(f"hum changed {value}")
 
+    mqttSendTemps()
+
 
 # mqtt func
 
 
 # Callback function quand on connect successful
 def on_connect(client, userdata, flags, rc, last):
-    print("Connected with result code " + str(rc))
-    # screen.setText(f"conn: {str(rc)}", line=1)
+    print("--------------- Connected with result code " + str(rc))
+    
+    if str(rc) == "Success":
+        client.subscribe(distantname, qos=1)
+
+    # screen.setText(f"Connected: {str(rc)}", line=1)
 
 
 # Callback function quand on recoit un message
 def on_message(client, userdata, msg):
-    print(f"Received message '{msg.payload.decode()}' on topic '{msg.topic}'")
-    # screen.clearText(False, False, True)
-    # screen.setText(f"msg: {msg.payload.decode()}", line=1)
-    # print(f"Température de l'equipier: {msg.payload.decode()}")
+    msgIN = msg.payload.decode()
+    print(f"--------------- Received message '{msgIN}' on topic '{msg.topic}'")
 
+    # si est dans disant show menu
     if currPage == 0 and currMode == 1:
-        updateUI()
+        vals = split("@", msgIN)
+        print(vals)
+
+        global tempDist
+        global humDist
+
+        try:
+            tempDist = float(vals[0])
+            humDist = float(vals[1])
+            updateUI()
+        except (ValueError, IndexError):
+            print("Error parsing received message")
 
 
 # callback quand on se sub a un sujet
 def on_subscribe(client, userdata, mid, granted_qos, rc):
-    pass
+    print(f"------------- Subscribed to topic with QoS {granted_qos}")
 
 
 # callback quand onviens de publish
-def on_publish(client, userdata, mid, other, other2):
-    pass
+def on_publish(client, userdata, mid, other=None, other2=None):
+    print(f"Message published with mid {mid}")
+
+
+def mqttSendTemps():
+    message = f"{tempCurr}@{humCurr}"
+    client.publish(localname, message)
+    print(f"Sent message: {message}")
 
 
 # software
 
 
 def updateUI():
-    screen.clearText()
-    print("did UI")
+    screen.clearText(False)
+    print(f"did UI . page: {currPage} . mode: {currMode}")
 
     if currPage == 0:  # see data
         if currMode == 0:
@@ -295,6 +333,19 @@ def potValToMenuNB(value):
 
 # start monitoring
 
+
+def MonitorTemp():
+    tempHum.lowerBoundTemp = tempCible
+    tempHum.upperBoundTemp = tempCanRestart
+    tempHum.waitTimeEntreStatesTemp = tempWaitTime
+
+    tempHum.lowerBoundHum = humCible
+    tempHum.upperBoundHum = humCanRestart
+    tempHum.waitTimeEntreStatesHum = humWaitTime
+
+    tempHum.Monitor(False)
+
+
 scrutManager.addScrutteur(potentiometre)
 potentiometre.steps = (int)(1023 / 50)  # type:ignore => to percent
 scrutManager.addScrutteur(movementSensor)
@@ -302,14 +353,6 @@ scrutManager.addScrutteur(tempHum)
 scrutManager.addScrutteur(button)
 
 scrutManager.monitor()
-
-tempHum.lowerBoundTemp = tempCible
-tempHum.upperBoundTemp = tempCanRestart
-tempHum.waitTimeEntreStatesTemp = tempWaitTime
-
-tempHum.lowerBoundHum = humCanRestart
-tempHum.upperBoundHum = humCible
-tempHum.waitTimeEntreStatesHum = humWaitTime
 
 
 # mqtt
@@ -319,11 +362,12 @@ client.on_message = on_message
 client.on_subscribe = on_subscribe
 client.on_publish = on_publish
 
+
 # client.username_pw_set("nomusager", "password")
 
-# client.connect("broker.hivemq.com", 1883, 10)
+client.connect("broker.hivemq.com", 1883, 10)
 
-# client.loop_start()
+client.loop_start()
 
 # link hardware functions
 
@@ -336,8 +380,9 @@ tempHum.setFuncOnUpperBoundTemp(onTempUpperBound)
 tempHum.setFuncOnLowerBoundHum(onHumLowerBound)
 tempHum.setFuncOnMiddleBoundHum(onHumChanged)
 tempHum.setFuncOnUpperBoundHum(onHumUpperBound)
+tempHum.setFuncOnCheckC(onTempHumChangedNow)
 
-tempHum.Monitor(False)
+MonitorTemp()
 
 movementSensor.setFuncOnPress(onMotionDetected)
 movementSensor.setFuncOnHold(onMotionStillDetected)
@@ -360,13 +405,11 @@ def exitApp():
 
     sleep(0.02)
     screen.shutDown()
-    sleep(0.02)
+    sleep(0.2)
 
     print("Done shutdown")
 
     exit(0)
-
-    print("postShutdown??")
 
 
 updateUI()

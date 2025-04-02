@@ -11,8 +11,15 @@ class basicPortControlSystem:
 
     # curState = 0  # 0 = off, 1 = on, if on pwm do * 255, only in __Update
 
+    # timeOut = null => null -> no timeout rn, - in do not light + in light
+    # lastTime = 0 => time begin timeout
+    # rStateThread = none
+
     def __init__(self, port, usePWM=False):
         self.curState = 0
+        self.timeOut = None
+        self.lastTime = time.perf_counter()
+        self.rStateThread = None
 
         self.usePWM = usePWM
         if usePWM:
@@ -38,9 +45,23 @@ class basicPortControlSystem:
 
     def shutDown(self):
         self.changeState(0)
-        
-    def setOnForTime(self, time):
-        pass        
+
+    def setOnForTime(self, duration, value):
+
+        def reset_state():
+            while time.perf_counter() - self.lastTime < duration:
+                time.sleep(0.1)  # Check periodically
+
+            self.curState = 0
+            self.__update()
+
+        self.curState = value
+        self.lastTime = time.perf_counter()  # Update the lastTime to the current time
+        self.__update()
+
+        if self.rStateThread is None or not self.rStateThread.is_alive():
+            self.rStateThread = threading.Thread(target=reset_state)
+            self.rStateThread.start()
 
     def pulseAsync(self, times, intime, outtime=None, intensity=None):
         if outtime is None:

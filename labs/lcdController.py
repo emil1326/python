@@ -3,6 +3,7 @@ import threading
 import time
 import grovepi  # type: ignore
 from grove_rgb_lcd import *
+import traceback
 
 
 # only works with v4 screens
@@ -28,7 +29,7 @@ class lcdController:
     # charMemorySlots ==> whats inside all the slots 0-6 ==> 7 kept for dynamic
 
     # lastPrintTime = time.first
-    tempsMinEntrePrint = 0.01
+    tempsMinEntrePrint = 0.005
 
     # Define color constants
     # region Color Constants
@@ -234,14 +235,16 @@ class lcdController:
                     self.lastShowText = final
                 else:
                     # retry juste une fois, si y peu pas veu dire sa spam
-                    self.set_timeout(self.printOnScreen2, self.tempsMinEntrePrint + 0.1)
+                    self.set_timeout(
+                        self.printOnScreen2, self.tempsMinEntrePrint + 0.05
+                    )
                     if self.verbose:
                         print(f"retarted: {final}")
 
         except:
             if self.verbose:
                 print("Got err at write text")
-            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.005)
+            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.05)
 
     def printOnScreen2(self):
         final = "".join(self.text[:16]) + "".join(self.text2[:16])
@@ -259,7 +262,7 @@ class lcdController:
         except:
             if self.verbose:
                 print("Got err at write text")
-            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.005)
+            self.set_timeout(self.printOnScreen, self.tempsMinEntrePrint + 0.05)
 
     def set_timeout(self, func, delay):
         def wrapper():
@@ -269,14 +272,19 @@ class lcdController:
         threading.Thread(target=wrapper).start()
 
     def SendInfoToScreen(self):
-        # try:
-        with self.screenLock:
-            time.sleep(0.005)
-            setRGB(self.RGBInternal[0], self.RGBInternal[1], self.RGBInternal[2])
-            time.sleep(0.005)
-            setText(self.allText)
-        # except:
-        # self.SendInfoToScreen(isColor, r, g, b, finalText)
+        try:
+            with self.screenLock:
+                time.sleep(0.005)
+                setRGB(self.RGBInternal[0], self.RGBInternal[1], self.RGBInternal[2])
+                time.sleep(0.005)
+                setText(self.allText)
+                # print(
+                #     f"sent info to screen: R{self.RGBInternal[0]} G{self.RGBInternal[1]} B{self.RGBInternal[2]}   text:{self.allText}"
+                # )
+                # print("Stack trace:")
+                # traceback.print_stack()
+        except:
+            self.SendInfoToScreen()
         if self.verbose:
             print("failed to set text / color")
         pass
@@ -373,5 +381,5 @@ class lcdController:
             raise ValueError("Color not recognized")
 
     def shutDown(self):
-        self.clearText(False)
-        self.setColorByName("gray")
+        self.setColorByName("gray", True)
+        self.clearText()

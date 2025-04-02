@@ -39,7 +39,7 @@ class scrutteurAnalogDHT:
             raise ValueError("Port not allowed")
 
         self.checkThread = None
-        self.checkWaitTime = 1
+        self.checkWaitTime = 2
         self.pauseChecks = False
         self.endLoopFlag = False
 
