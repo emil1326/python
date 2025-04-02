@@ -204,7 +204,7 @@ def onHumChanged(value):
     if currPage == 0 and currMode == 0:
         updateUI()
 
-    print(f"hum changed {value}")
+    # print(f"hum changed {value}")
 
     mqttSendTemps()
 
@@ -250,13 +250,14 @@ def on_subscribe(client, userdata, mid, granted_qos, rc):
 
 # callback quand onviens de publish
 def on_publish(client, userdata, mid, other=None, other2=None):
-    print(f"Message published with mid {mid}")
+    # print(f"Message published with mid {mid}")
+    pass
 
 
 def mqttSendTemps():
     message = f"{tempCurr}@{humCurr}"
     client.publish(localname, message)
-    print(f"Sent message: {message}")
+    # print(f"Sent message: {message}")
 
 
 # software
