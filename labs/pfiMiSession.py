@@ -21,10 +21,11 @@ client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, "emildevclientlionelgroul
 potentiometre = scrutteurAnalog(1)
 button = scrutteurDigital(2)
 tempHum = scrutteurHysteresiqueDHT(4)  # digital
-tempHum.alwaysRefresh = True
-tempHum.scrutteur.verbose
-tempHum.scrutteur.allVerbose
+tempHum.alwaysRefresh = False
+# tempHum.scrutteur.verbose
+# tempHum.scrutteur.allVerbose
 movementSensor = scrutteurDigital(7)
+luminositer = scrutteurAnalog(2)
 
 # out
 
@@ -40,19 +41,23 @@ lumiereMovement = basicPortControlSystem(6, True)  # vert => 10sec
 # waittime => temps hysteresique entre states
 
 tempCible = 20
-tempCanRestart = 18
-tempWaitTime = 5  # lower => test
+tempCanRestart = 15
+tempWaitTime = 25  # lower => test
 tempCurr = 0
 
 humCible = 55
 humCanRestart = 50
-humWaitTime = 5
+humWaitTime = 25
 humCurr = 0
 
 tempDist = 0
 humDist = 0
 
 timeOnMovment = 10  # time c allumer apres avoir vu du movement
+
+lumMin = 100  # dark
+lumMax = 300  # light
+canBeLit = False
 
 currPage = 0  # 0 = see vals, 1 = mod temp, 2 = mod hum, 3 = mod le mod / quit
 currMode = 0  # 0 = local, 1 = distant, 2 = quit
@@ -143,14 +148,30 @@ def onMotionDetected():
 
 def onMotionStillDetected():
     # flash once 10s at max light, si un autre se met pardessu sa change rien, juste instanci plus de thread todo fix that?
-    lumiereMovement.setOnForTime(timeOnMovment, 1)
+    if canBeLit:
+        lumiereMovement.setOnForTime(timeOnMovment, 1)
+    pass
+
+
+def onLumMin(value):
+    global canBeLit
+    canBeLit = True
+
+    pass
+
+
+def onLumMax(value):
+    global canBeLit
+    canBeLit = False
+
+    lumiereMovement.changeState(0)
     pass
 
 
 def onTempHumChangedNow(temp_humidity):
-    # temp, humidity = temp_humidity
-    # onTempChanged(temp)
-    # onHumChanged(humidity)
+    temp, humidity = temp_humidity
+    onTempChanged(temp)
+    onHumChanged(humidity)
     pass
 
 
@@ -215,7 +236,7 @@ def onHumChanged(value):
 # Callback function quand on connect successful
 def on_connect(client, userdata, flags, rc, last):
     print("--------------- Connected with result code " + str(rc))
-    
+
     if str(rc) == "Success":
         client.subscribe(distantname, qos=1)
 
@@ -230,7 +251,7 @@ def on_message(client, userdata, msg):
     # si est dans disant show menu
     if currPage == 0 and currMode == 1:
         vals = split("@", msgIN)
-        print(vals)
+        # print(vals)
 
         global tempDist
         global humDist
@@ -245,7 +266,7 @@ def on_message(client, userdata, msg):
 
 # callback quand on se sub a un sujet
 def on_subscribe(client, userdata, mid, granted_qos, rc):
-    print(f"------------- Subscribed to topic with QoS {granted_qos}")
+    print(f"--------------- Subscribed to topic with QoS {granted_qos}")
 
 
 # callback quand onviens de publish
@@ -265,7 +286,7 @@ def mqttSendTemps():
 
 def updateUI():
     screen.clearText(False)
-    print(f"did UI . page: {currPage} . mode: {currMode}")
+    # print(f"did UI . page: {currPage} . mode: {currMode}")
 
     if currPage == 0:  # see data
         if currMode == 0:
@@ -336,12 +357,14 @@ def potValToMenuNB(value):
 
 
 def MonitorTemp():
-    tempHum.lowerBoundTemp = tempCible
-    tempHum.upperBoundTemp = tempCanRestart
+    tempHum.upperBoundTemp = tempCible
+    tempCanRestart = tempCible - 5
+    tempHum.lowerBoundTemp = tempCanRestart
     tempHum.waitTimeEntreStatesTemp = tempWaitTime
 
-    tempHum.lowerBoundHum = humCible
-    tempHum.upperBoundHum = humCanRestart
+    tempHum.upperBoundHum = humCible
+    humCanRestart = humCible - 5
+    tempHum.lowerBoundHum = humCanRestart
     tempHum.waitTimeEntreStatesHum = humWaitTime
 
     tempHum.Monitor(False)
@@ -352,6 +375,7 @@ potentiometre.steps = (int)(1023 / 50)  # type:ignore => to percent
 scrutManager.addScrutteur(movementSensor)
 scrutManager.addScrutteur(tempHum)
 scrutManager.addScrutteur(button)
+scrutManager.addScrutteur(luminositer)
 
 scrutManager.monitor()
 
@@ -382,6 +406,10 @@ tempHum.setFuncOnLowerBoundHum(onHumLowerBound)
 tempHum.setFuncOnMiddleBoundHum(onHumChanged)
 tempHum.setFuncOnUpperBoundHum(onHumUpperBound)
 tempHum.setFuncOnCheckC(onTempHumChangedNow)
+
+luminositer.setFuncOnMin(onLumMin)
+luminositer.setFuncOnMax(onLumMax)
+luminositer.setMinMax(lumMin, lumMax)
 
 MonitorTemp()
 
