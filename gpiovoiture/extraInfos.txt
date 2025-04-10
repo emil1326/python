@@ -1,0 +1,83 @@
+console log:
+
+C:\Users\emili>ssh pi@192.168.137.147
+The authenticity of host '192.168.137.147 (192.168.137.147)' can't be established.
+ED25519 key fingerprint is SHA256:H1y/aFCYLhi54kqpr6PgLSRNVy9Vt5xZyH42mL71XJk.
+This host key is known by the following other names/addresses:
+    C:\Users\emili/.ssh/known_hosts:17: 192.168.137.180
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+Warning: Permanently added '192.168.137.147' (ED25519) to the list of known hosts.
+pi@192.168.137.147's password:
+Linux pi 6.6.51+rpt-rpi-v8 #1 SMP PREEMPT Debian 1:6.6.51-1+rpt3 (2024-10-08) aarch64
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Wed Apr  9 18:01:16 2025
+pi@pi:~ $ mkdir emilpyfile
+cd emi
+mkdir: cannot create directory ‘emilpyfile’: File exists
+pi@pi:~ $ cd emilpyfile/
+pi@pi:~/emilpyfile $ ls
+cd gpiovoiture
+pi@pi:~/emilpyfile $ cd gpiovoiture/
+pi@pi:~/emilpyfile/gpiovoiture $ python3 lab5.py
+2025-04-09 18:05:12 xCreatePipe: Can't set permissions (436) for /home/pi/emilpyfile/gpiovoiture/.lgd-nfy0, No such file or directory
+/usr/lib/python3/dist-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from lgpio: [Errno 2] No such file or directory: '.lgd-nfy-3'
+  warnings.warn(
+2025-04-09 18:05:12 xCreatePipe: Can't set permissions (436) for /home/pi/emilpyfile/gpiovoiture/.lgd-nfy0, No such file or directory
+/usr/lib/python3/dist-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from rpigpio: [Errno 2] No such file or directory: '.lgd-nfy-3'
+  warnings.warn(
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+Can't connect to pigpio at localhost(8888)
+
+Did you start the pigpio daemon? E.g. sudo pigpiod
+
+Did you specify the correct Pi host/port in the environment
+variables PIGPIO_ADDR/PIGPIO_PORT?
+E.g. export PIGPIO_ADDR=soft, export PIGPIO_PORT=8888
+
+Did you specify the correct Pi host/port in the
+pigpio.pi() function? E.g. pigpio.pi('soft', 8888)
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+/usr/lib/python3/dist-packages/gpiozero/devices.py:300: PinFactoryFallback: Falling back from pigpio: failed to connect to localhost:8888
+  warnings.warn(
+/usr/lib/python3/dist-packages/gpiozero/devices.py:297: NativePinFactoryFallback: Falling back to the experimental pin factory NativeFactory because no other pin factory could be loaded. For best results, install RPi.GPIO or pigpio. See https://gpiozero.readthedocs.io/en/stable/api_pins.html for more information.
+  warnings.warn(NativePinFactoryFallback(native_fallback_message))
+Traceback (most recent call last):
+  File "/home/pi/emilpyfile/gpiovoiture/lab5.py", line 3, in <module>
+    robot = Robot()
+            ^^^^^^^
+  File "/home/pi/emilpyfile/gpiovoiture/robot.py", line 17, in __init__
+    self.Lengine = Moteur(6, 5, 13)
+                   ^^^^^^^^^^^^^^^^
+  File "/home/pi/emilpyfile/gpiovoiture/moteur.py", line 22, in __init__
+    self.portPuissance = PWMOutputDevice(portPuissance)
+                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/gpiozero/devices.py", line 108, in __call__
+    self = super().__call__(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/gpiozero/output_devices.py", line 396, in __init__
+    self.pin.frequency = frequency
+    ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/gpiozero/pins/__init__.py", line 379, in <lambda>
+    lambda self, value: self._set_frequency(value),
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3/dist-packages/gpiozero/pins/__init__.py", line 374, in _set_frequency
+    raise PinPWMUnsupported(  # pragma: no cover
+gpiozero.exc.PinPWMUnsupported: PWM is not supported on pin GPIO13
+pi@pi:~/emilpyfile/gpiovoiture $ client_loop: send disconnect: Connection reset
+
+C:\Users\emili>
+
+
+
+================================================================================================================
+
+
+links: 
+
+https://github.com/gpiozero/gpiozero/issues/1106
