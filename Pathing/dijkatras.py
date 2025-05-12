@@ -12,37 +12,51 @@ class EmilsDijkatrasAlg:
     def plus_court_chemin(self, depart, fin):
         if depart == fin:
             raise Exception("depart et fin sont le meme")
-        if depart < 0 or depart > fin:
+        if depart < 0 or depart >= len(self.__distances):
             raise Exception("depart invalide")
-        if fin > len(self.__distances):
+        if fin < 0 or fin >= len(self.__distances):
             raise Exception("fin invalide")
 
         # Initialiser la liste de noeuds
-        noeuds = []
-
-        for i in range(len(self.__distances)):
-            noeuds.append(node())
+        noeuds = [node() for _ in range(len(self.__distances))]
         noeuds[depart].distance = 0
 
         # Algorithme de Dijkstra
-        foundEnd = False
+        while True:
+            # Trouver le noeud non visité avec la plus petite distance
+            curr_index = -1
+            curr_distance = self.inf
+            for i in range(len(noeuds)):
+                if not noeuds[i].vu and noeuds[i].distance < curr_distance:
+                    curr_distance = noeuds[i].distance
+                    curr_index = i
 
-        for i in range(len(self.__distances)):
-            self.explore(noeuds[i], i)
-            
-            pass
+            if curr_index == -1:  # Aucun noeud accessible restant
+                break
 
-    def explore(self, noeud, currNoeux):
-        # pour toutes les distances dans le node
-        for dist in self.__distances[currNoeux]:
-            # discard wrong vals
-            if dist == self.inf or dist == 0:
-                return
+            # Marquer le noeud comme visité
+            noeuds[curr_index].vu = True
 
-            pass
-        # gets node, check every non inf && non 0 relation of it, find shortest path
-        # writes new lengths
-        # returns all connections, in order of smallest to biggest
-        return [2, 1]
+            # Si on a atteint le noeud final, arrêter
+            if curr_index == fin:
+                break
 
-        pass
+            # Explorer les voisins du noeud courant
+            for i, dist in enumerate(self.__distances[curr_index]):
+                if dist != 0 and dist != self.inf and not noeuds[i].vu:
+                    new_distance = noeuds[curr_index].distance + dist
+                    if new_distance < noeuds[i].distance:
+                        noeuds[i].distance = new_distance
+                        noeuds[i].last = curr_index
+
+        # Reconstituer le chemin
+        chemin = []
+        curr = fin
+        while curr is not None:
+            chemin.insert(0, curr)
+            curr = noeuds[curr].last
+
+        if noeuds[fin].distance == self.inf:
+            raise Exception("Aucun chemin trouvé")
+
+        return chemin, noeuds[fin].distance

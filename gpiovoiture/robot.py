@@ -127,11 +127,11 @@ class Robot:
         self.reculer(0.5, 2)
         time.sleep(2.5)
 
-        print("Tourner à gauche...")
+        print("Tourner a gauche...")
         self.turnL(0.5, 2)
         time.sleep(2.5)
 
-        print("Tourner à droite...")
+        print("Tourner a droite...")
         self.turnR(0.5, 2)
         time.sleep(2.5)
 
@@ -139,7 +139,7 @@ class Robot:
         self.freiner()
         time.sleep(2.5)
 
-        print("Arrêter...")
+        print("Arreter...")
         self.arreter()
 
     def shutdown(self):
