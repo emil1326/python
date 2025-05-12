@@ -1,3 +1,5 @@
+# algoritme de dyjkatras
+
 import sys
 from singleNode import singleNode as node
 

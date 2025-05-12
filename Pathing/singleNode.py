@@ -1,3 +1,4 @@
+# une node ( pour lalgorythme dijkras )
 import sys
 
 
