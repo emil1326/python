@@ -30,3 +30,21 @@ matrice_distances_floor = [
     [Inf, Inf, Inf, Inf, Inf, Inf,   4, Inf, Inf, Inf, Inf,   2,   0,   2],  # 13
     [Inf, Inf, Inf, Inf, Inf, Inf, Inf,   4, Inf, Inf, Inf, Inf,   2,   0],  # 14
 ]
+
+# x,y
+matrice_distances_floor_coordinates = [
+    ( 5,  1),    # 1
+    ( 7,  1),    # 2
+    ( 7,  3),    # 3
+    (11,  3),    # 4
+    ( 2,  4),    # 5
+    ( 5,  4),    # 6
+    ( 7,  5),    # 7
+    ( 9,  5),    # 8
+    (11,  5),    # 9
+    ( 2,  6),    # 10
+    ( 5,  6),    # 11
+    ( 5,  9),    # 12
+    ( 7,  9),    # 13
+    ( 9,  9),    # 14
+]
