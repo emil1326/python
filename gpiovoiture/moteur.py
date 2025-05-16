@@ -62,8 +62,6 @@ class Moteur:
         self.lastTime = time.perf_counter()  # update last time
         self.setEngine()
 
-        if not hasattr(self, "rStateThread") or not self.rStateThread.is_alive():
-            self.rStateThread = threading.Thread(target=reset_state)
         if self.rStateThread is None or not self.rStateThread.is_alive():
             self.rStateThread = threading.Thread(target=reset_state)
             self.rStateThread.start()
