@@ -1,11 +1,14 @@
 import threading
 import time
-import grovepi  # type: ignore
+from gpiozero import DigitalInputDevice  # type: ignore
 
 
 class scrutteurDigitalGPIO:
-    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
-
+    allowedPorts = [
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        18, 19, 20, 21, 22, 23, 24, 25, 26, 27
+    ]
+    
     verbose = False
 
     # port                  #==> port de la pin
@@ -46,7 +49,7 @@ class scrutteurDigitalGPIO:
 
         self.isPressed = False
 
-        grovepi.pinMode(self.port, "INPUT")
+        self.device = DigitalInputDevice(self.port, pull_up=True)
 
         if self.verbose:
             print("Creer object digi scrutteur")
@@ -135,7 +138,8 @@ class scrutteurDigitalGPIO:
         self.endLoopFlag = False  # reset a la fin pour pouvoir relancer le thread
 
     def doCheckOnce(self):
-        if grovepi.digitalRead(self.port) == 1:
+        # DigitalInputDevice: True si HIGH (bouton pressé si pull_up)
+        if self.device.value:
             if not self.isPressed:
                 self.isPressed = True
                 if self.verbose:

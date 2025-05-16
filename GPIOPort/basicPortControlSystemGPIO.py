@@ -1,11 +1,15 @@
 import threading
 import time
-import grovepi  # type: ignore
+from gpiozero import PWMOutputDevice, DigitalOutputDevice  # type: ignore
 
 
 class basicPortControlSystemGPIO:
-    allowedPorts = [2, 3, 4, 5, 6, 7, 8]
-    pwmPorts = [3, 5, 6, 9]
+    allowedPorts = [
+        2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
+        18, 19, 20, 21, 22, 23, 24, 25, 26, 27
+    ]
+    # PWM matériel peu quand meme mettre le reste mais pas trop bien
+    pwmPorts = [12, 13, 18, 19]
     # usePWM = False
     verbose = False
 
@@ -22,41 +26,41 @@ class basicPortControlSystemGPIO:
         self.rStateThread = None
 
         self.usePWM = usePWM
+
         if usePWM:
             if port in self.pwmPorts:
-                self.port = port
+                self.device = PWMOutputDevice(port)
             else:
-                raise ValueError("Port not allowed")
+                raise ValueError("Port not allowed for PWM")
         else:
             if port in self.allowedPorts:
-                self.port = port
+                self.device = DigitalOutputDevice(port)
             else:
                 raise ValueError("Port not allowed")
 
         self.__update()
 
-        grovepi.pinMode(self.port, "OUTPUT")
-
     def __update(self):
         if self.usePWM:
-            grovepi.analogWrite(self.port, round(self.curState * 255))
+            self.device.value = self.curState  # PWM: 0.0 a 1.0
         else:
-            grovepi.digitalWrite(self.port, round(self.curState))
+            if self.curState:
+                self.device.on()
+            else:
+                self.device.off()
 
     def shutDown(self):
         self.changeState(0)
 
     def setOnForTime(self, duration, value):
-
         def reset_state():
             while time.perf_counter() - self.lastTime < duration:
-                time.sleep(0.1)  # Check periodically
-
+                time.sleep(0.1)
             self.curState = 0
             self.__update()
 
         self.curState = value
-        self.lastTime = time.perf_counter()  # Update the lastTime to the current time
+        self.lastTime = time.perf_counter()
         self.__update()
 
         if self.rStateThread is None or not self.rStateThread.is_alive():
@@ -71,11 +75,7 @@ class basicPortControlSystemGPIO:
 
         t1 = threading.Thread(
             target=self.pulseSync,
-            args=(
-                times,
-                intime,
-                outtime,
-            ),
+            args=(times, intime, outtime),
         )
         t1.start()
 
@@ -98,7 +98,7 @@ class basicPortControlSystemGPIO:
             time.sleep(outtime)
 
     def changeState(self, state):
-        if not state >= 0 and not state <= 1:
+        if not (0 <= state <= 1):
             raise ValueError("State not allowed")
 
         self.curState = state
