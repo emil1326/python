@@ -1,9 +1,9 @@
 import time
-from GPIOPort.scrutteurDigitalGPIO import scrutteurDigitalGPIO
-from Pathing import martices
-from Pathing.dijkatras import EmilsDijkatrasAlg
-from gpiovoiture.robot import Robot
-from labs.scruttationManager import scruttationManager
+from scrutteurDigitalGPIO import scrutteurDigitalGPIO
+import martices
+from dijkatras import EmilsDijkatrasAlg
+from robot import Robot
+from scruttationManager import scruttationManager
 
 floor = martices.matrice_distances_floor
 cooridinates = martices.matrice_distances_floor_coordinates
@@ -123,6 +123,8 @@ def setSpeeds(useTime):
     speedL = 1 * speedMul * speedMulLeftLine * speedMulLeftIntersection
     speedR = 1 * speedMul * speedMulRightLine * speedMulRightIntersection
 
+    print(f"SetSpeeds: l {speedL} : r {speedR}")
+
     if useTime:
         voiture.setOnForTime(speedL, False, timeToTurn, "left")
         voiture.setOnForTime(speedR, False, timeToTurn, "right")
@@ -197,3 +199,9 @@ input("finish?")
 
 manager.endLoop()
 voiture.shutdown()
+
+
+# ssh pi@192.168.137.244
+# cd Documents/emilpyfile/final
+# scp -r final pi@192.168.137.244:~/Documents/emilpyfile/
+# cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
