@@ -81,7 +81,6 @@ def checkLoop():
     speedMulRightLine = 1
     speedMulRightIntersection = 1
     speedMulLeftIntersection = 1
-    speedMul = 0.5
 
     useTime = False
 
@@ -95,6 +94,7 @@ def checkLoop():
 
             if currentOrder >= len(moveOrders):
                 # is finished
+                speedMul = 0
                 manager.endLoop()
                 voiture.shutdown()
                 exit()
