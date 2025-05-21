@@ -93,9 +93,10 @@ def checkLoop():
         if currTime - timeLastIntersection > coolDownTime:
             currentOrder = currentOrder + 1
 
-            if currentOrder > len(moveOrders):
+            if currentOrder >= len(moveOrders):
                 # is finished
                 manager.endLoop()
+                voiture.shutdown()
                 exit()
             timeLastIntersection = currTime
 
@@ -195,3 +196,4 @@ input("finish?")
 # finish
 
 manager.endLoop()
+voiture.shutdown()
