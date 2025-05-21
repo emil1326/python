@@ -43,32 +43,32 @@ class Moteur:
 
     def setOnForTime(self, value, back, duration=None):
         if duration is None:
-            duration = 1000000  # infinite duration
+            duration = 1000000  # inifinite duration :p
 
-        # rajoutte un obj comme variable a rajouter tsu la classe pour sa marche ben
-        tmp = object()
-        self._lastToken = tmp
+        def reset_state():
+            while time.perf_counter() - self.lastTime < duration:
+                time.sleep(0.1)  # Check periodically
 
-        def reset_state(my_token):
-            start_time = time.perf_counter()
-            while time.perf_counter() - start_time < duration:
-                time.sleep(0.05)
-            # reset quand c le dernier call
-            if getattr(self, "_lastToken", None) is my_token:
-                if back:
-                    self.pBackWard = 0
-                else:
-                    self.pForward = 0
-                self.setEngine()
+            if back:
+                self.pBackWard = 0
+            else:
+                self.pForward = 0
+            self.setEngine()
 
         if back:
             self.pBackWard = value
         else:
             self.pForward = value
+        self.lastTime = time.perf_counter()  # update last time
         self.setEngine()
 
-        t = threading.Thread(target=reset_state, args=(tmp,))
-        t.start()
+        if self.rStateThread is None:
+            self.rStateThread = threading.Thread(target=reset_state)
+            self.rStateThread.start()
+
+        elif self.rStateThread is not None and not self.rStateThread.is_alive():
+            self.rStateThread = threading.Thread(target=reset_state)
+            self.rStateThread.start()
 
     def setEngine(self):
         if self.pForward > self.pBackWard:
