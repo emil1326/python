@@ -23,9 +23,8 @@ class EmilsDijkatrasAlg:
         noeuds = [node() for _ in range(len(self.__distances))]
         noeuds[depart].distance = 0
 
-        # Algorithme de Dijkstra
         while True:
-            # Trouver le noeud non visité avec la plus petite distance
+            # Trouver noeud pas visite avec la plus petite distance
             curr_index = -1
             curr_distance = self.inf
             for i in range(len(noeuds)):
@@ -33,17 +32,15 @@ class EmilsDijkatrasAlg:
                     curr_distance = noeuds[i].distance
                     curr_index = i
 
-            if curr_index == -1:  # Aucun noeud accessible restant
+            if curr_index == -1:
                 break
 
-            # Marquer le noeud comme visité
             noeuds[curr_index].vu = True
 
-            # Si on a atteint le noeud final, arrêter
+            # dernier noeud
             if curr_index == fin:
                 break
 
-            # Explorer les voisins du noeud courant
             for i, dist in enumerate(self.__distances[curr_index]):
                 if dist != 0 and dist != self.inf and not noeuds[i].vu:
                     new_distance = noeuds[curr_index].distance + dist
@@ -51,7 +48,6 @@ class EmilsDijkatrasAlg:
                         noeuds[i].distance = new_distance
                         noeuds[i].last = curr_index
 
-        # Reconstituer le chemin
         chemin = []
         curr = fin
         while curr is not None:

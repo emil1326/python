@@ -11,24 +11,27 @@ cooridinates = martices.matrice_distances_floor_coordinates
 # software
 
 dijkstraObject = EmilsDijkatrasAlg(floor)
-manager = scruttationManager()
+manager = scruttationManager(True)
+manager.checkWaitTime = 0.1
 
 # hardware
 
-irSensorLeft = scrutteurDigitalGPIO(8)
-irSensorRight = scrutteurDigitalGPIO(25)
+irSensorLeft = scrutteurDigitalGPIO(23)
+irSensorRight = scrutteurDigitalGPIO(24)
 
 voiture = Robot()
 
 # consants
 
-speedMul = 0.5  # 1 * speedMul * speedMulLeftLine * speedMulLeftIntersection = puissance
+speedMul = (
+    0.25  # 1 * speedMul * speedMulLeftLine * speedMulLeftIntersection = puissance
+)
 
 entryPoint = 0  # start
-outputPoint = 1  # finish
+outputPoint = 13  # finish
 
-coolDownTime = 1  # temps qui attend avant de pouvoir refaire une nouvelle intersection
-timeToTurn = 1  # le temps nessecaire pour passer a travers une intersection
+coolDownTime = 3  # temps qui attend avant de pouvoir refaire une nouvelle intersection
+timeToTurn = 2  # le temps nessecaire pour passer a travers une intersection
 
 # variables
 
@@ -44,29 +47,29 @@ rightStatus = False
 currentOrder = 0
 moveOrders = ["left", "right", "forward"]
 
-timeLastIntersection = 0
+timeLastIntersection = 0  # tiumeStamp de la derniere fois on a ete a une intersection
 
 # hardWareFunctions
 
 
 def sensorIsLeft():
     global leftStatus
-    leftStatus = True
+    leftStatus = False
 
 
 def sensorIsLeftNo():
     global leftStatus
-    leftStatus = False
+    leftStatus = True
 
 
 def sensorIsRight():
     global rightStatus
-    rightStatus = True
+    rightStatus = False
 
 
 def sensorIsRightNo():
     global rightStatus
-    rightStatus = False
+    rightStatus = True
 
 
 # check loop
@@ -83,6 +86,7 @@ def checkLoop():
     speedMulLeftIntersection = 1
 
     useTime = False
+    end = False
 
     # 2 line => intersection => check action list
     if leftStatus and rightStatus:
@@ -90,44 +94,61 @@ def checkLoop():
         currTime = time.perf_counter()
         # if coolDown time is done, can get a new order
         if currTime - timeLastIntersection > coolDownTime:
+            print(
+                f"Intersection! Attente écoulée: {currTime - timeLastIntersection} secondes"
+            )
             currentOrder = currentOrder + 1
-
             if currentOrder >= len(moveOrders):
                 # is finished
                 speedMul = 0
+                print("Is finished")
                 manager.endLoop()
                 voiture.shutdown()
-                exit()
+                end = True
+            else:
+                print(
+                    f"curr move order: {moveOrders[currentOrder]} at index: {currentOrder}"
+                )
+
             timeLastIntersection = currTime
 
-        if moveOrders[currentOrder] == "left":
-            speedMulLeftIntersection = 0
-        elif moveOrders[currentOrder] == "right":
-            speedMulRightIntersection = 0
-        elif moveOrders[currentOrder] == "forward":
-            pass
+        if not end:
+            if moveOrders[currentOrder] == "left":
+                speedMulLeftIntersection = 0
+            elif moveOrders[currentOrder] == "right":
+                speedMulRightIntersection = 0
+            elif moveOrders[currentOrder] == "forward":
+                pass
 
         useTime = True
 
     # on left line
     elif leftStatus:
-        speedMulRightLine = 0.1
+        speedMulLeftLine = 0.1
     # on right line
     elif rightStatus:
-        speedMulLeftLine = 0.1
+        speedMulRightLine = 0.1
 
     setSpeeds(useTime)
 
 
 def setSpeeds(useTime):
+    global speedMulLeftLine, speedMulRightLine, speedMulLeftIntersection, speedMulRightIntersection, speedMul, currentOrder, timeLastIntersection
+
     speedL = 1 * speedMul * speedMulLeftLine * speedMulLeftIntersection
     speedR = 1 * speedMul * speedMulRightLine * speedMulRightIntersection
 
-    print(f"SetSpeeds: l {speedL} : r {speedR}")
+    print(
+        f"SetSpeeds at time : {time.time():.2f} : l {speedL:.3f} : r {speedR:.3f} -- l {leftStatus} : r {rightStatus}"
+    )
 
     if useTime:
-        voiture.setOnForTime(speedL, False, timeToTurn, "left")
-        voiture.setOnForTime(speedR, False, timeToTurn, "right")
+        if speedL == speedR:
+            voiture.avancer(0.3, 1, True)
+            voiture.arreter()
+        else:
+            voiture.setOnForTime(speedL, False, timeToTurn, "left")
+            voiture.setOnForTime(speedR, False, timeToTurn, "right")
         # awaits que sa fini, vu que on est pas en exact time mode, sa va juste staller le reading des capteures( -> stall le manager ), donc se quon veut
         time.sleep(timeToTurn)
     else:
@@ -189,11 +210,14 @@ fillActionOrders()
 
 manager.addScrutteur(irSensorLeft)
 manager.addScrutteur(irSensorRight)
+
+print("finish")
+
 manager.monitor()
 
 # wait for end
 
-input("finish?")
+input()
 
 # finish
 
@@ -201,7 +225,7 @@ manager.endLoop()
 voiture.shutdown()
 
 
-# ssh pi@192.168.137.244
+# ssh pi@192.168.137.199
 # cd Documents/emilpyfile/final
-# scp -r final pi@192.168.137.244:~/Documents/emilpyfile/
+# scp -r final pi@192.168.137.199:~/Documents/emilpyfile/
 # cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
