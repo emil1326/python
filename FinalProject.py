@@ -120,8 +120,8 @@ def checkLoop():
 
 
 def setSpeeds(useTime):
-    speedL = 1 * speedMul * speedMulLeftLine
-    speedR = 1 * speedMul * speedMulRightLine
+    speedL = 1 * speedMul * speedMulLeftLine * speedMulLeftIntersection
+    speedR = 1 * speedMul * speedMulRightLine * speedMulRightIntersection
 
     if useTime:
         voiture.setOnForTime(speedL, False, timeToTurn, "left")
