@@ -31,8 +31,8 @@ matrice_distances_floor = [
     [Inf, Inf, Inf, Inf, Inf, Inf, Inf,   4, Inf, Inf, Inf, Inf,   2,   0],  # 14
 ]
 
-# x,y
 matrice_distances_floor_coordinates = [
+    # x   y
     ( 5,  1),    # 1
     ( 7,  1),    # 2
     ( 7,  3),    # 3
