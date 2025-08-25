@@ -21,6 +21,8 @@ class Moteur:
         if portPuissance in self.allowedPort:
             self.portPuissance = PWMOutputDevice(portPuissance)
 
+        self.mulSpeed = 1
+
         self.pForward = 0
         self.pBackWard = 0
 
@@ -74,11 +76,11 @@ class Moteur:
         if self.pForward > self.pBackWard:
             self.portAvancer.on()
             self.portReculer.off()
-            self.portPuissance.value = self.pForward
+            self.portPuissance.value = self.pForward * self.mulSpeed
         if self.pForward < self.pBackWard:
             self.portAvancer.off()
             self.portReculer.on()
-            self.portPuissance.value = self.portReculer
+            self.portPuissance.value = self.portReculer * self.mulSpeed
 
     def Test(self):
         print("Test du moteur...")

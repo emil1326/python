@@ -17,6 +17,10 @@ class Robot:
         self.Lengine = Moteur(6, 5, 13)
         self.Rengine = Moteur(15, 14, 18)
 
+        self.mulSpeed = 1
+        self.mulSpeedL = 1
+        self.mulSpeedR = 1
+
         self.pForwardL = 0
         self.pBackWardL = 0
         self.pForwardR = 0
@@ -27,27 +31,27 @@ class Robot:
 
     def avancer(self, puissance, duration=None, awaitIT=False):
         self.setOnForTime(puissance, False, duration, "both")
-        
+
         if awaitIT and duration is not None:
             time.sleep(duration)
 
     def reculer(self, puissance, duration=None, awaitIT=False):
         self.setOnForTime(puissance, True, duration, "both")
-        
+
         if awaitIT and duration is not None:
             time.sleep(duration)
 
     def turnL(self, puissance, duration=None, awaitIT=False):
         self.setOnForTime(puissance, True, duration, "right")
         self.setOnForTime(0, False, duration, "left")
-        
+
         if awaitIT and duration is not None:
             time.sleep(duration)
 
     def turnR(self, puissance, duration=None, awaitIT=False):
         self.setOnForTime(puissance, True, duration, "left")
         self.setOnForTime(0, False, duration, "right")
-        
+
         if awaitIT and duration is not None:
             time.sleep(duration)
 
@@ -104,17 +108,17 @@ class Robot:
     def setEngines(self):
         # Left engine
         if self.pForwardL > 0:
-            self.Lengine.avancer(self.pForwardL)
+            self.Lengine.avancer(self.pForwardL * self.mulSpeed * self.mulSpeedL)
         elif self.pBackWardL > 0:
-            self.Lengine.reculer(self.pBackWardL)
+            self.Lengine.reculer(self.pBackWardL * self.mulSpeed * self.mulSpeedL)
         else:
             self.Lengine.arreter()
 
         # Right engine
         if self.pForwardR > 0:
-            self.Rengine.avancer(self.pForwardR)
+            self.Rengine.avancer(self.pForwardR * self.mulSpeed * self.mulSpeedR)
         elif self.pBackWardR > 0:
-            self.Rengine.reculer(self.pBackWardR)
+            self.Rengine.reculer(self.pBackWardR * self.mulSpeed * self.mulSpeedR)
         else:
             self.Rengine.arreter()
 
