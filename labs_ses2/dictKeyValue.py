@@ -25,12 +25,12 @@ class MapTouches:
 
     def freiner(self):
         pass
-    
+
     def speedUp(self):
         pass
-    
+
     def speedDown(self):
-        
+        pass
 
     def map(self, t):
         match (t):
@@ -48,6 +48,8 @@ class MapTouches:
                 return self.droite()
             case " ":
                 return self.freiner()
-            
-            case "."
-                return self.
+
+            case ".":
+                return self.speedUp()
+            case ",":
+                return self.speedDown()
