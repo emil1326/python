@@ -72,6 +72,11 @@ class Moteur:
             self.rStateThread = threading.Thread(target=reset_state)
             self.rStateThread.start()
 
+    def setMulSpeed(self, mulSpeed):
+        print('mulSpeed', mulSpeed*10, '%')
+        self.mulSpeed += mulSpeed
+        self.setEngine(self)
+
     def setEngine(self):
         if self.pForward > self.pBackWard:
             self.portAvancer.on()

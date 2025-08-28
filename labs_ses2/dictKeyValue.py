@@ -1,4 +1,5 @@
 from final.robot import Robot
+from final.moteur import Moteur
 
 
 class MapTouches:
@@ -6,28 +7,28 @@ class MapTouches:
         self.voiture = Robot()
 
     def diagoGauche(self):
-        pass
+        Robot.turnDL(Robot, 1)
 
     def diagoDroite(self):
-        pass
+        Robot.turnDR(Robot, 1)
 
     def gauche(self):
-        pass
+        Robot.turnL(Robot, 1)
 
     def droite(self):
-        pass
+        Robot.turnR(Robot, 1)
 
     def avancer(self):
-        pass
+        Robot.avancer(Robot, 1)
 
     def reculer(self):
-        pass
+        Robot.reculer(Robot, 1)
 
     def freiner(self):
-        pass
+        Robot.freiner(Robot, 1)
 
     def speedUp(self):
-        pass
+        Robot.setM
 
     def speedDown(self):
         pass
@@ -53,3 +54,6 @@ class MapTouches:
                 return self.speedUp()
             case ",":
                 return self.speedDown()
+            case 'x':
+                self.voiture.shutdown()
+                return exit(0)
