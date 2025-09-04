@@ -17,9 +17,9 @@ class Robot:
         self.Lengine = Moteur(6, 5, 13)
         self.Rengine = Moteur(15, 14, 18)
 
-        self.mulSpeed = 1
-        self.mulSpeedL = 1
-        self.mulSpeedR = 1
+        self.mulSpeed = 1.0
+        self.mulSpeedL = 1.0
+        self.mulSpeedR = 1.0
 
         self.pForwardL = 0
         self.pBackWardL = 0
