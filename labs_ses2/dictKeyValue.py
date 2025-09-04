@@ -28,10 +28,10 @@ class MapTouches:
         Robot.freiner(Robot, 1)
 
     def speedUp(self):
-        Robot.setM
+        Moteur.setMulSpeed(0.1)
 
     def speedDown(self):
-        pass
+        Moteur.setMulSpeed(-0.1)
 
     def map(self, t):
         match (t):

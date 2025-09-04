@@ -63,39 +63,39 @@ class Robot:
         if duration is None:
             duration = 1000000  # infinite duration :p
 
-        def reset_state():
-            while time.perf_counter() - self.lastTime < duration:
-                time.sleep(0.1)  # Check periodically
-
-            if side in ["both", "left"]:
-                if back:
-                    self.pBackWardL = 0
-                else:
-                    self.pForwardL = 0
-            if side in ["both", "right"]:
-                if back:
-                    self.pBackWardR = 0
-                else:
-                    self.pForwardR = 0
-            self.setEngines()
+    def reset_state():
+        while time.perf_counter() - self.lastTime < duration:
+            time.sleep(0.1)  # Check periodically
 
         if side in ["both", "left"]:
             if back:
-                self.pBackWardL = value
+                self.pBackWardL = 0
             else:
-                self.pForwardL = value
+                self.pForwardL = 0
         if side in ["both", "right"]:
             if back:
-                self.pBackWardR = value
+                self.pBackWardR = 0
             else:
-                self.pForwardR = value
-
-        self.lastTime = time.perf_counter()  # update last time
+                self.pForwardR = 0
         self.setEngines()
 
-        if not hasattr(self, "rStateThread") or not self.rStateThread.is_alive():  # type: ignore
-            self.rStateThread = threading.Thread(target=reset_state)
-            self.rStateThread.start()
+    if side in ["both", "left"]:
+        if back:
+            self.pBackWardL = value
+        else:
+            self.pForwardL = value
+    if side in ["both", "right"]:
+        if back:
+            self.pBackWardR = value
+        else:
+            self.pForwardR = value
+
+    self.lastTime = time.perf_counter()  # update last time
+    self.setEngines()
+
+    if not hasattr(self, "rStateThread") or not self.rStateThread.is_alive():  # type: ignore
+        self.rStateThread = threading.Thread(target=reset_state)
+        self.rStateThread.start()
 
     def setEngines(self):
         # Left engine
