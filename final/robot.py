@@ -55,6 +55,34 @@ class Robot:
         if awaitIT and duration is not None:
             time.sleep(duration)
 
+    def turnSelfL(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, True, duration, "right")
+        self.setOnForTime(puissance, False, duration, "left")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+
+    def turnSelfR(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, True, duration, "left")
+        self.setOnForTime(puissance, False, duration, "right")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+    
+    def turnDL(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance/2, False, duration, 'left')
+        self.setOnForTime(puissance, False, duration, 'right')
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+    
+    def turnDR(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, False, duration, 'left')
+        self.setOnForTime(puissance/2, False, duration, 'right')
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+    
     def freiner(self):
         self.setOnForTime(1, True, None, "both")
         self.setOnForTime(1, False, None, "both")
