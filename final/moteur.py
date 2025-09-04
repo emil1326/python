@@ -75,7 +75,7 @@ class Moteur:
     def setMulSpeed(self, mulSpeed):
         print('mulSpeed', mulSpeed*10, '%')
         self.mulSpeed += mulSpeed
-        self.setEngine(self)
+        self.setEngine()
 
     def setEngine(self):
         if self.pForward > self.pBackWard:
