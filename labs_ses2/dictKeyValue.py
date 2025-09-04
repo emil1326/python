@@ -1,4 +1,4 @@
-from final.robot import Robot
+from robot import Robot
 
 
 class MapTouches:
