@@ -21,7 +21,7 @@ class Moteur:
         if portPuissance in self.allowedPort:
             self.portPuissance = PWMOutputDevice(portPuissance)
 
-        self.mulSpeed = 1
+        self.mulSpeed = 1.0
 
         self.pForward = 0
         self.pBackWard = 0
@@ -71,6 +71,11 @@ class Moteur:
         elif self.rStateThread is not None and not self.rStateThread.is_alive():
             self.rStateThread = threading.Thread(target=reset_state)
             self.rStateThread.start()
+
+    def addMulSpeed(self, mulSpeed):
+        # print('mulSpeed', mulSpeed*10, '%')
+        self.mulSpeed += mulSpeed
+        self.setEngine()
 
     def setEngine(self):
         if self.pForward > self.pBackWard:

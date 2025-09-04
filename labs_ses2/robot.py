@@ -17,9 +17,9 @@ class Robot:
         self.Lengine = Moteur(6, 5, 13)
         self.Rengine = Moteur(15, 14, 18)
 
-        self.mulSpeed = 1
-        self.mulSpeedL = 1
-        self.mulSpeedR = 1
+        self.mulSpeed = 1.0
+        self.mulSpeedL = 1.0
+        self.mulSpeedR = 1.0
 
         self.pForwardL = 0
         self.pBackWardL = 0
@@ -51,6 +51,34 @@ class Robot:
     def turnR(self, puissance, duration=None, awaitIT=False):
         self.setOnForTime(puissance, True, duration, "left")
         self.setOnForTime(0, False, duration, "right")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+
+    def turnSelfL(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, True, duration, "right")
+        self.setOnForTime(puissance, False, duration, "left")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+
+    def turnSelfR(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, True, duration, "left")
+        self.setOnForTime(puissance, False, duration, "right")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+
+    def turnDL(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance / 2, False, duration, "left")
+        self.setOnForTime(puissance, False, duration, "right")
+
+        if awaitIT and duration is not None:
+            time.sleep(duration)
+
+    def turnDR(self, puissance, duration=None, awaitIT=False):
+        self.setOnForTime(puissance, False, duration, "left")
+        self.setOnForTime(puissance / 2, False, duration, "right")
 
         if awaitIT and duration is not None:
             time.sleep(duration)
@@ -104,6 +132,11 @@ class Robot:
         elif self.rStateThread is not None and not self.rStateThread.is_alive():
             self.rStateThread = threading.Thread(target=reset_state)
             self.rStateThread.start()
+
+    def addMulSpeed(self, mulSpeed):
+        # print('mulSpeed', mulSpeed*10, '%')
+        self.mulSpeed += mulSpeed
+        self.setEngines()
 
     def setEngines(self):
         # Left engine

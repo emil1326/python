@@ -1,5 +1,4 @@
-from final.robot import Robot
-from final.moteur import Moteur
+from robot import Robot
 
 
 class MapTouches:
@@ -25,13 +24,13 @@ class MapTouches:
         self.voiture.reculer(1)
 
     def freiner(self):
-        self.voiture.freiner(1)
+        self.voiture.freiner()
 
     def speedUp(self):
-        self.voiture.mulSpeedL = self.voiture.mulSpeedL + 0.1
+        self.voiture.addMulSpeed(0.1)
 
     def speedDown(self):
-        Moteur.setMulSpeed(-0.1)
+        self.voiture.addMulSpeed(-0.1)
 
     def map(self, t):
         match (t):
