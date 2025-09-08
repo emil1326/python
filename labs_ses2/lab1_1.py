@@ -19,4 +19,4 @@ while maycontinue:
 
     key = cv2.waitKeyEx(30)  # 30 millisecondes
 
-    mapper.map(ord(key))
+    mapper.map(key)

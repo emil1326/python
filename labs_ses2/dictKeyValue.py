@@ -32,28 +32,27 @@ class MapTouches:
     def speedDown(self):
         self.voiture.addMulSpeed(-0.1)
 
-    def map(self, t):
-        match (t):
-            case "q":
+    def map(self, key):
+        match (key):
+            case ord('q'):
                 return self.diagoGauche()
-            case "w":
+            case ord('w'):
                 return self.avancer()
-            case "e":
+            case ord('e'):
                 return self.diagoDroite()
-            case "a":
+            case ord('a'):
                 return self.gauche()
-            case "s":
+            case ord('s'):
                 return self.reculer()
-            case "d":
+            case ord('d'):
                 return self.droite()
-            case " ":
+            case ord(' '):
                 return self.freiner()
-
-            case ".":
+            case ord('.'):
                 return self.speedUp()
-            case ",":
+            case ord(','):
                 return self.speedDown()
-            case "x":
+            case ord('x'):
                 self.voiture.shutdown()
                 return exit(0)
 
