@@ -56,8 +56,9 @@ class MapTouches:
                 self.voiture.shutdown()
                 return exit(0)
 
-# ssh pi@192.168.137.135
-# cd Documents/pyfile/final
+
+# ssh pi@192.168.137.229
+# cd Documents/pyfile/labs_ses2
 # cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
-# scp -r labs_ses2 pi@192.168.137.135:~/Documents/pyfile/
+# scp -r labs_ses2 pi@192.168.137.229:~/Documents/pyfile/
 # robot1234

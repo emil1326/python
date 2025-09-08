@@ -63,7 +63,7 @@ class Robot:
         if duration is None:
             duration = 1000000  # infinite duration :p
 
-    def reset_state():
+    def reset_state(self, side ,sduration):
         while time.perf_counter() - self.lastTime < duration:
             time.sleep(0.1)  # Check periodically
 

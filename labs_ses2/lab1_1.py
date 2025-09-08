@@ -1,3 +1,4 @@
+from datetime import datetime
 import numpy as np  # type: ignore
 import cv2  # type: ignore
 
@@ -14,7 +15,15 @@ while maycontinue:
 
     key = cv2.waitKeyEx(1)
 
-    if ord(key) == "x":
+    if key == -1:
+        print("error from: ", key)
+        continue
+    else:
+        key = str(key)
+
+    print("curr :", key)
+
+    if key == "x":
         maycontinue = False
 
     key = cv2.waitKeyEx(30)  # 30 millisecondes
