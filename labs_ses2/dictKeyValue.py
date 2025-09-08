@@ -34,32 +34,32 @@ class MapTouches:
 
     def map(self, t):
         match (t):
-            case "q":
+            case 'q':
                 return self.diagoGauche()
-            case "w":
+            case 'w':
                 return self.avancer()
-            case "e":
+            case 'e':
                 return self.diagoDroite()
-            case "a":
+            case 'a':
                 return self.gauche()
-            case "s":
+            case 's':
                 return self.reculer()
-            case "d":
+            case 'd':
                 return self.droite()
-            case " ":
+            case ' ':
                 return self.freiner()
 
-            case ".":
+            case '.':
                 return self.speedUp()
-            case ",":
+            case ',':
                 return self.speedDown()
-            case "x":
+            case 'x':
                 self.voiture.shutdown()
                 return exit(0)
 
 
-# ssh pi@192.168.137.135
+# ssh pi@192.168.137.229
 # cd Documents/pyfile/labs_ses2
 # cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
-# scp -r labs_ses2 pi@192.168.137.135:~/Documents/pyfile/
+# scp -r labs_ses2 pi@192.168.137.229:~/Documents/pyfile/
 # robot1234
