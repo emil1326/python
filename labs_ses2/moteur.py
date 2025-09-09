@@ -85,7 +85,7 @@ class Moteur:
         if self.pForward < self.pBackWard:
             self.portAvancer.off()
             self.portReculer.on()
-            self.portPuissance.value = self.portReculer * self.mulSpeed
+            self.portPuissance.value = self.pBackWard * self.mulSpeed
 
     def Test(self):
         print("Test du moteur...")
