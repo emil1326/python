@@ -13,23 +13,15 @@ maycontinue = True
 sonarG = Sonar._init(Sonar, 25, 8) #sonar de gauche
 sonarD = Sonar._init(Sonar, 20, 21)#sonar de droite
 
-#initialisation des callbacks des DigitalInputDevice
-sonarG.echo.when_activated = sonarG.when_activated
-sonarG.echo.when_deactivated = sonarG.when_deactivated
-
-sonarD.echo.when_activated = sonarD.when_activated
-sonarD.echo.when_deactivated = sonarD.when_deactivated
-
 def triggerSonar():
     while(maycontinue):
         sonarD.trigger.on()
-        sonarG.trigger.on()
-        time.sleep(0.01)
+        time.sleep(0.05)
         sonarD.trigger.off()
-        sonarG.trigger.off()
+        time.sleep(0.05)
     
 
-triggerThread =  threading.Thread(target=triggerSonar)
+triggerThread = threading.Thread(target=triggerSonar)
 
 while maycontinue:
 
