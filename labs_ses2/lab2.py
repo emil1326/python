@@ -1,6 +1,6 @@
 from sonar import Sonar;
 import numpy as np  # type: ignore
-import cv2
+import cv2 # type: ignore
 import threading
 import time
 

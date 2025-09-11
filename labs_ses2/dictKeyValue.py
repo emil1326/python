@@ -1,21 +1,21 @@
-from robot import Robot
+from gab_moteurs import Moteurs
 
 
 class MapTouches:
     def __init__(self) -> None:
-        self.voiture = Robot()
+        self.voiture = Moteurs()
 
     def diagoGauche(self):
-        self.voiture.turnDL(1)
+        self.voiture.diagonale_gauche(1)
 
     def diagoDroite(self):
-        self.voiture.turnDR(1)
+        self.voiture.diagonale_droite(1)
 
     def gauche(self):
-        self.voiture.turnL(1)
+        self.voiture.avancer(1, "g")
 
     def droite(self):
-        self.voiture.turnR(1)
+        self.voiture.avancer(1, "d")
 
     def avancer(self):
         self.voiture.avancer(1)
@@ -24,7 +24,7 @@ class MapTouches:
         self.voiture.reculer(1)
 
     def freiner(self):
-        self.voiture.freiner()
+        self.voiture.avancer(0)
 
     def speedUp(self):
         self.voiture.addMulSpeed(0.1)
