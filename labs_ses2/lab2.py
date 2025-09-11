@@ -3,8 +3,14 @@ import numpy as np  # type: ignore
 import cv2 # type: ignore
 import threading
 import time
+from basicPortControlSystemGPIO import basicPortControlSystemGPIO as PCS
 
 from dictKeyValue import MapTouches
+
+delJaune = PCS(20)
+delRouge = PCS(20)
+
+delJaune.changeState(1)
 
 mapper = MapTouches()
 
