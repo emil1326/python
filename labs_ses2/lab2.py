@@ -1,4 +1,5 @@
-from sonar import Sonar;
+from sonar import Sonar
+from dels import Dels
 import numpy as np  # type: ignore
 import cv2
 import threading
@@ -15,13 +16,11 @@ sonarD = Sonar._init(Sonar, 20, 21)#sonar de droite
 
 def triggerSonar():
     while(maycontinue):
-        sonarD.trigger.on()
-        time.sleep(0.05)
-        sonarD.trigger.off()
-        time.sleep(0.05)
-    
+        sonarD.trigger()
+        time.sleep(0.1)
 
 triggerThread = threading.Thread(target=triggerSonar)
+triggerThread.start()
 
 while maycontinue:
 
@@ -36,3 +35,5 @@ while maycontinue:
     key = cv2.waitKeyEx(30)  # 30 millisecondes
 
     mapper.map(ord(key))
+
+triggerThread.join()
