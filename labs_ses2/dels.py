@@ -1,10 +1,11 @@
-import gpiozero as gp
+import gpiozero as gp  # type: ignore
+
 
 class Dels:
-    def init(self):
+    def __init__(self):
         self.__del_jaune = gp.DigitalOutputDevice(10)
         self.__del_verte = gp.DigitalOutputDevice(9)
-    
+
     def allumer_jaune(self):
         self.__del_jaune.on()
 

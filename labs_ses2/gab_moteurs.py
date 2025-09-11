@@ -2,16 +2,16 @@ import gpiozero as gp  # type: ignore
 
 
 class Moteurs:
-    def init(self):
+    def __init__(self):
         # init moteur gauche
         IN1 = gp.DigitalOutputDevice(6)
         IN2 = gp.DigitalOutputDevice(5)
-        ENA = gp.PWMOutputDevice(13, True, 0, frequency=1000)
+        ENA = gp.PWMOutputDevice(13)
         self.moteurGauche = (IN1, IN2, ENA)
         # init moteur droit
         IN3 = gp.DigitalOutputDevice(15)
         IN4 = gp.DigitalOutputDevice(14)
-        ENB = gp.PWMOutputDevice(18, True, 0, frequency=1000)
+        ENB = gp.PWMOutputDevice(18)
         self.moteurDroit = (IN3, IN4, ENB)
 
         self.mulSpeed = 1
@@ -20,7 +20,7 @@ class Moteurs:
         self, vitesse, moteur=None
     ):  # moteur = 'g': tourner gauche | 'd': tourner droite | None : avancer en ligne droite
         # moteur gauche
-        if moteur == "g" or moteur == None:
+        if moteur == "g" or moteur is None:
             IN1 = 0
             IN2 = 1
             ENA = 2
@@ -29,7 +29,7 @@ class Moteurs:
             self.moteurGauche[IN1].on()
             self.moteurGauche[IN2].off()
         # moteur droit
-        if moteur == "d" or moteur == None:
+        if moteur == "d" or moteur is None:
             IN3 = 0
             IN4 = 1
             ENB = 2
