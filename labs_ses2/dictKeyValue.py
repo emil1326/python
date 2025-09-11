@@ -54,7 +54,7 @@ class MapTouches:
             case ",":
                 return self.speedDown()
             case "x":
-                self.voiture.shutdown()
+                # self.voiture.shutdown()
                 return exit(0)
 
             case _:
