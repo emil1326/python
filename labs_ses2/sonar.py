@@ -4,7 +4,7 @@ from time import perf_counter, sleep
 
 class Sonar:
 
-    VT_SON = 0.343
+    VT_SON = 340.29
     FENETRE = 10 
     
     def __init__(self, pinEcho, pinTrigger):
@@ -17,7 +17,7 @@ class Sonar:
 
     def trigger(self):
         self.__trigger.on()
-        sleep(0.000001)
+        sleep(0.0001)
         self.__trigger.off()
 
     def when_activated(self):
