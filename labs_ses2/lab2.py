@@ -11,10 +11,10 @@ from basicPortControlSystemGPIO import basicPortControlSystemGPIO as PCS
 
 from dictKeyValue import MapTouches
 
-delJaune = PCS(20)
-delRouge = PCS(20)
+# delJaune = PCS(20)
+# delRouge = PCS(20)
 
-delJaune.changeState(1)
+# delJaune.changeState(1)
 
 mapper = MapTouches()
 

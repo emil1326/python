@@ -9,7 +9,7 @@ class Sonar:
     
     def __init__(self, pinEcho, pinTrigger):
         self.__echo = DigitalInputDevice(pinEcho)
-        self.__trigger = DigitalOutputDevice(pinTrigger, True, False)
+        self.__trigger = DigitalOutputDevice(pinTrigger)
         self.__echo.when_activated = self.when_activated
         self.__echo.when_deactivated = self.when_deactivated
         self.__pc_start = 0
