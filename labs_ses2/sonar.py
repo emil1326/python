@@ -30,7 +30,7 @@ class Sonar:
         pc_stop = perf_counter()
         t = pc_stop - self.pc_start
         self.__distance = t * V_SON / 2
-        print('distance', self.__distance, 'm')
+        print('distance', f"{self.__distance:.3f}", 'm')
         #TODO ajouter la moyenne mobile
     
     def get_distance(self):
