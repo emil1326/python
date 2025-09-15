@@ -17,6 +17,25 @@ class Moteurs:
 
         self.mulSpeed = 1
 
+    def __rien(self):
+        IN1 = 0
+        IN2 = 1
+        ENA = 2
+        IN3 = 0
+        IN4 = 1
+        ENB = 2
+        self.moteurGauche[ENA].value = 0
+        self.moteurGauche[ENA].on()
+        self.moteurGauche[IN1].off()
+        self.moteurGauche[IN2].off()
+        #moteur droit
+        self.moteurDroit[ENB].value = 0
+        self.moteurDroit[ENB].on()
+        self.moteurDroit[IN3].off()
+        self.moteurDroit[IN4].off()
+        
+        
+    
     def avancer(
         self, vitesse, direction=None
     ):  # direction = 'g': tourner gauche | 'd': tourner droite | None : avancer en ligne droite
@@ -58,6 +77,7 @@ class Moteurs:
             self.moteurDroit[IN4].off()
 
     def diagonale_gauche(self, vitesse):
+        self.__rien()
         # moteur gauche a la moitie de la vitesse
         IN1 = 0
         IN2 = 1
@@ -76,6 +96,7 @@ class Moteurs:
         self.moteurDroit[IN4].off()
 
     def diagonale_droite(self, vitesse):
+        self.rien()
         # moteur gauche a pleine vitesse
         IN1 = 0
         IN2 = 1
