@@ -5,8 +5,9 @@ from time import perf_counter, sleep
 class Sonar:
 
     VT_SON = 0.343
-
-    def __init__(self, pinEcho, pinTrigger):
+    FENETRE = 10 
+    
+    def _init(self, pinEcho, pinTrigger):
         self.__echo = DigitalInputDevice(pinEcho)
         self.__trigger = DigitalOutputDevice(pinTrigger, True, False)
         self.__echo.when_activated = self.when_activated
@@ -29,7 +30,8 @@ class Sonar:
         pc_stop = perf_counter()
         t = pc_stop - self.pc_start
         self.__distance = t * V_SON / 2
-        print("distance", self.__distance, "m")
-
+        print('distance', self.__distance, 'm')
+        #TODO ajouter la moyenne mobile
+    
     def get_distance(self):
         return self.__distance
