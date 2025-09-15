@@ -154,3 +154,6 @@ class Moteurs:
         if self.mulSpeed < 0:
             print("err mul speed", self.mulSpeed)
             self.mulSpeed = 0.1
+
+        self.moteurDroit[2].value = 1 * self.mulSpeed       
+        self.moteurGauche[2].value = 1 * self.mulSpeed
