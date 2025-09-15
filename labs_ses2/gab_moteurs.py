@@ -96,7 +96,7 @@ class Moteurs:
         self.moteurDroit[IN4].off()
 
     def diagonale_droite(self, vitesse):
-        self.rien()
+        self.__rien()
         # moteur gauche a pleine vitesse
         IN1 = 0
         IN2 = 1
