@@ -1,5 +1,5 @@
-from labs_ses2.gab_moteurs import Moteurs
-from labs_ses2.encodeurDeRotation import encodeurDeRotation
+from gab_moteurs import Moteurs
+from encodeurDeRotation import encodeurDeRotation
 
 # harware
 

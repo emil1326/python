@@ -7,7 +7,7 @@ class Sonar:
     VT_SON = 0.343
     FENETRE = 10 
     
-    def _init(self, pinEcho, pinTrigger):
+    def __init__(self, pinEcho, pinTrigger):
         self.__echo = DigitalInputDevice(pinEcho)
         self.__trigger = DigitalOutputDevice(pinTrigger, True, False)
         self.__echo.when_activated = self.when_activated

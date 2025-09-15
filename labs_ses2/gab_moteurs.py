@@ -1,3 +1,4 @@
+import math
 import gpiozero as gp  # type: ignore
 
 
@@ -19,33 +20,37 @@ class Moteurs:
     def avancer(
         self, vitesse, direction=None
     ):  # direction = 'g': tourner gauche | 'd': tourner droite | None : avancer en ligne droite
-        
+
         IN1 = 0
         IN2 = 1
         ENA = 2
         IN3 = 0
         IN4 = 1
         ENB = 2
-        
-        if direction == "g": #reverse moteur g pour trouner a gauche
+
+        if direction == "g":  # reverse moteur g pour trouner a gauche
             self.moteurGauche[ENA].value = vitesse * self.mulSpeed
             self.moteurGauche[ENA].on()
             self.moteurGauche[IN1].off()
             self.moteurGauche[IN2].on()
-        if direction == "d": #reverse moteur droit pour tourner a droite
+        if direction == "d":  # reverse moteur droit pour tourner a droite
             self.moteurDroit[ENB].value = vitesse * self.mulSpeed
             self.moteurDroit[ENB].on()
             self.moteurDroit[IN3].off()
-            self.moteurDroit[in4].on()
-            
-        if direction == "d" or direction is None: #avancer avec moteur gauche pour trouner a droite
-           
+            self.moteurDroit[IN4].on()
+
+        if (
+            direction == "d" or direction is None
+        ):  # avancer avec moteur gauche pour trouner a droite
+
             self.moteurGauche[ENA].value = vitesse * self.mulSpeed
             self.moteurGauche[ENA].on()
             self.moteurGauche[IN1].on()
             self.moteurGauche[IN2].off()
         # moteur droit
-        if direction == "g" or direction is None: #avacer avec moteur droit pour trouner a gauche
+        if (
+            direction == "g" or direction is None
+        ):  # avacer avec moteur droit pour trouner a gauche
 
             self.moteurDroit[ENB].value = vitesse * self.mulSpeed
             self.moteurDroit[ENB].on()
@@ -124,3 +129,10 @@ class Moteurs:
 
     def addMulSpeed(self, multiplier):
         self.mulSpeed += multiplier
+        if self.mulSpeed > 1:
+            print("err mul speed", self.mulSpeed)
+            self.mulSpeed = 1
+
+        if self.mulSpeed < 0:
+            print("err mul speed", self.mulSpeed)
+            self.mulSpeed = 0.1
