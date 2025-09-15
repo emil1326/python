@@ -27,14 +27,12 @@ class Moteurs:
         self.moteurGauche[ENA].on()
         self.moteurGauche[IN1].off()
         self.moteurGauche[IN2].off()
-        #moteur droit
+        # moteur droit
         self.moteurDroit[ENB].value = 0
         self.moteurDroit[ENB].on()
         self.moteurDroit[IN3].off()
         self.moteurDroit[IN4].off()
-        
-        
-    
+
     def avancer(
         self, vitesse, direction=None
     ):  # direction = 'g': tourner gauche | 'd': tourner droite | None : avancer en ligne droite
@@ -81,7 +79,7 @@ class Moteurs:
         IN1 = 0
         IN2 = 1
         ENA = 2
-        self.moteurGauche[ENA].value = vitesse / 2 * self.mulSpeed
+        self.moteurGauche[ENA].value = (vitesse / 2) * self.mulSpeed
         self.moteurGauche[ENA].on()
         self.moteurGauche[IN1].on()
         self.moteurGauche[IN2].off()
@@ -108,7 +106,7 @@ class Moteurs:
         IN3 = 0
         IN4 = 1
         ENB = 2
-        self.moteurDroit[ENB].value = vitesse / 2 * self.mulSpeed
+        self.moteurDroit[ENB].value = (vitesse / 2) * self.mulSpeed
         self.moteurDroit[ENB].on()
         self.moteurDroit[IN3].on()
         self.moteurDroit[IN4].off()
