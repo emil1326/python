@@ -46,12 +46,10 @@ class Moteurs:
 
         if direction == "g":  # reverse moteur g pour trouner a gauche
             self.moteurGauche[ENA].value = vitesse * self.mulSpeed
-            self.moteurGauche[ENA].on()
             self.moteurGauche[IN1].off()
             self.moteurGauche[IN2].on()
         if direction == "d":  # reverse moteur droit pour tourner a droite
             self.moteurDroit[ENB].value = vitesse * self.mulSpeed
-            self.moteurDroit[ENB].on()
             self.moteurDroit[IN3].off()
             self.moteurDroit[IN4].on()
 
@@ -60,7 +58,6 @@ class Moteurs:
         ):  # avancer avec moteur gauche pour trouner a droite
 
             self.moteurGauche[ENA].value = vitesse * self.mulSpeed
-            self.moteurGauche[ENA].on()
             self.moteurGauche[IN1].on()
             self.moteurGauche[IN2].off()
         # moteur droit
@@ -69,7 +66,6 @@ class Moteurs:
         ):  # avacer avec moteur droit pour trouner a gauche
 
             self.moteurDroit[ENB].value = vitesse * self.mulSpeed
-            self.moteurDroit[ENB].on()
             self.moteurDroit[IN3].on()
             self.moteurDroit[IN4].off()
 
