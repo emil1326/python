@@ -3,7 +3,8 @@ from gpiozero import DigitalInputDevice  # type: ignore
 
 class encodeurDeRotation:
 
-    TAILLE_ROUE = 0.05
+    TAILLE_ROUE = 3.456752389
+    STOP_LENGTH = 25
 
     def __init__(self):
         self.CapteurDroit = DigitalInputDevice(22)
@@ -15,8 +16,8 @@ class encodeurDeRotation:
         self.CapteurGauche.when_activated = self.onChangeG
         self.CapteurGauche.when_deactivated = self.onChangeG
 
-        self.LengthLeft = 0 # when 0 on fait le callback
-        self.TotalLength = 0 # just a stat, no use
+        self.LengthLeft = 0  # when 0 on fait le callback
+        self.TotalLength = 0  # just a stat, no use
 
         self.onLengthEnd = self.passFunc
 
@@ -24,15 +25,18 @@ class encodeurDeRotation:
         pass
 
     def onChangeD(self):
-        self.LengthLeft -= self.TAILLE_ROUE
-        self.TotalLength += self.TAILLE_ROUE
 
-        if self.LengthLeft <= 0:
-            self.onLengthEnd()
-
-    def onChangeG(self):
-        
         # pas fait puisque pas besoin live, adder quand meme puisque on a le hardware
         # et vas potentiellement avoir besoin de un >que ou average
 
         pass
+
+    def onChangeG(self):
+
+        self.LengthLeft -= self.TAILLE_ROUE
+        self.TotalLength += self.TAILLE_ROUE
+
+        print(self.LengthLeft)
+
+        if self.LengthLeft + self.STOP_LENGTH <= 0:
+            self.onLengthEnd()

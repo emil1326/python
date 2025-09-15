@@ -75,7 +75,7 @@ class Moteurs:
         IN1 = 0
         IN2 = 1
         ENA = 2
-        self.moteurGauche[ENA].value = vitesse * self.mulSpeed / 2
+        self.moteurGauche[ENA].value = vitesse * self.mulSpeed / 4
         self.moteurGauche[IN1].on()
         self.moteurGauche[IN2].off()
         # moteur droit a pleine vitesse
@@ -99,7 +99,7 @@ class Moteurs:
         IN3 = 0
         IN4 = 1
         ENB = 2
-        self.moteurDroit[ENB].value = vitesse  * self.mulSpeed / 2
+        self.moteurDroit[ENB].value = vitesse  * self.mulSpeed / 4
         self.moteurDroit[IN3].on()
         self.moteurDroit[IN4].off()
 

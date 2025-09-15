@@ -23,3 +23,6 @@ rot.onLengthEnd = endLength
 rot.LengthLeft = 100
 
 voiture.avancer(1)
+
+
+input("Finish?")

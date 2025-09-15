@@ -4,7 +4,7 @@ from time import perf_counter, sleep
 
 class Sonar:
 
-    VT_SON = 340.29
+    VT_SON = 343.29
     FENETRE = 10 
     
     def __init__(self, pinEcho, pinTrigger):
