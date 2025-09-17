@@ -1,4 +1,4 @@
-#Gabriel Pereira Leves et Emilien
+#Gabriel Pereira Levesque et Emilien
 #Laboratoire II | 15 septembre 2025
 
 from sonar import Sonar

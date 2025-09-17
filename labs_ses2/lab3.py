@@ -1,3 +1,6 @@
+#Gabriel Pereira Levesque et Emilien
+#Laboratoire III | 15 septembre 2025
+
 from gab_moteurs import Moteurs
 from encodeurDeRotation import encodeurDeRotation
 
