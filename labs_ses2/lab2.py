@@ -1,6 +1,6 @@
 #Gabriel Pereira Levesque et Emilien
 #Laboratoire II | 15 septembre 2025
-
+from dels import Dels
 from sonar import Sonar
 import numpy as np  # type: ignore
 import cv2  # type: ignore
@@ -8,7 +8,7 @@ import threading
 import time
 from dictKeyValue import MapTouches
 
-
+DIST_MIN = 1  #m
 
 #initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches()
@@ -18,6 +18,8 @@ maycontinue = True #bool, permet d'arrêter le programme proprement
 #initialisation des sonars
 sonarG = Sonar(25, 8)  # sonar de gauche
 sonarD = Sonar(20, 21)  # sonar de droite
+
+dels = Dels()
 
 #fonction pour le thread
 def triggerSonar():
@@ -33,7 +35,14 @@ triggerThread.start()
 img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
 
 while maycontinue: #tant qu'on peut continuer
-    text = f"distance: {sonarD.get_distance()} m"
+    distance = sonarD.get_distance()
+    text = f"distance: {distance} m"
+    
+    if distance > DIST_MIN:
+            dels.eteindre()
+    else:
+        dels.clignoter_jaune()
+        dels.clignoter_verte()           
      
     #set le texte pour la fenetre oCV
     cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
