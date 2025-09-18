@@ -3,8 +3,10 @@ from gpiozero import DigitalInputDevice  # type: ignore
 
 class encodeurDeRotation:
 
-    TAILLE_ROUE = 3.456752389
-    STOP_LENGTH = 25
+    # diametre 6.5cm
+    # (6.5 * 3.14159) / 80
+    TAILLE_ROUE = 0.25525
+    STOP_LENGTH = 10
 
     def __init__(self):
         self.CapteurDroit = DigitalInputDevice(22)
