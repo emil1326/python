@@ -1,6 +1,6 @@
 #Gabriel Pereira Levesque et Emilien
 #Laboratoire II | 15 septembre 2025
-
+from dels import Dels
 from sonar import Sonar
 import numpy as np  # type: ignore
 import cv2  # type: ignore
