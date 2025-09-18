@@ -20,6 +20,14 @@ sonarG = Sonar(25, 8)  # sonar de gauche
 sonarD = Sonar(20, 21)  # sonar de droite
 
 dels = Dels()
+maycontinueDels = False
+
+def clignoterDels():
+    while maycontinueDels and maycontinue:
+        dels.allumer_jaune()
+        dels.allumer_verte()
+        time.sleep(0.5)
+        dels.eteindre()
 
 #fonction pour le thread
 def triggerSonar():
@@ -30,7 +38,9 @@ def triggerSonar():
 
 #initialiser et partir le thread
 triggerThread = threading.Thread(target=triggerSonar)
+delsThread = threading.Thread(target=clignoterDels) 
 triggerThread.start() 
+delsThread.start()
 
 img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
 
@@ -38,24 +48,28 @@ while maycontinue: #tant qu'on peut continuer
     distance = sonarD.get_distance()
     text = f"distance: {distance} m"
     
-    if distance > DIST_MIN:
-            dels.eteindre()
+    if distance > DIST_MIN and delsThread.is_alive():
+        maycontinueDels = False
     else:
-        dels.clignoter_jaune()
-        dels.clignoter_verte()           
-     
+        maycontinueDels = True
+    
     #set le texte pour la fenetre oCV
     cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
     cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
 
-    key = cv2.waitKeyEx(30)  #attend pour un touche pendant 30 millisecondes
-
-    if ord(key) == "x": #si cest x on ferme le programme proprement
-        maycontinue = False   
-
-    mapper.map(ord(key)) #map la touche
+    key = cv2.waitKeyEx(30)
     
-    time.sleep(0.5) #sleep pour pas saturer le CPU
-    
+    if key == -1:
+        continue
+    else:
+        key = str(key.to_bytes(), "utf-8")
+
+    print("curr :", key)
+
+    if key == "x":
+        maycontinue = False
+
+    mapper.map(key)    
 
 triggerThread.join()
+delsThread.join()
