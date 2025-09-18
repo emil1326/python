@@ -14,7 +14,7 @@ class Sonar:
         self.__trigger = DigitalOutputDevice(pinTrigger)
         self.__echo.when_activated = self.when_activated
         self.__echo.when_deactivated = self.when_deactivated
-        self.__dels = Dels()
+        
         self.__pc_start = 0
         self.__distance = 0
         self.__valeurs_passees = []
@@ -51,11 +51,7 @@ class Sonar:
         t = pc_stop - self.pc_start
         distance_actuelle = t * V_SON / 2        
         self.__distance = self.__calculer_moyenne_mobile(distance_actuelle)
-        if self.__distance > self.DIST_MIN:
-            self.__dels.eteindre()
-        else:
-            self.__dels.clignoter_jaune()
-            self.__dels.clignoter_verte()            
+        
         print('distance mobile', f"{self.__distance}", 'm')
     
     def get_distance(self):
