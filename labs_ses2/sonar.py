@@ -14,7 +14,7 @@ class Sonar:
         self.__trigger = DigitalOutputDevice(pinTrigger)
         self.__echo.when_activated = self.when_activated
         self.__echo.when_deactivated = self.when_deactivated
-        self.__dels = Dels.__init__()
+        self.__dels = Dels()
         self.__pc_start = 0
         self.__distance = 0
         self.__valeurs_passees = []
