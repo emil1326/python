@@ -22,13 +22,6 @@ sonarD = Sonar(20, 21)  # sonar de droite
 dels = Dels()
 maycontinueDels = False
 
-def clignoterDels():
-    while maycontinueDels and maycontinue:
-        dels.allumer_jaune()
-        dels.allumer_verte()
-        time.sleep(0.5)
-        dels.eteindre()
-
 #fonction pour le thread
 def triggerSonar():
     while maycontinue:

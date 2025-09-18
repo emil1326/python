@@ -1,4 +1,5 @@
 import gpiozero as gp  # type: ignore
+import time as t
 
 class Dels:
     
@@ -7,12 +8,17 @@ class Dels:
     def __init__(self):
         self.__del_jaune = gp.DigitalOutputDevice(10)
         self.__del_verte = gp.DigitalOutputDevice(9)
+        self.__stop_clignottement = True
 
-    def clignoter_jaune(self):
-        self.__del_jaune.blink(on_time=self.T_CLIGN, off_time=self.T_CLIGN)
+    def arreter_clignotement(self):
+        self.__stop_clignottement = False
     
-    def clignoter_verte(self):
-        self.__del_verte.blink(on_time=self.T_CLIGN, off_time=self.T_CLIGN)
+    def clignoter_dels(self):
+        while not self.__stop_clignottement:
+            self.allumer_jaune()
+            self.allumer_verte()
+            t.sleep(0.5)
+            self.eteindre()
     
     def allumer_jaune(self):
         self.__del_jaune.on()
