@@ -1,18 +1,20 @@
 from gpiozero import DigitalOutputDevice, DigitalInputDevice  # type: ignore
 from time import perf_counter, sleep
+from dels import Dels
 
 
 class Sonar:
 
     VT_SON = 343.29
     FENETRE = 10 
-    
+    DIST_MIN = 1 #mètres
     
     def __init__(self, pinEcho, pinTrigger):
         self.__echo = DigitalInputDevice(pinEcho)
         self.__trigger = DigitalOutputDevice(pinTrigger)
         self.__echo.when_activated = self.when_activated
         self.__echo.when_deactivated = self.when_deactivated
+        self.__dels = Dels.__init__()
         self.__pc_start = 0
         self.__distance = 0
         self.__valeurs_passees = []
@@ -40,7 +42,7 @@ class Sonar:
         else:
             moyenne_mobile = sum(valeurs_passees)/len(valeurs_passees)
         
-        return moyenne_mobile
+        return round(moyenne_mobile, 2)
 
     def when_deactivated(self):
         print("when_deactivated echo finit")
@@ -49,7 +51,12 @@ class Sonar:
         t = pc_stop - self.pc_start
         distance_actuelle = t * V_SON / 2        
         self.__distance = self.__calculer_moyenne_mobile(distance_actuelle)
-        print('distance mobile', f"{self.__distance:.3f}", 'm')
+        if self.__distance > self.DIST_MIN:
+            self.__dels.eteindre()
+        else:
+            self.__dels.clignoter_jaune()
+            self.__dels.clignoter_verte()            
+        print('distance mobile', f"{self.__distance}", 'm')
     
     def get_distance(self):
         return self.__distance

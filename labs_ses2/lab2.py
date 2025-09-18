@@ -2,50 +2,51 @@
 #Laboratoire II | 15 septembre 2025
 
 from sonar import Sonar
-from dels import Dels
 import numpy as np  # type: ignore
 import cv2  # type: ignore
 import threading
 import time
-from basicPortControlSystemGPIO import basicPortControlSystemGPIO as PCS
-
 from dictKeyValue import MapTouches
 
-# delJaune = PCS(20)
-# delRouge = PCS(20)
 
-# delJaune.changeState(1)
 
+#initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches()
 
-maycontinue = True
+maycontinue = True #bool, permet d'arrêter le programme proprement
 
+#initialisation des sonars
 sonarG = Sonar(25, 8)  # sonar de gauche
 sonarD = Sonar(20, 21)  # sonar de droite
 
-
+#fonction pour le thread
 def triggerSonar():
     while maycontinue:
-        sonarD.trigger()
-        time.sleep(0.1)
+        sonarD.trigger() #appel trigger
+        time.sleep(0.1) #10x par seconde
 
 
+#initialiser et partir le thread
 triggerThread = threading.Thread(target=triggerSonar)
-triggerThread.start()
+triggerThread.start() 
 
-while maycontinue:
+img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
 
-    img = np.zeros((512, 512, 3), np.uint8)
-    cv2.imshow("Labo 1", img)
+while maycontinue: #tant qu'on peut continuer
+    text = f"distance: {sonarD.get_distance()} m"
+     
+    #set le texte pour la fenetre oCV
+    cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
+    cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
 
-    key = cv2.waitKeyEx(1)
+    key = cv2.waitKeyEx(30)  #attend pour un touche pendant 30 millisecondes
 
-    if ord(key) == "x":
-        maycontinue = False
+    if ord(key) == "x": #si cest x on ferme le programme proprement
+        maycontinue = False   
 
-    key = cv2.waitKeyEx(30)  # 30 millisecondes
-
-    mapper.map(ord(key))
-    time.sleep(0.5)
+    mapper.map(ord(key)) #map la touche
+    
+    time.sleep(0.5) #sleep pour pas saturer le CPU
+    
 
 triggerThread.join()
