@@ -1,36 +1,36 @@
-from gab_moteurs import Moteurs
+from gab_robot import Robot
 
 
 class MapTouches:
-    def __init__(self) -> None:
-        self.voiture = Moteurs()
+    def __init__(self, robot) -> None:
+        self.voiture = robot
 
     def diagoGauche(self):
-        self.voiture.diagonale_gauche(1)
+        self.voiture.diagonale_gauche()
 
     def diagoDroite(self):
-        self.voiture.diagonale_droite(1)
+        self.voiture.diagonale_droite()
 
     def gauche(self):
-        self.voiture.avancer(1, "g")
+        self.voiture.tourner_gauche()
 
     def droite(self):
-        self.voiture.avancer(1, "d")
+        self.voiture.tourner_droite()
 
     def avancer(self):
-        self.voiture.avancer(1)
+        self.voiture.avancer()
 
     def reculer(self):
-        self.voiture.reculer(1)
+        self.voiture.reculer()
 
     def freiner(self):
-        self.voiture.avancer(0)
+        self.voiture.arreter()
 
-    def speedUp(self):
-        self.voiture.addMulSpeed(0.1)
+    def acceler(self):
+        self.voiture.modifier_vitesse(0.1)
 
-    def speedDown(self):
-        self.voiture.addMulSpeed(-0.1)
+    def ralentir(self):
+        self.voiture.modifier_vitesse(-0.1)
 
     def map(self, t):
         match (t):
@@ -50,9 +50,9 @@ class MapTouches:
                 return self.freiner()
 
             case ".":
-                return self.speedUp()
+                return self.acceler()
             case ",":
-                return self.speedDown()
+                return self.ralentir()
             case "x":
                 # self.voiture.shutdown()
                 return exit(0)
