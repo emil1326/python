@@ -42,6 +42,8 @@ class Sonar:
         else:
             moyenne_mobile = sum(valeurs_passees)/len(valeurs_passees)
         
+        self.__valeurs_passees = valeurs_passees
+        
         return round(moyenne_mobile, 2)
 
     def when_deactivated(self):
