@@ -75,5 +75,16 @@ class Robot:
     
     def dels_clignotent(self):
         return not self.__stop_clignotement
+    
+    def get_distance(self, sonar=None):
+        if sonar == 'g': #sonar de gauche
+            return self.__sonar_g.get_distance()
+        if sonar == 'd': #sonar de droite
+            return self.__sonar_d.get_distance()
+        elif sonar == None: #les deux
+            d_g = self.__sonar_g.get_distance()
+            d_d = self.__sonar_d.get_distance()
+            
+            return (d_g + d_d) / 2 #retourn la moyenne entre les deux
         
         
