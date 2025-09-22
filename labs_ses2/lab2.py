@@ -19,14 +19,14 @@ mapper = MapTouches(robot)
 maycontinue = True #bool, permet d'arrêter le programme proprement
 
 #initialiser et partir le thread
-triggerThread = threading.Thread(target=Robot.trigger_sonar_d)
-delsThread = threading.Thread(target=Robot.clignoter_dels) 
-triggerThread.start() 
+triggerThread = threading.Thread(target=robot.trigger_sonar_d)
+delsThread = threading.Thread(target=robot.clignoter_dels) 
+triggerThread.start()
 delsThread.start()
 
 while maycontinue: #tant qu'on peut continuer
     img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
-    distance = robot.__sonar_d.get_distance()
+    distance = robot.get_distance('d')
     text = f"distance: {distance} m"
     
     if distance > DIST_MIN and delsThread.is_alive():
