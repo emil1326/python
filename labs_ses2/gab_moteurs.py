@@ -18,8 +18,8 @@ class Moteur:
         self, vitesse
     ):
         self.moteur[self.PWM].value = vitesse * self.mulSpeed
-        self.moteur[self.IN_A].off()
-        self.moteur[self.IN_B].on()
+        self.moteur[self.IN_A].on()
+        self.moteur[self.IN_B].off()
 
     def arreter(self):
         self.moteur[self.PWM].off()
@@ -27,9 +27,9 @@ class Moteur:
         self.moteur[self.IN_B].off()
         
     def reculer(self, vitesse):
-        
-        
-        pass
+        self.moteur[self.PWM].value = vitesse * self.mulSpeed
+        self.moteur[self.IN_A].off()
+        self.moteur[self.IN_B].on()
 
     def addMulSpeed(self, multiplier):
         self.mulSpeed += multiplier
