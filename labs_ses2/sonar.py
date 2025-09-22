@@ -26,7 +26,7 @@ class Sonar:
 
     def when_activated(self):
         #print("when_activated echo reçu")
-        self.pc_start = perf_counter()
+        self.__pc_start = perf_counter()
        
     def __calculer_moyenne_mobile(self, nouv_valeur): #prend une nouvelle valeur et vient calculer la moyenne
         self.__valeurs_passees.append(nouv_valeur)
