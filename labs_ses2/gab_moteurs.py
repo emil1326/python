@@ -17,14 +17,19 @@ class Moteur:
     def avancer(
         self, vitesse
     ):
-        self.moteurGauche[PWM].value = vitesse * self.mulSpeed
-        self.moteurGauche[IN_A].off()
-        self.moteurGauche[IN_B].on()
+        self.moteur[self.PWM].value = vitesse * self.mulSpeed
+        self.moteur[self.IN_A].off()
+        self.moteur[self.IN_B].on()
 
     def arreter(self):
-        self.moteur[PWM].off()
-        self.moteur[IN_A].off()
-        self.moteur[IN_B].off()
+        self.moteur[self.PWM].off()
+        self.moteur[self.IN_A].off()
+        self.moteur[self.IN_B].off()
+        
+    def reculer(self, vitesse):
+        
+        
+        pass
 
     def addMulSpeed(self, multiplier):
         self.mulSpeed += multiplier
@@ -36,4 +41,4 @@ class Moteur:
             print("err mul speed", self.mulSpeed)
             self.mulSpeed = 0.1
 
-        self.moteur[PWM].value = 1 * self.mulSpeed   
+        self.moteur[self.PWM].value = 1 * self.mulSpeed   

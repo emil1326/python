@@ -1,5 +1,3 @@
-from gab_robot import Robot
-
 
 class MapTouches:
     def __init__(self, robot) -> None:

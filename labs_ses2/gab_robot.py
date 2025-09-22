@@ -5,7 +5,7 @@ import time
 
 class Robot:
     
-    def __init__(self, sonar = null, dels = null):
+    def __init__(self, sonar = None, dels = None):
         if(dels):
             self.__dels = Dels()
         if(sonar):
@@ -67,7 +67,7 @@ class Robot:
         self.__stop_clignotement = True
     
     def clignoter_dels(self):
-        while not self.__stop_clignottement:
+        while not self.__stop_clignotement:
             self.__dels.allumer_jaune()
             self.__dels.allumer_verte()
             time.sleep(0.5)

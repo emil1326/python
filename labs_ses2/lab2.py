@@ -26,13 +26,13 @@ delsThread.start()
 
 while maycontinue: #tant qu'on peut continuer
     img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
-    distance = sonarD.get_distance()
+    distance = robot.__sonar_d.get_distance()
     text = f"distance: {distance} m"
     
     if distance > DIST_MIN and delsThread.is_alive():
-        Robot.arreter_clignoter_dels()
+        robot.arreter_clignoter_dels()
     elif not Robot.dels_clignotent:
-        Robot.clignoter_dels()
+        robot.clignoter_dels()
     
     #set le texte pour la fenetre oCV
     cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)

@@ -1,11 +1,16 @@
 from datetime import datetime
 import time
+from gab_robot import Robot
 import numpy as np  # type: ignore
 import cv2  # type: ignore
 
 from dictKeyValue import MapTouches
 
-mapper = MapTouches()
+#initialisation du robot
+robot = Robot(True, True)
+
+#initialisation du mapper qui associe les touches à des actions
+mapper = MapTouches(robot)
 
 maycontinue = True
 
