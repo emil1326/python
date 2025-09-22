@@ -19,22 +19,32 @@ mapper = MapTouches(robot)
 maycontinue = True #bool, permet d'arrêter le programme proprement
 
 #initialiser et partir le thread
-triggerThread = threading.Thread(target=robot.trigger_sonar_d)
-delsThread = threading.Thread(target=robot.clignoter_dels) 
+triggerThread = threading.Thread(target=robot.trigger_sonars)
 triggerThread.start()
-delsThread.start()
+
+#del verte = sonar droit
+#del jaune = sonar gauche
 
 while maycontinue: #tant qu'on peut continuer
     img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
-    distance = robot.get_distance('d')
-    if distance is None:
-        distance = -1
+    distance_d = robot.get_distance('d')
+    distance_g = robot_get_distance('g')
+    if distance_d is None:
+        distance_d = -1
+    if distance_g is None:
+        distance_g = -1
     text = f"distance: {distance:.2f} m"
     
-    if distance > DIST_MIN and delsThread.is_alive():
-        robot.arreter_clignoter_dels()
-    elif not Robot.dels_clignotent:
-        robot.clignoter_dels()
+    if distance_d > DIST_MIN:
+        robot.arreter_clignoter_del_verte()
+    else:
+        robot.clignoter_del_verte()
+        
+    if distance_g > DIST_MIN:
+        robot.arreter_clignoter_del_jaune()
+    else:
+        robot.clignoter_del_jaune()
+    
     
     #set le texte pour la fenetre oCV
     cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)

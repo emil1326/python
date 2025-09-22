@@ -14,7 +14,7 @@ class Robot:
         
         self.__moteur_g = Moteur(6, 5, 13)
         self.__moteur_d = Moteur(15, 14, 18)
-        self.__stop_clignotement = True
+        
         self.__stop_sonar = True
         
     
@@ -50,30 +50,27 @@ class Robot:
         self.__moteur_d.addMulSpeed(multiplicateur)
         self.__moteur_g.addMulSpeed(multiplicateur)
     
-    def trigger_sonar_g(self):
+    def trigger_sonars(self):
         self.__stop_sonar = False
         while not self.__stop_sonar:
             self.__sonar_g.trigger()
-            time.sleep(0.1)
-    
-    def trigger_sonar_d(self):
-        self.__stop_sonar = False
-        while not self.__stop_sonar:
-            self.__sonar_d.trigger()        
+            self.__sonar_d.trigger()
             time.sleep(0.1)
     
     def arreter_sonars(self):
         self.__stop_sonar = True
     
-    def arreter_clignoter_dels(self):
-        self.__stop_clignotement = True
+    def clignoter_del_jaune(self):
+        self.__dels.partir_clignotement_jaune()
     
-    def clignoter_dels(self):
-        while not self.__stop_clignotement:
-            self.__dels.allumer_jaune()
-            self.__dels.allumer_verte()
-            time.sleep(0.5)
-            self.__dels.eteindre()
+    def clignoter_del_verte(self):
+        self.__dels.partir_clignotement_verte()
+    
+    def arreter_clignoter_del_jaune(self):
+        self.__dels.arreter_clignoter_del_jaune()
+    
+    def arreter_clignoter_del_verte(self):
+        self.__dels.arreter_clignoter_del_verte()
     
     def dels_clignotent(self):
         return not self.__stop_clignotement
@@ -83,9 +80,8 @@ class Robot:
             return self.__sonar_g.get_distance()
         if sonar == 'd': #sonar de droite
             return self.__sonar_d.get_distance()
-        elif sonar == None: #les deux
-            d_g = self.__sonar_g.get_distance()
-            d_d = self.__sonar_d.get_distance()            
-            return (d_g + d_d) / 2 #retourne la moyenne entre les deux
+        else:
+            return None
+            
         
         
