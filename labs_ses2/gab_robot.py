@@ -55,7 +55,8 @@ class Robot:
         self.__sonar_g.demarrer_trigger()
     
     def arreter_sonars(self):
-        self.__stop_sonar = True
+        self.__sonar_d.arreter_trigger()
+        self.__sonar_g.arreter_trigger()
     
     def clignoter_del_jaune(self):
         self.__dels.partir_clignotement_jaune()
@@ -68,9 +69,6 @@ class Robot:
     
     def arreter_clignoter_del_verte(self):
         self.__dels.arreter_clignoter_del_verte()
-    
-    def dels_clignotent(self):
-        return not self.__stop_clignotement
     
     def get_distance(self, sonar):
         if sonar == 'g': #sonar de gauche

@@ -48,7 +48,7 @@ while maycontinue: #tant qu'on peut continuer
     text_dist_g = f"distance gauche: {distance_g:.2f}m"
     text_dist_d = f"distance droite: {distance_d:.2f}m"
     cv2.putText(img, text_dist_g, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
-    cv2.putText(img, text_dist_d, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
+    cv2.putText(img, text_dist_d, (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
     cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
 
     key = cv2.waitKeyEx(30)
@@ -58,11 +58,7 @@ while maycontinue: #tant qu'on peut continuer
     else:
         key = str(key.to_bytes(), "utf-8")
 
-    print("curr :", key)
-
     if key == "x":
-        robot.arreter_sonars()
-        robot.arreter_clignoter_dels()
         maycontinue = False
 
     mapper.map(key) 
