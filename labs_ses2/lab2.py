@@ -28,12 +28,11 @@ triggerThread.start()
 while maycontinue: #tant qu'on peut continuer
     img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
     distance_d = robot.get_distance('d')
-    distance_g = robot_get_distance('g')
+    distance_g = robot.get_distance('g')
     if distance_d is None:
         distance_d = -1
     if distance_g is None:
-        distance_g = -1
-    text = f"distance: {distance:.2f} m"
+        distance_g = -1    
     
     if distance_d > DIST_MIN:
         robot.arreter_clignoter_del_verte()
@@ -47,6 +46,7 @@ while maycontinue: #tant qu'on peut continuer
     
     
     #set le texte pour la fenetre oCV
+    text = f"distance gauche: {distance_g:.2f}m || distance droite: {distance_d:.2f}m"
     cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
     cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
 
@@ -67,4 +67,4 @@ while maycontinue: #tant qu'on peut continuer
     mapper.map(key) 
 
 triggerThread.join()
-delsThread.join()
+robot.shutdown()

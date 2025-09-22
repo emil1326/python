@@ -82,6 +82,9 @@ class Robot:
             return self.__sonar_d.get_distance()
         else:
             return None
+    
+    def shutdown(self):
+        self.__dels.shutdown_threads()
             
         
         
