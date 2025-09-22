@@ -50,10 +50,12 @@ class Dels:
             time.sleep(self.T_CLIGN)
     
     def partir_clignotement_jaune(self):
-        self.__thread_del_jaune.start()
+        if not self.__thread_del_jaune.is_alive():
+            self.__thread_del_jaune.start()
     
     def partir_clignotement_verte(self):
-        self.__thread_del_verte.start()
+        if not self.__thread_del_verte.is_alive():
+            self.__thread_del_verte.start()
     
     def shutdown_threads(self):
         self.__thread_del_jaune.join()
