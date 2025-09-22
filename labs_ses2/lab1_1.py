@@ -1,3 +1,6 @@
+#Laboratoire I version du 22 septembre 2025
+#Par Gabriel Pereira Levesque et Émilien
+
 from datetime import datetime
 import time
 from gab_robot import Robot

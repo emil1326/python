@@ -45,9 +45,11 @@ class Dels:
         self.__clignoter_verte = True
         while self.__clignoter_verte:
             self.allumer_verte()
-            t.sleep(self.T_clign)
+            t.sleep(self.T_CLIGN)
             self.eteindre_verte()
             t.sleep(self.T_CLIGN)
+            
+##TODO thread part 2x
     
     def partir_clignotement_jaune(self):
         if self.__thread_del_jaune is None or not self.__thread_del_jaune.is_alive():
