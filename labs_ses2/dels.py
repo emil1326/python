@@ -36,17 +36,17 @@ class Dels:
     def clignoter_del_jaune(self):
         self.__clignoter_jaune = True
         while self.__clignoter_jaune:
-            self.__dels.allumer_jaune()
+            self.allumer_jaune()
             time.sleep(self.T_CLIGN)
-            self.__dels.eteindre_jaune()
+            self.eteindre_jaune()
             time.sleep(self.T_CLIGN)
             
     def clignoter_del_verte(self):
         self.__clignoter_verte = True
         while self.__clignoter_verte:
-            self.__dels.allumer_verte()
+            self.allumer_verte()
             time.sleep(self.T_clign)
-            self.__dels.eteindre_verte()
+            self.eteindre_verte()
             time.sleep(self.T_CLIGN)
     
     def partir_clignotement_jaune(self):
