@@ -29,20 +29,17 @@ class Sonar:
         self.pc_start = perf_counter()
        
     def __calculer_moyenne_mobile(self, nouv_valeur): #prend une nouvelle valeur et vient calculer la moyenne
-        valeurs_passees = self.__valeurs_passees
-        valeurs_passees.append(nouv_valeur)
+        self.__valeurs_passees.append(nouv_valeur)
         
         if len(valeurs_passees)>self.FENETRE:
-            del valeurs_passees[0]
+            del self.__valeurs_passees[0]
             
-        if len(valeurs_passees) > 2:
-            MIN = min(valeurs_passees)
-            MAX = max(valeurs_passees)  
-            moyenne_mobile = (sum(valeurs_passees) - (MIN + MAX))/(len(valeurs_passees)-2)
+        if len(self.__valeurs_passees) > 2:
+            MIN = min(self.__valeurs_passees)
+            MAX = max(self.__valeurs_passees)  
+            moyenne_mobile = (sum(self.__valeurs_passees) - (MIN + MAX))/(len(self.__valeurs_passees)-2)
         else:
-            moyenne_mobile = sum(valeurs_passees)/len(valeurs_passees)
-        
-        self.__valeurs_passees = valeurs_passees
+            moyenne_mobile = sum(self.__valeurs_passees)/len(self.__valeurs_passees)
         
         return round(moyenne_mobile, 2)
 
