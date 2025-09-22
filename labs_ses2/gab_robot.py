@@ -85,6 +85,6 @@ class Robot:
             d_g = self.__sonar_g.get_distance()
             d_d = self.__sonar_d.get_distance()
             
-            return ((d_g + d_d) / 2) #retourn la moyenne entre les deux
+            return (d_g + d_d) / 2 #retourne la moyenne entre les deux
         
         
