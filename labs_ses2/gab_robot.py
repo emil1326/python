@@ -51,11 +51,8 @@ class Robot:
         self.__moteur_g.addMulSpeed(multiplicateur)
     
     def trigger_sonars(self):
-        self.__stop_sonar = False
-        while not self.__stop_sonar:
-            self.__sonar_g.trigger()
-            self.__sonar_d.trigger()
-            time.sleep(0.1)
+        self.__sonar_d.demarrer_trigger()
+        self.__sonar_g.demarrer_trigger()
     
     def arreter_sonars(self):
         self.__stop_sonar = True
@@ -75,16 +72,21 @@ class Robot:
     def dels_clignotent(self):
         return not self.__stop_clignotement
     
-    def get_distance(self, sonar=None):
+    def get_distance(self, sonar):
         if sonar == 'g': #sonar de gauche
             return self.__sonar_g.get_distance()
         if sonar == 'd': #sonar de droite
             return self.__sonar_d.get_distance()
         else:
-            return None
+            return -1
     
     def shutdown(self):
-        self.__dels.shutdown_threads()
+        if self.__dels:
+            self.__dels.shutdown()
+        if self.__sonar_d:
+            self.__sonar_d.shutdown()
+        if self.__sonar_g:
+            self.__sonar_g.shutdown()
             
         
         

@@ -1,6 +1,7 @@
 from gpiozero import DigitalOutputDevice, DigitalInputDevice  # type: ignore
 from time import perf_counter, sleep
 from dels import Dels
+import threading
 
 
 class Sonar:
@@ -15,15 +16,29 @@ class Sonar:
         self.__echo.when_activated = self.when_activated
         self.__echo.when_deactivated = self.when_deactivated
         
+        self.__continuer_trigger = True
+        self.__stop_thread = threading.Event()
+        self.__thread_trigger = threading.Thread(target=self.trigger)
+        self.__thread_trigger.start()
+        
         self.__pc_start = 0
         self.__distance = 0
         self.__valeurs_passees = []
 
     def trigger(self): #envoie l'onde avec un sleep d'une milliseconde
-        self.__trigger.on()
-        sleep(0.001)
-        self.__trigger.off()
-
+        while not self.__stop_thread.is_set():
+            if self.__continuer_trigger:
+                self.__trigger.on()
+                sleep(0.001)
+                self.__trigger.off()
+            sleep(0.5)  
+    
+    def demarrer_trigger(self):
+        self.__continuer_trigger = True
+    
+    def arreter_trigger(self):
+        self.__continuer_trigger = False
+    
     def when_activated(self):
         #print("when_activated echo reçu")
         self.__pc_start = perf_counter()
@@ -54,3 +69,7 @@ class Sonar:
     def get_distance(self):
         #print('get distance mobile', f"{self.__distance}", 'm')
         return self.__distance
+
+    def shutdown(self):
+        self.__stop_thread.set()
+        self.__thread_trigger.join()

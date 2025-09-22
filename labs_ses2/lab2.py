@@ -18,9 +18,8 @@ mapper = MapTouches(robot)
 
 maycontinue = True #bool, permet d'arrêter le programme proprement
 
-#initialiser et partir le thread
-triggerThread = threading.Thread(target=robot.trigger_sonars)
-triggerThread.start()
+#partir les sonars
+robot.trigger_sonars()
 
 #del verte = sonar droit
 #del jaune = sonar gauche
@@ -46,9 +45,10 @@ while maycontinue: #tant qu'on peut continuer
     
     
     #set le texte pour la fenetre oCV
-    text = f"distance gauche: {distance_g:.2f}m \n distance droite: {distance_d:.2f}m"
-    cv2.putText(img, text, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
-    #TODO 2e put text et 
+    text_dist_g = f"distance gauche: {distance_g:.2f}m"
+    text_dist_d = f"distance droite: {distance_d:.2f}m"
+    cv2.putText(img, text_dist_g, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
+    cv2.putText(img, text_dist_d, (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (200, 150, 255), 2)
     cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
 
     key = cv2.waitKeyEx(30)
@@ -67,5 +67,4 @@ while maycontinue: #tant qu'on peut continuer
 
     mapper.map(key) 
 
-triggerThread.join()
 robot.shutdown()
