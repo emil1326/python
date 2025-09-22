@@ -31,7 +31,7 @@ class Sonar:
     def __calculer_moyenne_mobile(self, nouv_valeur): #prend une nouvelle valeur et vient calculer la moyenne
         self.__valeurs_passees.append(nouv_valeur)
         
-        if len(valeurs_passees)>self.FENETRE:
+        if len(self.__valeurs_passees)>self.FENETRE:
             del self.__valeurs_passees[0]
             
         if len(self.__valeurs_passees) > 2:
