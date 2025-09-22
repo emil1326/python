@@ -29,7 +29,7 @@ while maycontinue: #tant qu'on peut continuer
     distance = robot.get_distance('d')
     if distance is None:
         distance = -1
-    text = f"distance: {distance} m"
+    text = f"distance: {distance:.2f} m"
     
     if distance > DIST_MIN and delsThread.is_alive():
         robot.arreter_clignoter_dels()
