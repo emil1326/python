@@ -27,6 +27,8 @@ delsThread.start()
 while maycontinue: #tant qu'on peut continuer
     img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
     distance = robot.get_distance('d')
+    if distance is None:
+        distance = -1
     text = f"distance: {distance} m"
     
     if distance > DIST_MIN and delsThread.is_alive():
