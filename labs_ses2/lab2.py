@@ -1,5 +1,5 @@
 #Gabriel Pereira Levesque et Emilien
-#Laboratoire II | 15 septembre 2025
+#Laboratoire II | 22 septembre 2025
 
 from gab_robot import Robot
 import numpy as np  # type: ignore

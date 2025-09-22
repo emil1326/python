@@ -8,9 +8,9 @@ class Moteur:
     
     def __init__(self, port_DOD_A, port_DOD_B, port_PWM):
         # init moteur gauche
-        in_a = gp.DigitalOutputDevice(6)
-        in_b = gp.DigitalOutputDevice(5)
-        pwm = gp.PWMOutputDevice(13)
+        in_a = gp.DigitalOutputDevice(port_DOD_A)
+        in_b = gp.DigitalOutputDevice(port_DOD_B)
+        pwm = gp.PWMOutputDevice(port_PWM)
         self.moteur = (in_a, in_b, pwm)
         self.mulSpeed = 1
 
