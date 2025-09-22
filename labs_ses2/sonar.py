@@ -47,7 +47,7 @@ class Sonar:
         #print("when_deactivated echo finit")
         V_SON = self.VT_SON
         pc_stop = perf_counter()
-        t = pc_stop - self.pc_start
+        t = pc_stop - self.__pc_start
         distance_actuelle = t * V_SON / 2        
         self.__distance = self.__calculer_moyenne_mobile(distance_actuelle) 
     
