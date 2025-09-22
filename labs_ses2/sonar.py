@@ -53,5 +53,5 @@ class Sonar:
         self.__distance = self.__calculer_moyenne_mobile(distance_actuelle) 
     
     def get_distance(self):
-        print('get distance mobile', f"{self.__distance}", 'm')
+        #print('get distance mobile', f"{self.__distance}", 'm')
         return self.__distance
