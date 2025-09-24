@@ -3,9 +3,7 @@ import time as t
 import gpiozero as gp
 
 class Dels:
-    
-    T_CLIGN = 0.5
-    
+
     def __init__(self):
         # DELs
         self.__del_jaune = gp.DigitalOutputDevice(10)
@@ -14,6 +12,10 @@ class Dels:
         # flags pour clignotement
         self.__clignoter_jaune = False
         self.__clignoter_verte = False
+        
+        #temps de clignotement
+        self.__t_clign_jaune = 0.5
+        self.__t_clign_verte = 0.5
         
         # event pour arrêter proprement les threads
         self.__stop_event = threading.Event()
@@ -38,13 +40,15 @@ class Dels:
         self.__del_verte.off()
     
     # méthodes clignotement
-    def partir_clignotement_jaune(self):
+    def partir_clignotement_jaune(self, t_clign):
+        self.__t_clign_jaune = t_clign
         self.__clignoter_jaune = True
     
     def arreter_clignotement_jaune(self):
         self.__clignoter_jaune = False
 
-    def partir_clignotement_verte(self):
+    def partir_clignotement_verte(self, t_clign):
+        self.__t_clign_verte = t_clign
         self.__clignoter_verte = True
     
     def arreter_clignotement_verte(self):
@@ -55,17 +59,21 @@ class Dels:
         while not self.__stop_event.is_set():
             if self.__clignoter_jaune:
                 self.allumer_jaune()
-                t.sleep(self.T_CLIGN)
+                t.sleep(self.__t_clign_jaune)
                 self.eteindre_jaune()
-                t.sleep(self.T_CLIGN)
+                t.sleep(self.__t_clign_jaune)
             else:
-                t.sleep(0.1)
+                t.sleep(0.5)
     
     def _clignoter_del_verte(self):
         while not self.__stop_event.is_set():
             if self.__clignoter_verte:
                 self.allumer_verte()
-                t.sleep(self.T_CLIGN)
+                t.sleep(self.__t_clign_verte)
+                self.eteindre_verte()
+                t.sleep(self.__t_clign_verte)
+            else:
+                t.sleep(0.5)
 
     # arrêt propre des threads
     def shutdown(self):

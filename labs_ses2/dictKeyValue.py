@@ -29,6 +29,9 @@ class MapTouches:
 
     def ralentir(self):
         self.voiture.modifier_vitesse(-0.1)
+    
+    def shutdown(self):
+        self.voiture.shutdown()
 
     def map(self, t):
         match (t):
@@ -52,7 +55,7 @@ class MapTouches:
             case ",":
                 return self.ralentir()
             case "x":
-                # self.voiture.shutdown()
+                self.shutdown()
                 return exit(0)
 
             case _:

@@ -58,14 +58,14 @@ class Robot:
         self.__sonar_d.arreter_trigger()
         self.__sonar_g.arreter_trigger()
     
-    def clignoter_del_jaune(self):
-        self.__dels.partir_clignotement_jaune()
+    def clignoter_del_jaune(self, t_clign):
+        self.__dels.partir_clignotement_jaune(t_clign)
     
-    def clignoter_del_verte(self):
-        self.__dels.partir_clignotement_verte()
+    def clignoter_del_verte(self, t_clign):
+        self.__dels.partir_clignotement_verte(t_clign)
     
-    def arreter_clignoter_del_jaune(self):
-        self.__dels.arreter_clignoter_del_jaune()
+    def arreter_clignoter_del_jaune(self, t_clign):
+        self.__dels.arreter_clignoter_del_jaune(t_clign)
     
     def arreter_clignoter_del_verte(self):
         self.__dels.arreter_clignoter_del_verte()

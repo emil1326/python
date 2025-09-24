@@ -3,12 +3,16 @@ import platform
 import cv2
 
 class Camera:
+    #constantes
+    #resolution de l'image
     LARGEUR = 320
     HAUTEUR = 240
+    #limites 
     MIN_HUE = 0
     MAX_HUE = 179
-    MAX_SAT = 100
     MIN_SAT = 0
+    MAX_SAT = 100
+    
     
     
     def __init__(self):
