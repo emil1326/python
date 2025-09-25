@@ -27,9 +27,6 @@ class encodeurDeRotation:
 
         self.onLengthEnd = self.passFunc
 
-    def passFunc(self):
-        pass
-
     def onChangeD(self):
         self.LengthLeft -= self.TAILLE_ROUE
         self.TotalLength += self.TAILLE_ROUE
