@@ -6,7 +6,7 @@ class encodeurDeRotation:
     # diametre 6.5cm
     # (6.5 * 3.14159) / 80
     TAILLE_ROUE = 0.5
-    STOP_LENGTH = -16
+    STOP_LENGTH = -16.5
 
     def __init__(self, capteur_droit=True, capteur_gauche=True):
         if capteur_droit:
