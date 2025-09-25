@@ -15,14 +15,14 @@ class encodeurDeRotation:
             self.CapteurGauche = DigitalInputDevice(27)
 
         if capteur_droit:
-            self.CapteurDroit.when_activated = self.onChangeD        
+            self.CapteurDroit.when_activated = self.onChangeD
             self.CapteurDroit.when_deactivated = self.onChangeD
-            
+
         if capteur_gauche:
             self.CapteurGauche.when_activated = self.onChangeG
             self.CapteurGauche.when_deactivated = self.onChangeG
 
-        self.LengthLeft = 0 # when 0 on fait le callback
+        self.LengthLeft = 0  # when 0 on fait le callback
         self.TotalLength = 0  # juste une statistique
 
         self.onLengthEnd = self.passFunc
@@ -31,11 +31,11 @@ class encodeurDeRotation:
         pass
 
     def onChangeD(self):
-        
+
         self.LengthLeft -= self.TAILLE_ROUE
         self.TotalLength += self.TAILLE_ROUE
 
-        if (self.LengthLeft%10==0):
+        if self.LengthLeft % 10 == 0 or self.LengthLeft < 1:
             print(self.LengthLeft)
 
         if self.LengthLeft + self.STOP_LENGTH <= 0:
@@ -45,7 +45,7 @@ class encodeurDeRotation:
         self.LengthLeft -= self.TAILLE_ROUE
         self.TotalLength += self.TAILLE_ROUE
 
-        if (self.LengthLeft%10==0):
+        if self.LengthLeft % 10 == 0 or self.LengthLeft < 1:
             print(self.LengthLeft)
 
         if self.LengthLeft + self.STOP_LENGTH <= 0:
