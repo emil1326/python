@@ -18,9 +18,9 @@ class Robot:
         self.__stop_sonar = True
         
     
-    def avancer(self):
-        self.__moteur_d.avancer(1)
-        self.__moteur_g.avancer(1)
+    def avancer(self, vitesse = 1):
+        self.__moteur_d.avancer(vitesse)
+        self.__moteur_g.avancer(vitesse)
     
     def reculer(self):
         self.__moteur_d.reculer(1)

@@ -6,7 +6,7 @@ from encodeurDeRotation import encodeurDeRotation
 
 # harware
 
-rot = encodeurDeRotation()
+rot = encodeurDeRotation(False, True)
 voiture = Robot()
 
 # harware functions
@@ -14,7 +14,6 @@ voiture = Robot()
 
 def endLength():
     voiture.arreter()
-    pass
 
 
 # set-up
@@ -25,7 +24,7 @@ rot.onLengthEnd = endLength
 
 rot.LengthLeft = 100
 
-voiture.avancer()
+voiture.avancer(0.5)
 
 
 input("Finish?")
