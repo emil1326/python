@@ -17,19 +17,18 @@ robot = Robot(False, False)
 mapper = MapTouches(robot)
 
 maycontinue = True #bool, permet d'arrêter le programme proprement
-#del verte = sonar droit
-#del jaune = sonar gauche
+
+img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
 
 while maycontinue: #tant qu'on peut continuer
-    img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
+   
     #routine pseudo code
     #1. capturer une image
     #2. convertir l'image en hsv
     #3. binariser l'image hsv 
     #4. filtrer l'image binarisé pour avoir le blob de la balle
     #5. detecter quelle action faire selon les coordonnees du centre du blob    
-    #6. dessiner le rectangle autour du blob
-    
+    #6. dessiner le rectangle autour du blob     
     
     #set le texte pour la fenetre oCV
     cv2.imshow("Labo 4", img) #montrer la fenêtre de openCV
@@ -37,13 +36,12 @@ while maycontinue: #tant qu'on peut continuer
     key = cv2.waitKeyEx(30) #attendre 30ms pour l'appui d'une touche 
     
     #gestion d'erreur 
-    if key == -1:
+    if key == -1 or key > 255:
         continue
-    else:
-        key = str(key.to_bytes(), "utf-8")
-        
+
+    t = chr(key)
     #si on demande d'arrêter
-    if key == "x":
+    if t == "x":
         maycontinue = False #mettre le flag de la boucle a False pour l'arrêter
     #mapper pour appeler les bonnes fonctions selon la touche appuyée
-    mapper.map(key) 
+    mapper.map(t) 

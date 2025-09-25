@@ -70,11 +70,7 @@ class Camera:
         return image_hsv
     
     def capturer_image(self):
-        self.__image_array = self.__cam.capture_array()
-        return self.__image_array
-
-    def get_image(self):
-        return self.__image_array
+        return self.__cam.capture_array()
 
 
     
