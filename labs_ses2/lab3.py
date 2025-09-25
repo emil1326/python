@@ -17,7 +17,7 @@ def endLength():
 
 
 # set-up
-
+#comme on le fait par callback
 rot.onLengthEnd = endLength
 
 # main
