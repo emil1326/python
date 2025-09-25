@@ -31,7 +31,6 @@ class encodeurDeRotation:
         pass
 
     def onChangeD(self):
-
         self.LengthLeft -= self.TAILLE_ROUE
         self.TotalLength += self.TAILLE_ROUE
 
