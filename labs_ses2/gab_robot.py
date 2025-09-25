@@ -65,10 +65,10 @@ class Robot:
         self.__dels.partir_clignotement_verte(t_clign)
     
     def arreter_clignoter_del_jaune(self):
-        self.__dels.arreter_clignoter_del_jaune()
+        self.__dels.arreter_clignotement_jaune()
     
     def arreter_clignoter_del_verte(self):
-        self.__dels.arreter_clignoter_del_verte()
+        self.__dels.arreter_clignotement_verte()
     
     def get_distance(self, sonar):
         if sonar == 'g': #sonar de gauche
