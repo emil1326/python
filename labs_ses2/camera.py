@@ -1,6 +1,7 @@
 #gabriel pereira levesque
 import platform
 import cv2
+import numpy as np
 
 class Camera:
     #constantes
@@ -8,12 +9,12 @@ class Camera:
     LARGEUR = 320
     HAUTEUR = 240
     #limites 
-    MIN_HUE = 0
-    MAX_HUE = 179
-    MIN_SAT = 0
-    MAX_SAT = 100
-    
-    
+    MIN_HUE = 20
+    MAX_HUE = 30
+    MIN_SAT = 50
+    MAX_SAT = 255
+    MIN_VAL = 30
+    MAX_VAL = 255
     
     def __init__(self):
         from picamera2 import Picamera2
@@ -24,12 +25,25 @@ class Camera:
         
         self.__image_array = self.__cam.capture_array()
     
+    def __binariser_image(self, image_hsv):
+        #définition des bornes
+        borne_min = np.array([self.MIN_HUE, self.MIN_SAT, self.MIN_VAL])
+        borne_max = np.array([self.MAX_HUE, self.MAX_SAT, self.MAX_VAL])
+        
+        #création du masque
+        masque = cv2.inRange(image_hsv, borne_min, borne_max)
+        
+        return masque
     
     def __convertir_image_hsv(self, image):
-        cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        image_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        return image_hsv
     
     def capturer_image(self):
         self.__image_array = self.__cam.capture_array()
+        return self.__image_array
+
+    def get_image(self):
         return self.__image_array
 
 

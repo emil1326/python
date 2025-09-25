@@ -1,3 +1,6 @@
+#Gabriel Pereira Levesque
+#Laboratoire IV
+
 from gab_robot import Robot
 import numpy as np  # type: ignore
 import cv2  # type: ignore
@@ -8,7 +11,7 @@ from dictKeyValue import MapTouches
 DIST_MIN = 1  #m
 
 #initialisation du robot
-robot = Robot(True, True)
+robot = Robot(False, False)
 
 #initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)
@@ -18,22 +21,21 @@ maycontinue = True #bool, permet d'arrêter le programme proprement
 #del jaune = sonar gauche
 
 while maycontinue: #tant qu'on peut continuer
-    img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
-    
+    img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV    
     
     #set le texte pour la fenetre oCV
-    cv2.imshow("Labo 2", img) #montrer la fenêtre de openCV
+    cv2.imshow("Labo 4", img) #montrer la fenêtre de openCV
 
-    key = cv2.waitKeyEx(30)
+    key = cv2.waitKeyEx(30) #attendre 30ms pour l'appui d'une touche 
     
+    #gestion d'erreur 
     if key == -1:
         continue
     else:
         key = str(key.to_bytes(), "utf-8")
-
+        
+    #si on demande d'arrêter
     if key == "x":
-        maycontinue = False
-
+        maycontinue = False #mettre le flag de la boucle a False pour l'arrêter
+    #mapper pour appeler les bonnes fonctions selon la touche appuyée
     mapper.map(key) 
-
-robot.shutdown()
