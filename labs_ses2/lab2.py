@@ -63,7 +63,7 @@ while maycontinue: #tant qu'on peut continuer
     if key == -1:
         continue
     else:
-        key = str(key.to_bytes(), "utf-8")
+        key = chr(key)
         
     #si on demande d'arrêter
     if key == "x":

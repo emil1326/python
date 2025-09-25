@@ -64,8 +64,8 @@ class Robot:
     def clignoter_del_verte(self, t_clign):
         self.__dels.partir_clignotement_verte(t_clign)
     
-    def arreter_clignoter_del_jaune(self, t_clign):
-        self.__dels.arreter_clignoter_del_jaune(t_clign)
+    def arreter_clignoter_del_jaune(self):
+        self.__dels.arreter_clignoter_del_jaune()
     
     def arreter_clignoter_del_verte(self):
         self.__dels.arreter_clignoter_del_verte()
