@@ -25,6 +25,36 @@ class Camera:
         
         self.__image_array = self.__cam.capture_array()
     
+    def dessiner_rectangle_sur_image(self, image, contour, couleur=(0,0,255), epaisseur=2):
+        if contour is None:
+            return image
+        x, y, l, h = cv2.boundingRect(contour)
+        cv2.rectangle(image, (x,y), (x+l, y + h), couleur, epaisseur)
+    
+    def get_dimensions_contour(self, contour):
+        x, y, l, h = cv2.boundingRect(contour)
+        aire = l*h
+        centre = {"x": x + (l // 2), "y": y + (h // 2)}
+        
+        return {"aire":aire, "centre": centre}
+    
+    #prend une image binarise et retourne les coordonnees {centre, aire} du plus gros blob
+    def get_plus_gros_contour(self, image_bin):
+        plus_gros_contour = None
+        max_aire = 0
+        
+        contours, _ = cv2.findContours(image_bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+        
+        for c in contours:
+            x, y, l, h = cv2.boundingRect(c)
+            aire = l*h
+            if aire > max_aire:
+                max_aire = aire
+                plus_gros_contour = c                
+        
+        return plus_gros_contour 
+    
+    #prend une image hsv et la binarise
     def __binariser_image(self, image_hsv):
         #définition des bornes
         borne_min = np.array([self.MIN_HUE, self.MIN_SAT, self.MIN_VAL])

@@ -21,7 +21,15 @@ maycontinue = True #bool, permet d'arrêter le programme proprement
 #del jaune = sonar gauche
 
 while maycontinue: #tant qu'on peut continuer
-    img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV    
+    img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
+    #routine pseudo code
+    #1. capturer une image
+    #2. convertir l'image en hsv
+    #3. binariser l'image hsv 
+    #4. filtrer l'image binarisé pour avoir le blob de la balle
+    #5. detecter quelle action faire selon les coordonnees du centre du blob    
+    #6. dessiner le rectangle autour du blob
+    
     
     #set le texte pour la fenetre oCV
     cv2.imshow("Labo 4", img) #montrer la fenêtre de openCV
