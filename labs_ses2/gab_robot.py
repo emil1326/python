@@ -14,7 +14,7 @@ class Robot:
         
         self.__moteur_g = Moteur(6, 5, 13)
         self.__moteur_d = Moteur(15, 14, 18)
-        self.__stop_clignotement = True
+        
         self.__stop_sonar = True
         
     
@@ -50,41 +50,41 @@ class Robot:
         self.__moteur_d.addMulSpeed(multiplicateur)
         self.__moteur_g.addMulSpeed(multiplicateur)
     
-    def trigger_sonar_g(self):
-        while not self.__stop_sonar:
-            self.__sonar_g.trigger()
-            time.sleep(0.1)
-    
-    def trigger_sonar_d(self):
-        while not self.__stop_sonar:
-            self.__sonar_d.trigger()        
-            time.sleep(0.1)
+    def trigger_sonars(self):
+        self.__sonar_d.demarrer_trigger()
+        self.__sonar_g.demarrer_trigger()
     
     def arreter_sonars(self):
-        self.__stop_sonar = True
+        self.__sonar_d.arreter_trigger()
+        self.__sonar_g.arreter_trigger()
     
-    def arreter_clignoter_dels(self):
-        self.__stop_clignotement = True
+    def clignoter_del_jaune(self, t_clign):
+        self.__dels.partir_clignotement_jaune(t_clign)
     
-    def clignoter_dels(self):
-        while not self.__stop_clignotement:
-            self.__dels.allumer_jaune()
-            self.__dels.allumer_verte()
-            time.sleep(0.5)
-            self.__dels.eteindre()
+    def clignoter_del_verte(self, t_clign):
+        self.__dels.partir_clignotement_verte(t_clign)
     
-    def dels_clignotent(self):
-        return not self.__stop_clignotement
+    def arreter_clignoter_del_jaune(self):
+        self.__dels.arreter_clignotement_jaune()
     
-    def get_distance(self, sonar=None):
+    def arreter_clignoter_del_verte(self):
+        self.__dels.arreter_clignotement_verte()
+    
+    def get_distance(self, sonar):
         if sonar == 'g': #sonar de gauche
             return self.__sonar_g.get_distance()
         if sonar == 'd': #sonar de droite
             return self.__sonar_d.get_distance()
-        elif sonar == None: #les deux
-            d_g = self.__sonar_g.get_distance()
-            d_d = self.__sonar_d.get_distance()
+        else:
+            return -1
+    
+    def shutdown(self):
+        if self.__dels:
+            self.__dels.shutdown()
+        if self.__sonar_d:
+            self.__sonar_d.shutdown()
+        if self.__sonar_g:
+            self.__sonar_g.shutdown()
             
-            return (d_g + d_d) / 2 #retourne la moyenne entre les deux
         
         
