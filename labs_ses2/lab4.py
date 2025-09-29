@@ -34,8 +34,9 @@ VITESSE_AIRE_MAX = MAX_AIRE / 5
 
 def findVitesse(aireCurrente):
     vtemp = aireCurrente * MAX_AIRE / MIN_AIRE
-
-    return aireCurrente / vtemp
+    newv = aireCurrente / vtemp
+    print(newv)
+    return newv
 
 
 while maycontinue:  # tant qu'on peut continuer
@@ -89,7 +90,7 @@ while maycontinue:  # tant qu'on peut continuer
     # si on demande d'arrêter
     if t == "x":
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
-        print('arrêt')
+        print("arrêt")
     # mapper pour appeler les bonnes fonctions selon la touche appuyée
     mapper.map(t)
 
