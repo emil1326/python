@@ -12,10 +12,10 @@ class Camera:
     #limites 
     MIN_HUE = 14
     MAX_HUE = 31
-    MIN_SAT = 114
-    MAX_SAT = 255
-    MIN_VAL = 0
-    MAX_VAL = 255
+    MIN_SAT = 132
+    MAX_SAT = 237
+    MIN_VAL = 141
+    MAX_VAL = 241
     
     def __init__(self):        
         self.__cam = Picamera2()
