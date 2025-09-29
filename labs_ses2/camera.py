@@ -25,18 +25,20 @@ class Camera:
         self.__cam.configure(config)
         self.__cam.start()        
     
+    #dessine un rectangle sur l'image passée autour d'un contour passé en paramètre 
     def dessiner_rectangle_sur_image(self, image, contour, couleur=(0,0,255), epaisseur=2):
         if contour is None:
             return image
         x, y, l, h = cv2.boundingRect(contour)
         cv2.rectangle(image, (x,y), (x+l, y + h), couleur, epaisseur)
     
+    #Retourne aire, centre (x, y) d'un contour
     def get_dimensions_contour(self, contour):
         x, y, l, h = cv2.boundingRect(contour)
         aire = l*h
         centre = {"x": x + (l // 2), "y": y + (h // 2)}
         
-        return {"aire":aire, "centre": centre}
+        return aire, centre
     
     #prend une image binarise et retourne les coordonnees {centre, aire} du plus gros blob
     def get_plus_gros_contour(self, image_bin):
