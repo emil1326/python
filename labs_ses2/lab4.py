@@ -24,7 +24,9 @@ img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de o
 
 MIN_AIRE = 30
 MAX_AIRE = 5000
+FULLMIN_X = 40
 MIN_X = 80
+FULLMAX_X = 280
 MAX_X = 240
 
 while maycontinue:  # tant qu'on peut continuer
@@ -40,17 +42,28 @@ while maycontinue:  # tant qu'on peut continuer
     contour_balle = camera.get_plus_gros_contour(img_bin, {"min": 0, "max": 240})
     # 5. detecter quelle action faire selon les coordonnees du centre du blob
     aire, centre = camera.get_dimensions_contour(contour_balle)
-    if(aire <= MIN_AIRE): #trop loin!
-        print('arreter')
-    elif(aire > MAX_AIRE): #trop proche!
-        print('arreter')
+    if aire <= MIN_AIRE:  # trop loin!
+        print("arreter")
+        robot.arreter()
+    elif aire > MAX_AIRE:  # trop proche!
+        print("arreter")
+        robot.arreter()
     else:
-        if centre["x"] <= MIN_X: #à gauche!
-            print('gauche')
+        if centre["x"] <= FULLMIN_X:
+            robot.tourner_gauche()
+            print("Full gauche")
+        elif centre["x"] <= MIN_X:  # à gauche!
+            robot.diagonale_gauche()
+            print("gauche")
+        elif centre["x"] >= FULLMAX_X:
+            robot.tourner_droite()
+            print("Full droite")
         elif centre["x"] >= MAX_X:
-            print('droite')
+            robot.diagonale_droite()
+            print("droite")
         else:
-            print('avancer')
+            robot.avancer()
+            print("avancer")
     # 6. dessiner le rectangle autour du blob
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
 
