@@ -22,7 +22,7 @@ maycontinue = True  # bool, permet d'arrêter le programme proprement
 
 img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de oCV
 
-MIN_AIRE = 30
+MIN_AIRE = 100
 MAX_AIRE = 5000
 MIN_X = 80
 MAX_X = 240
@@ -47,7 +47,7 @@ while maycontinue:  # tant qu'on peut continuer
     else:
         if centre["x"] <= MIN_X: #à gauche!
             print('gauche')
-        elif centre["x"] >= MAX_X:
+        elif centre["x"] >= MAX_X: # à droite!
             print('droite')
         else:
             print('avancer')
