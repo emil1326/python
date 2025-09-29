@@ -39,7 +39,7 @@ while maycontinue: #tant qu'on peut continuer
     
     #set le texte pour la fenetre oCV
     cv2.imshow("Labo 4", img_bgr) #montrer la fenêtre de openCV
-
+    cv2.imshow("Labo 4 binarise", img_bin)
     key = cv2.waitKeyEx(30) #attendre 30ms pour l'appui d'une touche 
     
     #gestion d'erreur 
