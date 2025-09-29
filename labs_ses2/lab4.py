@@ -22,6 +22,11 @@ maycontinue = True  # bool, permet d'arrêter le programme proprement
 
 img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de oCV
 
+MIN_AIRE = 30
+MAX_AIRE = 5000
+MIN_X = 80
+MAX_X = 240
+
 while maycontinue:  # tant qu'on peut continuer
 
     # routine pseudo code
@@ -32,10 +37,20 @@ while maycontinue:  # tant qu'on peut continuer
     # 3. binariser l'image hsv
     img_bin = camera.binariser_image(img_hsv)
     # 4. filtrer l'image binarisé pour avoir le blob de la balle
-    contour_balle = camera.get_plus_gros_contour(img_bin, {"min": 100, "max": 240})
+    contour_balle = camera.get_plus_gros_contour(img_bin, {"min": 0, "max": 240})
     # 5. detecter quelle action faire selon les coordonnees du centre du blob
     aire, centre = camera.get_dimensions_contour(contour_balle)
-    print("aire balle", aire, "centre ball", centre)
+    if(aire <= MIN_AIRE): #trop loin!
+        print('arreter')
+    elif(aire > MAX_AIRE): #trop proche!
+        print('arreter')
+    else:
+        if centre["x"] <= MIN_X: #à gauche!
+            print('gauche')
+        elif centre["x"] >= MAX_X:
+            print('droite')
+        else:
+            print('avancer')
     # 6. dessiner le rectangle autour du blob
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
 
