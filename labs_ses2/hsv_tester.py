@@ -20,6 +20,9 @@ picam2.align_configuration(config)
 picam2.configure(config)
 picam2.start()
 
+#cap = cv2.VideoCapture(0)
+
+
 titre_fenetre = "HSV Tester"
 cv2.namedWindow(titre_fenetre)
 cv2.createTrackbar('Teinte min',  titre_fenetre, 0, 179, track_bar_cb)
@@ -46,6 +49,10 @@ while not terminer:
 
     print(f"{teinte_min}, {teinte_max}")
     frame_bgr = picam2.capture_array()
+    """ ret, frame_bgr = cap.read()
+    if not ret:
+        break """
+    
     frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
     frame_disc = cv2.inRange(frame_hsv, teinte_min, teinte_max)
     cv2.imshow("Image BGR", frame_bgr)

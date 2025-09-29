@@ -9,21 +9,21 @@ class Camera:
     LARGEUR = 320
     HAUTEUR = 240
     #limites 
-    MIN_HUE = 20
-    MAX_HUE = 30
-    MIN_SAT = 50
+    MIN_HUE = 14
+    MAX_HUE = 31
+    MIN_SAT = 114
     MAX_SAT = 255
-    MIN_VAL = 30
+    MIN_VAL = 0
     MAX_VAL = 255
     
     def __init__(self):
         from picamera2 import Picamera2
         self.__cam = Picamera2()
-        config = picam2.create_video_configuration(main={"format":"RGB888", "size":(LARGEUR, HAUTEUR)})
+        LARGEUR = 320
+        HAUTEUR = 240
+        config = self.__cam.create_video_configuration(main={"format":"RGB888", "size":(LARGEUR, HAUTEUR)})
         self.__cam.configure(config)
-        self.__cam.start()
-        
-        self.__image_array = self.__cam.capture_array()
+        self.__cam.start()        
     
     def dessiner_rectangle_sur_image(self, image, contour, couleur=(0,0,255), epaisseur=2):
         if contour is None:
@@ -55,7 +55,7 @@ class Camera:
         return plus_gros_contour 
     
     #prend une image hsv et la binarise
-    def __binariser_image(self, image_hsv):
+    def binariser_image(self, image_hsv):
         #définition des bornes
         borne_min = np.array([self.MIN_HUE, self.MIN_SAT, self.MIN_VAL])
         borne_max = np.array([self.MAX_HUE, self.MAX_SAT, self.MAX_VAL])
@@ -65,11 +65,11 @@ class Camera:
         
         return masque
     
-    def __convertir_image_hsv(self, image):
-        image_hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+    def convertir_image_bgr2hsv(self, image_bgr):
+        image_hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
         return image_hsv
     
-    def capturer_image(self):
+    def capturer_image_bgr(self):
         return self.__cam.capture_array()
 
 

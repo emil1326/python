@@ -1,14 +1,15 @@
 from gab_moteurs import Moteur
 from sonar import Sonar
 from dels import Dels
+from camera import Camera
 import time
 
 class Robot:
     
     def __init__(self, sonar = None, dels = None):
-        if(dels):
+        if(dels is not None):
             self.__dels = Dels()
-        if(sonar):
+        if(sonar is not None):
             self.__sonar_g = Sonar(25, 8)
             self.__sonar_d = Sonar(20, 21)
         
@@ -16,8 +17,8 @@ class Robot:
         self.__moteur_d = Moteur(15, 14, 18)
         
         self.__stop_sonar = True
-        
     
+    #voiture
     def avancer(self, vitesse = 1):
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
@@ -50,6 +51,15 @@ class Robot:
         self.__moteur_d.addMulSpeed(multiplicateur)
         self.__moteur_g.addMulSpeed(multiplicateur)
     
+    def shutdown(self):
+        if self.__dels:
+            self.__dels.shutdown()
+        if self.__sonar_d:
+            self.__sonar_d.shutdown()
+        if self.__sonar_g:
+            self.__sonar_g.shutdown()
+      
+    #sonars
     def trigger_sonars(self):
         self.__sonar_d.demarrer_trigger()
         self.__sonar_g.demarrer_trigger()
@@ -58,6 +68,15 @@ class Robot:
         self.__sonar_d.arreter_trigger()
         self.__sonar_g.arreter_trigger()
     
+    def get_distance(self, sonar):
+        if sonar == 'g': #sonar de gauche
+            return self.__sonar_g.get_distance()
+        if sonar == 'd': #sonar de droite
+            return self.__sonar_d.get_distance()
+        else:
+            return -1
+    
+    #dels
     def clignoter_del_jaune(self, t_clign):
         self.__dels.partir_clignotement_jaune(t_clign)
     
@@ -68,23 +87,5 @@ class Robot:
         self.__dels.arreter_clignotement_jaune()
     
     def arreter_clignoter_del_verte(self):
-        self.__dels.arreter_clignotement_verte()
-    
-    def get_distance(self, sonar):
-        if sonar == 'g': #sonar de gauche
-            return self.__sonar_g.get_distance()
-        if sonar == 'd': #sonar de droite
-            return self.__sonar_d.get_distance()
-        else:
-            return -1
-    
-    def shutdown(self):
-        if self.__dels:
-            self.__dels.shutdown()
-        if self.__sonar_d:
-            self.__sonar_d.shutdown()
-        if self.__sonar_g:
-            self.__sonar_g.shutdown()
-            
-        
+        self.__dels.arreter_clignotement_verte()        
         

@@ -2,6 +2,7 @@
 #Laboratoire IV
 
 from gab_robot import Robot
+from camera import Camera
 import numpy as np  # type: ignore
 import cv2  # type: ignore
 import threading
@@ -12,6 +13,7 @@ DIST_MIN = 1  #m
 
 #initialisation du robot
 robot = Robot(False, False)
+camera = Camera()
 
 #initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)
@@ -24,14 +26,19 @@ while maycontinue: #tant qu'on peut continuer
    
     #routine pseudo code
     #1. capturer une image
+    img_bgr = camera.capturer_image_bgr()    
     #2. convertir l'image en hsv
-    #3. binariser l'image hsv 
+    img_hsv = camera.convertir_image_bgr2hsv(img_bgr)
+    #3. binariser l'image hsv
+    img_bin = camera.binariser_image(img_hsv)
     #4. filtrer l'image binarisé pour avoir le blob de la balle
+    contour_balle = camera.get_plus_gros_contour(img_bin)
     #5. detecter quelle action faire selon les coordonnees du centre du blob    
-    #6. dessiner le rectangle autour du blob     
+    #6. dessiner le rectangle autour du blob  
+    camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)   
     
     #set le texte pour la fenetre oCV
-    cv2.imshow("Labo 4", img) #montrer la fenêtre de openCV
+    cv2.imshow("Labo 4", img_bgr) #montrer la fenêtre de openCV
 
     key = cv2.waitKeyEx(30) #attendre 30ms pour l'appui d'une touche 
     
@@ -45,3 +52,5 @@ while maycontinue: #tant qu'on peut continuer
         maycontinue = False #mettre le flag de la boucle a False pour l'arrêter
     #mapper pour appeler les bonnes fonctions selon la touche appuyée
     mapper.map(t) 
+
+cv2.destroyAllWindows()
