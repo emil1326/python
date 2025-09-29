@@ -80,6 +80,7 @@ while maycontinue:  # tant qu'on peut continuer
     # si on demande d'arrêter
     if t == "x":
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
+        print('arrêt')
     # mapper pour appeler les bonnes fonctions selon la touche appuyée
     mapper.map(t)
 
