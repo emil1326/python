@@ -33,7 +33,9 @@ while maycontinue: #tant qu'on peut continuer
     img_bin = camera.binariser_image(img_hsv)
     #4. filtrer l'image binarisé pour avoir le blob de la balle
     contour_balle = camera.get_plus_gros_contour(img_bin)
-    #5. detecter quelle action faire selon les coordonnees du centre du blob    
+    #5. detecter quelle action faire selon les coordonnees du centre du blob
+    aire, centre = camera.get_dimensions_contour(contour_balle)
+    print('aire balle', aire, 'centre ball', centre)
     #6. dessiner le rectangle autour du blob  
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)   
     
