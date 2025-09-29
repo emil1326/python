@@ -33,8 +33,8 @@ VITESSE_AIRE_MAX = MAX_AIRE / 5
 
 
 def findVitesse(aireCurrente):
-    vtemp = aireCurrente * MAX_AIRE / MIN_AIRE
-    newv = aireCurrente / vtemp
+    aire = max(aireCurrente, 1)  # éviter division par 0
+    newv = MAX_AIRE / aire
     print(newv)
     return newv
 
