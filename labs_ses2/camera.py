@@ -55,8 +55,8 @@ class Camera:
         for c in contours:
             x, y, l, h = cv2.boundingRect(c)
             if Height_Bounds is not None:
-                if y < Height_Bounds["min"] and y > Height_Bounds["max"]:
-                    return
+                if y < Height_Bounds["min"] or y > Height_Bounds["max"]:
+                    continue
             aire = l * h
             if aire > max_aire:
                 max_aire = aire
