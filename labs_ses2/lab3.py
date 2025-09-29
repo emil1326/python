@@ -1,5 +1,5 @@
-#Gabriel Pereira Levesque et Emilien
-#Laboratoire III | 15 septembre 2025
+# Gabriel Pereira Levesque et Emilien
+# Laboratoire III | 15 septembre 2025
 
 from gab_robot import Robot
 from encodeurDeRotation import encodeurDeRotation
@@ -17,7 +17,7 @@ def endLength():
 
 
 # set-up
-#comme on le fait par callback
+# comme on le fait par callback
 rot.onLengthEnd = endLength
 
 # main

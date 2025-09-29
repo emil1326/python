@@ -1,5 +1,5 @@
-#Laboratoire I version du 22 septembre 2025
-#Par Gabriel Pereira Levesque et Émilien
+# Laboratoire I version du 22 septembre 2025
+# Par Gabriel Pereira Levesque et Émilien
 
 from datetime import datetime
 import time
@@ -9,10 +9,10 @@ import cv2  # type: ignore
 
 from dictKeyValue import MapTouches
 
-#initialisation du robot
+# initialisation du robot
 robot = Robot(True, True)
 
-#initialisation du mapper qui associe les touches à des actions
+# initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)
 
 maycontinue = True

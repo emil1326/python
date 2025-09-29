@@ -1,4 +1,3 @@
-
 class MapTouches:
     def __init__(self, robot) -> None:
         self.voiture = robot
@@ -29,7 +28,7 @@ class MapTouches:
 
     def ralentir(self):
         self.voiture.modifier_vitesse(-0.1)
-    
+
     def shutdown(self):
         self.voiture.shutdown()
 

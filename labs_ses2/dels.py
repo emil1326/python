@@ -1,6 +1,7 @@
 import threading
 import time as t
-import gpiozero as gp
+import gpiozero as gp  # type: ignore
+
 
 class Dels:
 
@@ -8,24 +9,24 @@ class Dels:
         # DELs
         self.__del_jaune = gp.DigitalOutputDevice(10)
         self.__del_verte = gp.DigitalOutputDevice(9)
-        
+
         # flags pour clignotement
         self.__clignoter_jaune = False
         self.__clignoter_verte = False
-        
-        #temps de clignotement
+
+        # temps de clignotement
         self.__t_clign_jaune = 0.5
         self.__t_clign_verte = 0.5
-        
+
         # event pour arrêter proprement les threads
         self.__stop_event = threading.Event()
-        
+
         # threads
         self.__thread_del_jaune = threading.Thread(target=self._clignoter_del_jaune)
         self.__thread_del_verte = threading.Thread(target=self._clignoter_del_verte)
         self.__thread_del_jaune.start()
         self.__thread_del_verte.start()
-    
+
     # méthodes DELs simples
     def allumer_jaune(self):
         self.__del_jaune.on()
@@ -38,22 +39,22 @@ class Dels:
 
     def eteindre_verte(self):
         self.__del_verte.off()
-    
+
     # méthodes clignotement
     def partir_clignotement_jaune(self, t_clign):
         self.__t_clign_jaune = t_clign
         self.__clignoter_jaune = True
-    
+
     def arreter_clignotement_jaune(self):
         self.__clignoter_jaune = False
 
     def partir_clignotement_verte(self, t_clign):
         self.__t_clign_verte = t_clign
         self.__clignoter_verte = True
-    
+
     def arreter_clignotement_verte(self):
         self.__clignoter_verte = False
-    
+
     # threads permanents
     def _clignoter_del_jaune(self):
         while not self.__stop_event.is_set():
@@ -64,7 +65,7 @@ class Dels:
                 t.sleep(self.__t_clign_jaune)
             else:
                 t.sleep(0.5)
-    
+
     def _clignoter_del_verte(self):
         while not self.__stop_event.is_set():
             if self.__clignoter_verte:
@@ -80,4 +81,3 @@ class Dels:
         self.__stop_event.set()
         self.__thread_del_jaune.join()
         self.__thread_del_verte.join()
-
