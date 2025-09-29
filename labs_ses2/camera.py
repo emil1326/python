@@ -2,6 +2,7 @@
 import platform
 import cv2
 import numpy as np
+from picamera2 import Picamera2
 
 class Camera:
     #constantes
@@ -16,8 +17,7 @@ class Camera:
     MIN_VAL = 0
     MAX_VAL = 255
     
-    def __init__(self):
-        from picamera2 import Picamera2
+    def __init__(self):        
         self.__cam = Picamera2()
         LARGEUR = 320
         HAUTEUR = 240
