@@ -23,11 +23,20 @@ maycontinue = True  # bool, permet d'arrêter le programme proprement
 img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de oCV
 
 MIN_AIRE = 100
-MAX_AIRE = 5000
+MAX_AIRE = 3000
 FULLMIN_X = 40
 MIN_X = 80
 FULLMAX_X = 280
 MAX_X = 240
+VITESSE_AIRE_MIN = MIN_AIRE
+VITESSE_AIRE_MAX = MAX_AIRE / 5
+
+
+def findVitesse(aireCurrente):
+    vtemp = aireCurrente * MAX_AIRE / MIN_AIRE
+
+    return aireCurrente / vtemp
+
 
 while maycontinue:  # tant qu'on peut continuer
 
@@ -62,7 +71,7 @@ while maycontinue:  # tant qu'on peut continuer
             robot.diagonale_droite()
             print("droite")
         else:
-            robot.avancer()
+            robot.avancer(findVitesse(aire))
             print("avancer")
     # 6. dessiner le rectangle autour du blob
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
