@@ -44,7 +44,7 @@ class Camera:
         return aire, centre
     
     #prend une image binarise et retourne les coordonnees {centre, aire} du plus gros blob
-    def get_plus_gros_contour(self, image_bin):
+    def get_plus_gros_contour(self, image_bin, Height_Bounds = None):
         plus_gros_contour = None
         max_aire = 0
 
