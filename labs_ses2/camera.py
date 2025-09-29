@@ -56,7 +56,7 @@ class Camera:
             x, y, l, h = cv2.boundingRect(c)
             if Height_Bounds is not None:
                 if y < Height_Bounds["min"] and y > Height_Bounds["max"]:
-                    return
+                    break
             aire = l * h
             if aire > max_aire:
                 max_aire = aire
