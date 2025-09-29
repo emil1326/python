@@ -1,5 +1,5 @@
-#Gabriel Pereira Levesque
-#Laboratoire IV
+# Gabriel Pereira Levesque
+# Laboratoire IV
 
 from gab_robot import Robot
 from camera import Camera
@@ -9,50 +9,50 @@ import threading
 import time
 from dictKeyValue import MapTouches
 
-DIST_MIN = 1  #m
+DIST_MIN = 1  # m
 
-#initialisation du robot
+# initialisation du robot
 robot = Robot(False, False)
 camera = Camera()
 
-#initialisation du mapper qui associe les touches à des actions
+# initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)
 
-maycontinue = True #bool, permet d'arrêter le programme proprement
+maycontinue = True  # bool, permet d'arrêter le programme proprement
 
-img = np.zeros((512, 512, 3), np.uint8) #set limage de fond pour l'écran de oCV
+img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de oCV
 
-while maycontinue: #tant qu'on peut continuer
-   
-    #routine pseudo code
-    #1. capturer une image
-    img_bgr = camera.capturer_image_bgr()    
-    #2. convertir l'image en hsv
+while maycontinue:  # tant qu'on peut continuer
+
+    # routine pseudo code
+    # 1. capturer une image
+    img_bgr = camera.capturer_image_bgr()
+    # 2. convertir l'image en hsv
     img_hsv = camera.convertir_image_bgr2hsv(img_bgr)
-    #3. binariser l'image hsv
+    # 3. binariser l'image hsv
     img_bin = camera.binariser_image(img_hsv)
-    #4. filtrer l'image binarisé pour avoir le blob de la balle
-    contour_balle = camera.get_plus_gros_contour(img_bin)
-    #5. detecter quelle action faire selon les coordonnees du centre du blob
+    # 4. filtrer l'image binarisé pour avoir le blob de la balle
+    contour_balle = camera.get_plus_gros_contour(img_bin, {"min": 100, "max": 240})
+    # 5. detecter quelle action faire selon les coordonnees du centre du blob
     aire, centre = camera.get_dimensions_contour(contour_balle)
-    print('aire balle', aire, 'centre ball', centre)
-    #6. dessiner le rectangle autour du blob  
-    camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)   
-    
-    #set le texte pour la fenetre oCV
-    cv2.imshow("Labo 4", img_bgr) #montrer la fenêtre de openCV
+    print("aire balle", aire, "centre ball", centre)
+    # 6. dessiner le rectangle autour du blob
+    camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
+
+    # set le texte pour la fenetre oCV
+    cv2.imshow("Labo 4", img_bgr)  # montrer la fenêtre de openCV
     cv2.imshow("Labo 4 binarise", img_bin)
-    key = cv2.waitKeyEx(30) #attendre 30ms pour l'appui d'une touche 
-    
-    #gestion d'erreur 
+    key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
+
+    # gestion d'erreur
     if key == -1 or key > 255:
         continue
 
     t = chr(key)
-    #si on demande d'arrêter
+    # si on demande d'arrêter
     if t == "x":
-        maycontinue = False #mettre le flag de la boucle a False pour l'arrêter
-    #mapper pour appeler les bonnes fonctions selon la touche appuyée
-    mapper.map(t) 
+        maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
+    # mapper pour appeler les bonnes fonctions selon la touche appuyée
+    mapper.map(t)
 
 cv2.destroyAllWindows()
