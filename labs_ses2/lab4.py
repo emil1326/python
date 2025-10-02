@@ -12,7 +12,7 @@ from dictKeyValue import MapTouches
 DIST_MIN = 1  # m
 
 # initialisation du robot
-robot = Robot(False, False)
+robot = Robot()
 camera = Camera()
 
 # initialisation du mapper qui associe les touches à des actions
@@ -30,14 +30,6 @@ FULLMAX_X = 280
 MAX_X = 240
 VITESSE_AIRE_MIN = MIN_AIRE
 VITESSE_AIRE_MAX = MAX_AIRE / 5
-
-
-def findVitesse(aireCurrente):
-    aire = max(aireCurrente, 1)  # éviter division par 0
-    newv = MAX_AIRE / aire
-    print(newv)
-    return newv
-
 
 while maycontinue:  # tant qu'on peut continuer
 
@@ -72,7 +64,7 @@ while maycontinue:  # tant qu'on peut continuer
             robot.diagonale_droite()
             print("droite")
         else:
-            robot.avancer(findVitesse(aire))
+            robot.avancer(0.5)
             print("avancer")
     # 6. dessiner le rectangle autour du blob
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
