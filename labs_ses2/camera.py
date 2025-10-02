@@ -22,6 +22,7 @@ class Camera:
         self.__cam = Picamera2()
         LARGEUR = 320
         HAUTEUR = 240
+        
         config = self.__cam.create_video_configuration(
             main={"format": "RGB888", "size": (LARGEUR, HAUTEUR)}
         )
@@ -30,8 +31,9 @@ class Camera:
     
     #dessine un rectangle sur l'image passée autour d'un contour passé en paramètre 
     def dessiner_rectangle_sur_image(self, image, contour, couleur=(0,0,255), epaisseur=2):
-        if contour is None:
-            return image
+        #si aucun contour a dessiner on quitte la fonction
+        if contour is None or len(contour) == 0:
+            return
         x, y, l, h = cv2.boundingRect(contour)
         cv2.rectangle(image, (x,y), (x+l, y + h), couleur, epaisseur)
     
@@ -43,8 +45,9 @@ class Camera:
         
         return aire, centre
     
-    #prend une image binarise et retourne les coordonnees {centre, aire} du plus gros blob
-    def get_plus_gros_contour(self, image_bin, Height_Bounds = None):
+    #prend une image binarisée et retourne le plus gros blob
+    def get_plus_gros_contour(self, image_bin):
+        #définition des maximums
         plus_gros_contour = None
         max_aire = 0
 
@@ -52,14 +55,16 @@ class Camera:
             image_bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
         )
 
+        #pour chaque contour
         for c in contours:
+            #prendre les dimensions
             x, y, l, h = cv2.boundingRect(c)
-            if Height_Bounds is not None:
-                if y < Height_Bounds["min"] or y > Height_Bounds["max"]:
-                    continue
+            #calculer l'aire
             aire = l * h
+            #si l'aire est le plus grand
             if aire > max_aire:
                 max_aire = aire
+                #c'est alors aussi le plus gros contour
                 plus_gros_contour = c
 
         return plus_gros_contour
@@ -79,5 +84,6 @@ class Camera:
         image_hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
         return image_hsv
 
+    #capture et retourne une image (tableau) en source bgr
     def capturer_image_bgr(self):
         return self.__cam.capture_array()

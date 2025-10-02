@@ -1,5 +1,5 @@
-# Gabriel Pereira Levesque
-# Laboratoire IV
+# Gabriel Pereira Levesque & Émilien
+# Laboratoire IV | 2 octobre 2025
 
 from gab_robot import Robot
 from camera import Camera
@@ -8,8 +8,6 @@ import cv2  # type: ignore
 import threading
 import time
 from dictKeyValue import MapTouches
-
-DIST_MIN = 1  # m
 
 # initialisation du robot
 robot = Robot()
@@ -20,16 +18,13 @@ mapper = MapTouches(robot)
 
 maycontinue = True  # bool, permet d'arrêter le programme proprement
 
-img = np.zeros((512, 512, 3), np.uint8)  # set limage de fond pour l'écran de oCV
-
 MIN_AIRE = 100
 MAX_AIRE = 3000
-FULLMIN_X = 40
-MIN_X = 80
-FULLMAX_X = 280
-MAX_X = 240
-VITESSE_AIRE_MIN = MIN_AIRE
-VITESSE_AIRE_MAX = MAX_AIRE / 5
+FULLMIN_X = 60
+MIN_X = 120
+FULLMAX_X = 200
+MAX_X = 260
+VITESSE = 0.5
 
 while maycontinue:  # tant qu'on peut continuer
 
@@ -41,31 +36,25 @@ while maycontinue:  # tant qu'on peut continuer
     # 3. binariser l'image hsv
     img_bin = camera.binariser_image(img_hsv)
     # 4. filtrer l'image binarisé pour avoir le blob de la balle
-    contour_balle = camera.get_plus_gros_contour(img_bin, {"min": 0, "max": 240})
-    # 5. detecter quelle action faire selon les coordonnees du centre du blob
+    contour_balle = camera.get_plus_gros_contour(img_bin)
+    # 5. détecter quelle action faire selon les coordonnées du blob
     aire, centre = camera.get_dimensions_contour(contour_balle)
     if aire <= MIN_AIRE:  # trop loin!
-        print("arreter")
         robot.arreter()
-    elif aire > MAX_AIRE:  # trop proche!
-        print("arreter")
+    elif aire >= MAX_AIRE:  # trop proche!
         robot.arreter()
     else:
         if centre["x"] <= FULLMIN_X:
-            robot.tourner_gauche()
-            print("Full gauche")
-        elif centre["x"] <= MIN_X:  # à gauche!
+            robot.tourner_gauche(VITESSE)
+        elif centre["x"] <= MIN_X:
             robot.diagonale_gauche()
-            print("gauche")
         elif centre["x"] >= FULLMAX_X:
-            robot.tourner_droite()
-            print("Full droite")
-        elif centre["x"] >= MAX_X:
+            robot.tourner_droite(VITESSE)
+        elif centre["x"] >= MAX_X: 
             robot.diagonale_droite()
-            print("droite")
         else:
-            robot.avancer(0.5)
-            print("avancer")
+            robot.avancer(VITESSE)
+            
     # 6. dessiner le rectangle autour du blob
     camera.dessiner_rectangle_sur_image(img_bgr, contour_balle)
 

@@ -10,7 +10,7 @@ import cv2  # type: ignore
 from dictKeyValue import MapTouches
 
 # initialisation du robot
-robot = Robot(True, True)
+robot = Robot()
 
 # initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)

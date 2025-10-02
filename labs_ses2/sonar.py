@@ -43,7 +43,7 @@ class Sonar:
         self.__continuer_trigger = False
 
     def when_activated(self):
-        self.__pc_start = perf_counter()
+        self.__pc_start = perf_counter() - self.__echo.active_time
 
     def __calculer_moyenne_mobile(
         self, nouv_valeur
@@ -73,7 +73,7 @@ class Sonar:
         return moyenne_mobile
 
     def when_deactivated(self):  # quand le echo a finit
-        pc_stop = perf_counter()
+        pc_stop = perf_counter() - self.__echo.inactive_time
         t = pc_stop - self.__pc_start  # calcul du temps écoulé
         distance_actuelle = t * self.VT_SON / 2  # calcul de la distance
         self.__distance = self.__calculer_moyenne_mobile(
