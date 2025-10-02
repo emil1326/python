@@ -10,9 +10,10 @@ class Moteur:
         # init moteur gauche
         in_a = gp.DigitalOutputDevice(port_DOD_A)
         in_b = gp.DigitalOutputDevice(port_DOD_B)
-        pwm = gp.PWMOutputDevice(port_PWM)
+        pwm = gp.PWMOutputDevice(port_PWM)        
         self.moteur = (in_a, in_b, pwm)
         self.mulSpeed = 1
+        self.arreter()
 
     def avancer(self, vitesse):
         self.moteur[self.PWM].value = vitesse * self.mulSpeed
