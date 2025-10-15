@@ -1,5 +1,5 @@
+#gabriel pereira levesque
 import gpiozero as gp  # type: ignore
-
 
 class Moteur:
     IN_A = 0
