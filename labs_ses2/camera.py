@@ -15,16 +15,14 @@ class Camera:
     MAX_SAT = 237
     MIN_VAL = 141
     MAX_VAL = 241
-    CORRELATION_MIN = 0.6
+    CORRELATION_MIN = 0.65
     ROI = 50
     
-    def __init__(self):    
-        LARGEUR = 320
-        HAUTEUR = 240
-        self.__cam
+    def __init__(self): 
+        self.__cam = None
         self.__derniere_position_objet = None
         
-        if platform.system() == "Linux": 
+        """ if platform.system() == "Linux": 
             from picamera2 import Picamera2 # type: ignore   
             self.__cam = Picamera2()
             config = self.__cam.create_video_configuration(
@@ -32,49 +30,90 @@ class Camera:
             )
             self.__cam.configure(config)
             self.__cam.start()        
-        elif platform.system() == "Windows":
-            self.__cam = cv2.VideoCapture(0)  
-            self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, LARGEUR)
-            self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, HAUTEUR)
-            self.__cam.read()
-            
-    def creation_du_model(self, touche_arret):
+        elif platform.system() == "Windows": """
+        self.__cam = cv2.VideoCapture(1)  
+        self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
+        self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
+        self.__cam.read()
+    
+    #prend une touche d'arrêt pour stopper la boucle et le nom dans lequel le modèle doit être sauvegardé       
+    def creation_du_model(self, touche_arret, nom_fichier):
         touche_presse = ''
         while touche_arret != touche_presse:
             img_bgr = self.capturer_image_bgr()
             img_gray = self.convertir_image_bgr2gray(img_bgr)
             
-            touche_presse = chr(cv2.waitKey(30))
+            cv2.imshow("Creation du model", img_gray)
+            
+            touche = cv2.waitKey(30)
+            
+            if touche == -1 or touche > 255:
+                continue
+            
+            touche_presse = chr(touche) #image capturé
         
-        cv2.imwrite("img_model_gab_cell.bmp", img_gray)
+        cv2.destroyAllWindows()
+        cv2.imwrite(nom_fichier, img_gray)
     
     #prend un masque du model et retourne l'image en couleur avec des rectangles dessines si un model est trouve
-    def rechercher_model(self, model):
-        img_bgr = self.capturer_image_bgr()
-        img_gray = self.convertir_image_bgr2gray(img_bgr)
-        img_cible = img_gray
+    def rechercher_model(self, nom_model):
+        model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)        
         
-        if self.__derniere_position_objet != None:
-            ymin = self.__derniere_position_objet["y"] - self.ROI
-            ymax = self.__derniere_position_objet["y"] + model.shape[1] + self.ROI
-            xmin = self.__derniere_position_objet["x"] - self.ROI
-            xmax = self.__derniere_position_objet["x"] + model.shape[0] + self.ROI
-            img_cible = img_gray[ymin:ymax, xmin:xmax]
+        ymin = 0
+        ymax = self.HAUTEUR
+        xmin = 0
+        xmax = self.LARGEUR
         
-        res_match = cv2.matchTemplate(img_cible, model, cv2.TM_CCORR_NORMED)
-        _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
+        touche_presse = ''
         
-        if self.CORRELATION_MIN < res_match:
-            x = max_loc[0]
-            y = max_loc[1]
-            self.__derniere_position_objet = {"y":y, "x":x}
-            #dessiner le rectangle autour de l'objet détecté 
-            cv2.rectangle(img_bgr, (x, y), (x + model.shape[0], y + model.shape[1]), (0,0,255), 2)
+        while touche_presse != 'x':
+            img_bgr = self.capturer_image_bgr()
+            img_gray = self.convertir_image_bgr2gray(img_bgr)
+            img_cible = img_gray
+            
+            if self.__derniere_position_objet is not None:
+                ymin = self.__derniere_position_objet["y"] - self.ROI
+                ymax = self.__derniere_position_objet["y"] + model.shape[0] + self.ROI  # hauteur
+                xmin = self.__derniere_position_objet["x"] - self.ROI
+                xmax = self.__derniere_position_objet["x"] + model.shape[1] + self.ROI  # largeur
+
+                # bornes dans les dimensions valides
+                h, w = img_gray.shape
+                ymin = max(0, ymin)
+                xmin = max(0, xmin)
+                ymax = min(h, ymax)
+                xmax = min(w, xmax)
+
+                img_cible = img_gray[ymin:ymax, xmin:xmax]
+            
+            res_match = cv2.matchTemplate(img_cible, model, cv2.TM_CCOEFF_NORMED)
+            _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
+            
+            print(f"max_val={max_val:.3f} à {max_loc}, "
+                f"img_cible={img_cible.shape}, "
+                f"model={model.shape}")
+                        
+            if self.CORRELATION_MIN < max_val:
+                x = max_loc[0] + xmin
+                y = max_loc[1] + ymin
+                self.__derniere_position_objet = {"y":y, "x":x}
+                #dessiner le rectangle autour de l'objet détecté 
+                cv2.rectangle(img_bgr, (x, y), (x + model.shape[1], y + model.shape[0]), (0,0,255), 2)
+                
+
             #dessiner le rectangle du ROI
-            cv2.rectangle(img_bgr, (img_cible[1], img_cible[0]), (img_cible.shape[0], img_cible.shape[1]), (255, 0, 0), 2)
-            return img_bgr
-        else:
-            return False
+            cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
+            cv2.imshow('Lab 4 | Recherche du model', img_bgr)
+            
+            key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
+            
+            # gestion d'erreur
+            if key == -1 or key > 255:
+                continue
+
+            touche_presse = chr(key)
+        print('arrêt de la recherche')
+
         
             
     def convertir_image_bgr2gray(self, image_bgr):
@@ -136,8 +175,8 @@ class Camera:
 
     #capture et retourne une image (tableau) en source bgr
     def capturer_image_bgr(self):
-        if platform.system() == "Linux":
+        """ if platform.system() == "Linux":
             return self.__cam.capture_array()
-        elif platform.system() == "Windows":
-            ret, image = self.__cam.read()
-            return image
+        elif platform.system() == "Windows": """
+        ret, image = self.__cam.read()
+        return image
