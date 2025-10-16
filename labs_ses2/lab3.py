@@ -6,7 +6,7 @@ from encodeurDeRotation import encodeurDeRotation
 
 # harware
 
-rot = encodeurDeRotation(False, True)
+rot = encodeurDeRotation(None, 27)
 voiture = Robot()
 
 # harware functions
