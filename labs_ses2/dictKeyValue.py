@@ -1,6 +1,7 @@
 class MapTouches:
-    def __init__(self, robot) -> None:
-        self.voiture = robot
+    def __init__(self, robot=None) -> None:
+        if(robot):
+            self.voiture = robot
 
     def diagoGauche(self):
         self.voiture.diagonale_gauche()
@@ -30,7 +31,8 @@ class MapTouches:
         self.voiture.modifier_vitesse(-0.1)
 
     def shutdown(self):
-        self.voiture.shutdown()
+        if(self.voiture is not None):
+            self.voiture.shutdown()
 
     def map(self, t):
         match (t):
