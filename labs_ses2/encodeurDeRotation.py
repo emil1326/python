@@ -25,7 +25,7 @@ class encodeurDeRotation:
         self.tailleRoue = 0.5
         # basically will average out if we have both sensors
         if capteur_droit is not None and capteur_gauche is not None:
-            self.tailleRoue = 0.25
+            self.tailleRoue = self.tailleRoue / 2
 
         self.LengthLeft = 0  # when 0 on fait le callback
         self.TotalLength = 0  # juste une statistique
