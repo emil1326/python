@@ -16,7 +16,7 @@ class Camera:
     MAX_SAT = 237
     MIN_VAL = 141
     MAX_VAL = 241
-    CORRELATION_MIN = 0.45
+    CORRELATION_MIN = 0.3
     
     ROI = 50
 
@@ -24,7 +24,7 @@ class Camera:
         self.__cam = None
         self.__derniere_position_objet = None
 
-        """ if platform.system() == "Linux": 
+        """ if platform.system() == "Linux": img_model_gab_bateau.bmp
             from picamera2 import Picamera2 # type: ignore   
             self.__cam = Picamera2()
             config = self.__cam.create_video_configuration(
@@ -33,7 +33,7 @@ class Camera:
             self.__cam.configure(config)
             self.__cam.start()        
         elif platform.system() == "Windows": """
-        self.__cam = cv2.VideoCapture(1)
+        self.__cam = cv2.VideoCapture(0)
         self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
         self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
         self.__cam.read()
@@ -70,10 +70,7 @@ class Camera:
         model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)        
         masque = cv2.imread(nom_masque, cv2.IMREAD_GRAYSCALE)
         
-        ymin = 0
-        ymax = self.HAUTEUR
-        xmin = 0
-        xmax = self.LARGEUR
+        
 
         touche_presse = ""
 
@@ -81,6 +78,10 @@ class Camera:
             img_bgr = self.capturer_image_bgr()
             img_gray = self.convertir_image_bgr2gray(img_bgr)
             img_cible = img_gray
+            ymin = 0
+            ymax = self.HAUTEUR
+            xmin = 0
+            xmax = self.LARGEUR
 
             if self.__derniere_position_objet is not None:
                 ymin = self.__derniere_position_objet["y"] - self.ROI
@@ -126,6 +127,7 @@ class Camera:
                 continue
 
             touche_presse = chr(key)
+
         print("arrêt de la recherche")
 
     def convertir_image_bgr2gray(self, image_bgr):

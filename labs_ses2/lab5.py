@@ -1,5 +1,5 @@
-# Gabriel Pereira Levesque & Émilien
-# Laboratoire V | ??DATE??
+# Gabriel Pereira Levesque
+# Laboratoire V | 27 octobre 2025
 #from robot import Robot
 from camera import Camera
 import numpy as np  # type: ignore
@@ -25,6 +25,7 @@ if(choix == 'c'):
 else:
     nom_model = input("tappez le nom du fichier dans lequel se trouve le modèle a détecter: ")
     nom_masque = nom_model.replace("model", "masque")
+    print("nom masque: ", nom_masque)
     camera.rechercher_model(nom_model, nom_masque)
 
 cv2.destroyAllWindows()
