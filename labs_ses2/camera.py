@@ -1,7 +1,8 @@
 # gabriel pereira levesque
 import platform
-import cv2 # type: ignore
-import numpy as np # type: ignore
+import cv2  # type: ignore
+import numpy as np  # type: ignore
+
 
 class Camera:
     # constantes
@@ -18,11 +19,11 @@ class Camera:
     CORRELATION_MIN = 0.45
     
     ROI = 50
-    
-    def __init__(self): 
+
+    def __init__(self):
         self.__cam = None
         self.__derniere_position_objet = None
-        
+
         """ if platform.system() == "Linux": 
             from picamera2 import Picamera2 # type: ignore   
             self.__cam = Picamera2()
@@ -32,27 +33,35 @@ class Camera:
             self.__cam.configure(config)
             self.__cam.start()        
         elif platform.system() == "Windows": """
-        self.__cam = cv2.VideoCapture(1)  
+        self.__cam = cv2.VideoCapture(1)
         self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
         self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
         self.__cam.read()
-    
-    #prend une touche d'arrêt pour stopper la boucle et le nom dans lequel le modèle doit être sauvegardé       
+
+    # nous laisse resetter la camera setting quand on veut pas ceux de base -> unused pcq literals
+    def resetCamera(self):
+        self.__cam = cv2.VideoCapture(1)
+        self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
+        self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
+        self.__cam.read()
+
+    # prend une touche d'arrêt pour stopper la boucle et le nom dans lequel le modèle doit être sauvegardé
     def creation_du_model(self, touche_arret, nom_fichier):
-        touche_presse = ''
+        touche_presse = ""
+        img_gray = None
         while touche_arret != touche_presse:
             img_bgr = self.capturer_image_bgr()
             img_gray = self.convertir_image_bgr2gray(img_bgr)
-            
+
             cv2.imshow("Creation du model", img_gray)
-            
+
             touche = cv2.waitKey(30)
-            
+
             if touche == -1 or touche > 255:
                 continue
-            
-            touche_presse = chr(touche) #image capturé
-        
+
+            touche_presse = chr(touche)  # image capturé
+
         cv2.destroyAllWindows()
         cv2.imwrite(nom_fichier, img_gray)
     
@@ -65,17 +74,19 @@ class Camera:
         ymax = self.HAUTEUR
         xmin = 0
         xmax = self.LARGEUR
-        
-        touche_presse = ''
-        
-        while touche_presse != 'x':
+
+        touche_presse = ""
+
+        while touche_presse != "x":
             img_bgr = self.capturer_image_bgr()
             img_gray = self.convertir_image_bgr2gray(img_bgr)
             img_cible = img_gray
-            
+
             if self.__derniere_position_objet is not None:
                 ymin = self.__derniere_position_objet["y"] - self.ROI
-                ymax = self.__derniere_position_objet["y"] + model.shape[0] + self.ROI  # hauteur
+                ymax = (
+                    self.__derniere_position_objet["y"] + model.shape[0] + self.ROI
+                )  # hauteur
                 xmin = self.__derniere_position_objet["x"] - self.ROI
                 xmax = self.__derniere_position_objet["x"] + model.shape[1] + self.ROI  # largeur
                 cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
@@ -109,37 +120,38 @@ class Camera:
             cv2.imshow('Lab 4 | Recherche du model', img_bgr)
             
             key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
-            
+
             # gestion d'erreur
             if key == -1 or key > 255:
                 continue
 
             touche_presse = chr(key)
-        print('arrêt de la recherche')
+        print("arrêt de la recherche")
 
-        
-            
     def convertir_image_bgr2gray(self, image_bgr):
         return cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
-    #dessine un rectangle sur l'image passée autour d'un contour passé en paramètre 
-    def dessiner_rectangle_sur_image(self, image, contour, couleur=(0,0,255), epaisseur=2):
-        #si aucun contour a dessiner on quitte la fonction
+
+    # dessine un rectangle sur l'image passée autour d'un contour passé en paramètre
+    def dessiner_rectangle_sur_image(
+        self, image, contour, couleur=(0, 0, 255), epaisseur=2
+    ):
+        # si aucun contour a dessiner on quitte la fonction
         if contour is None or len(contour) == 0:
             return
         x, y, l, h = cv2.boundingRect(contour)
-        cv2.rectangle(image, (x,y), (x+l, y + h), couleur, epaisseur)
-    
-    #Retourne aire, centre (x, y) d'un contour
+        cv2.rectangle(image, (x, y), (x + l, y + h), couleur, epaisseur)
+
+    # Retourne aire, centre (x, y) d'un contour
     def get_dimensions_contour(self, contour):
         x, y, l, h = cv2.boundingRect(contour)
         aire = l * h
         centre = {"x": x + (l // 2), "y": y + (h // 2)}
-        
+
         return aire, centre
-    
-    #prend une image binarisée et retourne le plus gros blob
+
+    # prend une image binarisée et retourne le plus gros blob
     def get_plus_gros_contour(self, image_bin):
-        #définition des maximums
+        # définition des maximums
         plus_gros_contour = None
         max_aire = 0
 
@@ -147,16 +159,16 @@ class Camera:
             image_bin, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE
         )
 
-        #pour chaque contour
+        # pour chaque contour
         for c in contours:
-            #prendre les dimensions
+            # prendre les dimensions
             x, y, l, h = cv2.boundingRect(c)
-            #calculer l'aire
+            # calculer l'aire
             aire = l * h
-            #si l'aire est le plus grand
+            # si l'aire est le plus grand
             if aire > max_aire:
                 max_aire = aire
-                #c'est alors aussi le plus gros contour
+                # c'est alors aussi le plus gros contour
                 plus_gros_contour = c
 
         return plus_gros_contour
@@ -176,10 +188,10 @@ class Camera:
         image_hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
         return image_hsv
 
-    #capture et retourne une image (tableau) en source bgr
+    # capture et retourne une image (tableau) en source bgr
     def capturer_image_bgr(self):
-        """ if platform.system() == "Linux":
+        """if platform.system() == "Linux":
             return self.__cam.capture_array()
-        elif platform.system() == "Windows": """
-        ret, image = self.__cam.read()
+        elif platform.system() == "Windows":"""
+        ret, image = self.__cam.read()  # type: ignore
         return image
