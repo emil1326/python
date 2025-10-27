@@ -24,6 +24,7 @@ if(choix == 'c'):
     camera.creation_du_model('c', fichier)
 else:
     nom_model = input("tappez le nom du fichier dans lequel se trouve le modèle a détecter: ")
-    camera.rechercher_model(nom_model)
+    nom_masque = nom_model.replace("model", "masque")
+    camera.rechercher_model(nom_model, nom_masque)
 
 cv2.destroyAllWindows()

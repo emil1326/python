@@ -15,7 +15,8 @@ class Camera:
     MAX_SAT = 237
     MIN_VAL = 141
     MAX_VAL = 241
-    CORRELATION_MIN = 0.65
+    CORRELATION_MIN = 0.45
+    
     ROI = 50
     
     def __init__(self): 
@@ -56,8 +57,9 @@ class Camera:
         cv2.imwrite(nom_fichier, img_gray)
     
     #prend un masque du model et retourne l'image en couleur avec des rectangles dessines si un model est trouve
-    def rechercher_model(self, nom_model):
+    def rechercher_model(self, nom_model, nom_masque):
         model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)        
+        masque = cv2.imread(nom_masque, cv2.IMREAD_GRAYSCALE)
         
         ymin = 0
         ymax = self.HAUTEUR
@@ -76,7 +78,8 @@ class Camera:
                 ymax = self.__derniere_position_objet["y"] + model.shape[0] + self.ROI  # hauteur
                 xmin = self.__derniere_position_objet["x"] - self.ROI
                 xmax = self.__derniere_position_objet["x"] + model.shape[1] + self.ROI  # largeur
-
+                cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
+                
                 # bornes dans les dimensions valides
                 h, w = img_gray.shape
                 ymin = max(0, ymin)
@@ -86,12 +89,10 @@ class Camera:
 
                 img_cible = img_gray[ymin:ymax, xmin:xmax]
             
-            res_match = cv2.matchTemplate(img_cible, model, cv2.TM_CCOEFF_NORMED)
+            res_match = cv2.matchTemplate(img_cible, model, cv2.TM_CCOEFF_NORMED, None, masque)
             _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
             
-            print(f"max_val={max_val:.3f} à {max_loc}, "
-                f"img_cible={img_cible.shape}, "
-                f"model={model.shape}")
+            print(f"max_val = {max_val:.3f} à {max_loc}")
                         
             if self.CORRELATION_MIN < max_val:
                 x = max_loc[0] + xmin
@@ -99,10 +100,12 @@ class Camera:
                 self.__derniere_position_objet = {"y":y, "x":x}
                 #dessiner le rectangle autour de l'objet détecté 
                 cv2.rectangle(img_bgr, (x, y), (x + model.shape[1], y + model.shape[0]), (0,0,255), 2)
+            else:
+                self.__derniere_position_objet = None
                 
 
             #dessiner le rectangle du ROI
-            cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
+            
             cv2.imshow('Lab 4 | Recherche du model', img_bgr)
             
             key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
