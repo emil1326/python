@@ -29,7 +29,7 @@ class Orientation:
         self.imu = ICM20948()
 
         # calibration / bias
-        self.calibrating = False
+        self.calibrating = threading.Event()
         self.calibrationDone = False
         self.mx_offset = 0.0
         self.my_offset = 0.0
@@ -39,12 +39,12 @@ class Orientation:
         # stored in same units as gx (deg/s if gyro_in_deg_per_s True)
         self.gx_bias = 0.0
         # orientation states
-        self.estImmobile = True
+        self.estImmobile = threading.Event()
         self.yaw = 0.0  # relative integrated yaw (radians)
         self.mag_heading = 0.0  # heading from magnetometer (radians)
 
         # thread control
-        self._stop = False
+        self._stop = threading.Event()
         self._last_time = None
         self._thread = threading.Thread(target=self._main_loop, daemon=True)
 
@@ -68,7 +68,7 @@ class Orientation:
         return Orientation.orientationData()
 
     def _calibrate_magnetometer(self, seconds=5):
-        self.calibrating = True
+        self.calibrating.set()
         t_end = time.perf_counter() + seconds
         min_mx = min_my = min_mz = float("inf")
         max_mx = max_my = max_mz = float("-inf")
@@ -89,13 +89,15 @@ class Orientation:
         self.mx_offset = (min_mx + max_mx) / 2.0 if max_mx > min_mx else 0.0
         self.my_offset = (min_my + max_my) / 2.0 if max_my > min_my else 0.0
         self.mz_offset = (min_mz + max_mz) / 2.0 if max_mz > min_mz else 0.0
-        self.calibrating = False
+        self.calibrating.clear()
         self.calibrationDone = True
 
     def set_immobile(self, immobile: bool):
-        self.estImmobile = immobile
         if immobile:
+            self.estImmobile.set()
             self.gx_window.clear()
+        else:
+            self.estImmobile.clear()
 
     def _compute_mag_heading(self, mx, my):
         mx_c = mx - self.mx_offset
@@ -103,7 +105,7 @@ class Orientation:
         return math.atan2(my_c, mx_c)
 
     def _main_loop(self):
-        while not self._stop:
+        while not self._stop.is_set():
             now = time.perf_counter()
             dt = (now - self._last_time) if self._last_time is not None else 0.0
             self._last_time = now
@@ -140,6 +142,6 @@ class Orientation:
             time.sleep(max(0.0, self.waitTime / 1000.0))
 
     def stop(self):
-        self._stop = True
+        self._stop.set()
         if self._thread is not None and self._thread.is_alive():
             self._thread.join(timeout=1.0)
