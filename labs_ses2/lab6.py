@@ -12,7 +12,7 @@ mayContinue = True  # bool, permet d'arrêter le programme proprement
 
 while mayContinue:  # tant qu'on peut continuer
     if orientation.calibrating:
-        print("Calibrating magnetometer... Please keep the robot still.")
+        print("Calibrage du magnetometre... Gardez le robot en place.")
         time.sleep(1)
         continue
 
@@ -22,4 +22,14 @@ while mayContinue:  # tant qu'on peut continuer
     raw = orientation._read_imu()
     print("Raw data:\n" + pformat(raw, indent=2))
 
-    time.sleep(0.1)
+    key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
+
+    # gestion d'erreur
+    if key == -1 or key > 255:
+        continue
+
+    t = chr(key)
+    # si on demande d'arrêter
+    if t == "x":
+        maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
+        print("arrêt")
