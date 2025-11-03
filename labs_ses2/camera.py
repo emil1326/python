@@ -38,6 +38,23 @@ class Camera:
         self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
         self.__cam.read()
 
+    def sauvegarder_image_ml(self, dossier_mere, image, touche, compteur_image):
+        
+        touche_obstacle = "o"
+        touche_voie_libre = "l"
+        
+        nom_image = f"image_{compteur_image}"
+
+        if touche == touche_voie_libre:
+            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
+            print("image enregistree dans voie_libre")
+            compteur_image += 1
+        elif touche == touche_obstacle:
+            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "obstacle", nom_image), image)
+            print("image enregistree dans obstacle")
+            compteur_image += 1
+        
+    
     # nous laisse resetter la camera setting quand on veut pas ceux de base -> unused pcq literals
     def resetCamera(self):
         self.__cam = cv2.VideoCapture(1)
@@ -69,8 +86,6 @@ class Camera:
     def rechercher_model(self, nom_model, nom_masque):
         model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)        
         masque = cv2.imread(nom_masque, cv2.IMREAD_GRAYSCALE)
-        
-        
 
         touche_presse = ""
 
@@ -192,8 +207,8 @@ class Camera:
 
     # capture et retourne une image (tableau) en source bgr
     def capturer_image_bgr(self):
-        """if platform.system() == "Linux":
+        if platform.system() == "Linux":
             return self.__cam.capture_array()
-        elif platform.system() == "Windows":"""
-        ret, image = self.__cam.read()  # type: ignore
-        return image
+        elif platform.system() == "Windows":
+            ret, image = self.__cam.read()  # type: ignore
+            return image
