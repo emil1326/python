@@ -56,13 +56,29 @@ class Orientation:
         self._thread.start()
 
     def _read_imu(self):
+        imuwork = False
+        magwork = False
+        ax = ay = az = gx = gy = gz = mx = my = mz = 0
         try:
             ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
-            mx, my, mz = self.imu.read_magnetometer_data()
-            return Orientation.orientationData(ax, ay, az, gx, gy, gz, mx, my, mz)
+            imuwork = True
         except Exception as e:
             print(e)
 
+        time.sleep(0.01)  # small delay to allow I2C bus to recover
+
+        try:
+            mx, my, mz = self.imu.read_magnetometer_data()
+            magwork = True
+        except Exception as e:
+            print(e)
+
+        if imuwork and magwork:
+            return Orientation.orientationData(ax, ay, az, gx, gy, gz, mx, my, mz)
+        elif imuwork:
+            return Orientation.orientationData(ax, ay, az, gx, gy, gz, 0, 0, 0)
+        elif magwork:
+            return Orientation.orientationData(0, 0, 0, 0, 0, 0, mx, my, mz)
         # fallback: zeros
         return Orientation.orientationData()
 
