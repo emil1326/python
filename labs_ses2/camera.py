@@ -1,5 +1,6 @@
 # gabriel pereira levesque
 import os
+import platform
 import cv2  # type: ignore
 import numpy as np  # type: ignore
 
