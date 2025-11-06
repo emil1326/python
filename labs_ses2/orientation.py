@@ -28,9 +28,30 @@ class Orientation:
                 f"mx={self.mx!r}, my={self.my!r}, mz={self.mz!r})"
             )
 
-    def __init__(self, mag_cal_seconds=5, gx_window_size=50):
-        print('init du icm')
-        self.imu = ICM20948()
+    def __init__(self, mag_cal_seconds=5, gx_window_size=50, init_retries=6, retry_delay=0.5):
+        self.imu = None
+        # retry loop: le capteur peut répondre de façon intermittente, faire plusieurs tentatives
+        for attempt in range(1, init_retries + 1):
+            try:
+                self.imu = ICM20948()
+                break
+            except OSError as e:
+                print(f"ICM20948 init attempt {attempt}/{init_retries} failed (OSError): {e}")
+            except Exception as e:
+                print(f"ICM20948 init attempt {attempt}/{init_retries} failed: {e}")
+            time.sleep(retry_delay)
+
+        if self.imu is None:
+            # échec d'init : lève une erreur claire avec conseils
+            raise RuntimeError(
+                "Impossible d'initialiser ICM20948 après plusieurs tentatives. "
+                "Vérifie : alimentation 3.3V, GND commun, SDA/SCL, bus i2c correct, "
+                "pas d'autres processus utilisant le bus. Lance `sudo i2cdetect -y <bus>` "
+                "et `dmesg | grep -i i2c`."
+            )
+
+        # small delay to let device settle before first reads
+        time.sleep(0.05)
 
         # calibration / bias
         """ self.calibrating = threading.Event()
