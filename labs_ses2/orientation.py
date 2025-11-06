@@ -29,6 +29,7 @@ class Orientation:
             )
 
     def __init__(self, mag_cal_seconds=5, gx_window_size=50, init_retries=6, retry_delay=0.5):
+        print("Initializing ICM20948 IMU...")
         self.imu = None
         # retry loop: le capteur peut répondre de façon intermittente, faire plusieurs tentatives
         for attempt in range(1, init_retries + 1):
