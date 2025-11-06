@@ -63,8 +63,8 @@ class MapTouches:
                 print("No value for", t)
 
 
-# ssh pi@192.168.137.229
+# ssh pi@192.168.137.183
 # cd Documents/pyfile/labs_ses2
 # cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
-# scp labs_ses2\*.py pi@192.168.137.229:~/Documents/pyfile/
+# scp labs_ses2\*.py pi@192.168.137.183:~/Documents/pyfile/
 # robot1234
