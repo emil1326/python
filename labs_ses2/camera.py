@@ -1,5 +1,5 @@
 # gabriel pereira levesque
-import platform
+import os
 import cv2  # type: ignore
 import numpy as np  # type: ignore
 
@@ -46,11 +46,11 @@ class Camera:
         nom_image = f"image_{compteur_image}"
 
         if touche == touche_voie_libre:
-            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
+            cv2.imwrite(os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
             print("image enregistree dans voie_libre")
             compteur_image += 1
         elif touche == touche_obstacle:
-            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "obstacle", nom_image), image)
+            cv2.imwrite(os.path.join(dossier_mere, "train", "obstacle", nom_image), image)
             print("image enregistree dans obstacle")
             compteur_image += 1
         
