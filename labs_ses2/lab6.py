@@ -4,7 +4,7 @@
 import time
 from orientation import Orientation
 from pprint import pformat
-import cv2
+import cv2  # type: ignore
 
 # initialisations
 orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
