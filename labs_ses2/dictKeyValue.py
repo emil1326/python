@@ -34,12 +34,14 @@ class MapTouches:
         if(self.voiture is not None):
             self.voiture.shutdown()
 
-    def map(self, t):
+    def map(self, t, voie_libre = True):
         match (t):
             case "q":
                 return self.diagoGauche()
             case "w":
-                return self.avancer()
+                if(voie_libre):
+                    return self.avancer()
+                break;
             case "e":
                 return self.diagoDroite()
             case "a":
