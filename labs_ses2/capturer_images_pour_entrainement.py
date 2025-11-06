@@ -1,7 +1,7 @@
 from camera import Camera
 from robot import Robot
 from dictKeyValue import MapTouches
-import cv2 
+import cv2 # type: ignore
 import time
 
 

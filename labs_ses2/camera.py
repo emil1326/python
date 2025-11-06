@@ -1,5 +1,6 @@
 # gabriel pereira levesque
 import platform
+import os
 import cv2  # type: ignore
 import numpy as np  # type: ignore
 
@@ -17,7 +18,7 @@ class Camera:
     MIN_VAL = 141
     MAX_VAL = 241
     CORRELATION_MIN = 0.3
-    
+
     ROI = 50
 
     def __init__(self):
@@ -25,13 +26,14 @@ class Camera:
         self.__derniere_position_objet = None
 
         if platform.system() == "Linux":
-            from picamera2 import Picamera2 # type: ignore   
+            from picamera2 import Picamera2  # type: ignore
+
             self.__cam = Picamera2()
             config = self.__cam.create_video_configuration(
                 main={"format": "RGB888", "size": (self.LARGEUR, self.HAUTEUR)}
             )
             self.__cam.configure(config)
-            self.__cam.start()        
+            self.__cam.start()
         elif platform.system() == "Windows":
             self.__cam = cv2.VideoCapture(0)
             self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
@@ -39,22 +41,26 @@ class Camera:
             self.__cam.read()
 
     def sauvegarder_image_ml(self, dossier_mere, image, touche, compteur_image):
-        
+
         touche_obstacle = "o"
         touche_voie_libre = "l"
-        
+
         nom_image = f"image_{compteur_image}"
 
         if touche == touche_voie_libre:
-            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
+            cv2.imwrite(
+                os.path.join(dossier_mere, "train", "voie_libre", nom_image), image
+            )
             print("image enregistree dans voie_libre")
             compteur_image += 1
         elif touche == touche_obstacle:
-            cv2.imwrite(platform.os.path.join(dossier_mere, "train", "obstacle", nom_image), image)
+            cv2.imwrite(
+                os.path.join(dossier_mere, "train", "obstacle", nom_image), image
+            )
             print("image enregistree dans obstacle")
             compteur_image += 1
-        
-    
+            compteur_image += 1
+
     # nous laisse resetter la camera setting quand on veut pas ceux de base -> unused pcq literals
     def resetCamera(self):
         self.__cam = cv2.VideoCapture(1)
@@ -81,10 +87,10 @@ class Camera:
 
         cv2.destroyAllWindows()
         cv2.imwrite(nom_fichier, img_gray)
-    
-    #prend un masque du model et retourne l'image en couleur avec des rectangles dessines si un model est trouve
+
+    # prend un masque du model et retourne l'image en couleur avec des rectangles dessines si un model est trouve
     def rechercher_model(self, nom_model, nom_masque):
-        model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)        
+        model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)
         masque = cv2.imread(nom_masque, cv2.IMREAD_GRAYSCALE)
 
         touche_presse = ""
@@ -104,9 +110,11 @@ class Camera:
                     self.__derniere_position_objet["y"] + model.shape[0] + self.ROI
                 )  # hauteur
                 xmin = self.__derniere_position_objet["x"] - self.ROI
-                xmax = self.__derniere_position_objet["x"] + model.shape[1] + self.ROI  # largeur
+                xmax = (
+                    self.__derniere_position_objet["x"] + model.shape[1] + self.ROI
+                )  # largeur
                 cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
-                
+
                 # bornes dans les dimensions valides
                 h, w = img_gray.shape
                 ymin = max(0, ymin)
@@ -115,26 +123,33 @@ class Camera:
                 xmax = min(w, xmax)
 
                 img_cible = img_gray[ymin:ymax, xmin:xmax]
-            
-            res_match = cv2.matchTemplate(img_cible, model, cv2.TM_CCOEFF_NORMED, None, masque)
+
+            res_match = cv2.matchTemplate(
+                img_cible, model, cv2.TM_CCOEFF_NORMED, None, masque
+            )
             _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
-            
+
             print(f"max_val = {max_val:.3f} à {max_loc}")
-                        
+
             if self.CORRELATION_MIN < max_val:
                 x = max_loc[0] + xmin
                 y = max_loc[1] + ymin
-                self.__derniere_position_objet = {"y":y, "x":x}
-                #dessiner le rectangle autour de l'objet détecté 
-                cv2.rectangle(img_bgr, (x, y), (x + model.shape[1], y + model.shape[0]), (0,0,255), 2)
+                self.__derniere_position_objet = {"y": y, "x": x}
+                # dessiner le rectangle autour de l'objet détecté
+                cv2.rectangle(
+                    img_bgr,
+                    (x, y),
+                    (x + model.shape[1], y + model.shape[0]),
+                    (0, 0, 255),
+                    2,
+                )
             else:
                 self.__derniere_position_objet = None
-                
 
-            #dessiner le rectangle du ROI
-            
-            cv2.imshow('Lab 4 | Recherche du model', img_bgr)
-            
+            # dessiner le rectangle du ROI
+
+            cv2.imshow("Lab 4 | Recherche du model", img_bgr)
+
             key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
 
             # gestion d'erreur
@@ -208,7 +223,7 @@ class Camera:
     # capture et retourne une image (tableau) en source bgr
     def capturer_image_bgr(self):
         if platform.system() == "Linux":
-            return self.__cam.capture_array()
+            return self.__cam.capture_array()  # type: ignore
         elif platform.system() == "Windows":
             ret, image = self.__cam.read()  # type: ignore
             return image
