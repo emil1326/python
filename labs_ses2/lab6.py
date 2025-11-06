@@ -4,6 +4,7 @@
 import time
 from orientation import Orientation
 from pprint import pformat
+import cv2
 
 # initialisations
 orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
@@ -11,7 +12,7 @@ orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
 mayContinue = True  # bool, permet d'arrêter le programme proprement
 
 while mayContinue:  # tant qu'on peut continuer
-    if orientation.calibrating:
+    if orientation.calibrating.is_set():
         print("Calibrage du magnetometre... Gardez le robot en place.")
         time.sleep(1)
         continue

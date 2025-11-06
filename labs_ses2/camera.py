@@ -24,19 +24,19 @@ class Camera:
         self.__cam = None
         self.__derniere_position_objet = None
 
-        """ if platform.system() == "Linux": img_model_gab_bateau.bmp
+        if platform.system() == "Linux":
             from picamera2 import Picamera2 # type: ignore   
             self.__cam = Picamera2()
             config = self.__cam.create_video_configuration(
-                main={"format": "RGB888", "size": (LARGEUR, HAUTEUR)}
+                main={"format": "RGB888", "size": (self.LARGEUR, self.HAUTEUR)}
             )
             self.__cam.configure(config)
             self.__cam.start()        
-        elif platform.system() == "Windows": """
-        self.__cam = cv2.VideoCapture(0)
-        self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
-        self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
-        self.__cam.read()
+        elif platform.system() == "Windows":
+            self.__cam = cv2.VideoCapture(0)
+            self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
+            self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
+            self.__cam.read()
 
     def sauvegarder_image_ml(self, dossier_mere, image, touche, compteur_image):
         
