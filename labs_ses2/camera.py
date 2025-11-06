@@ -45,7 +45,7 @@ class Camera:
         touche_obstacle = "o"
         touche_voie_libre = "l"
 
-        nom_image = f"image_{compteur_image}"
+        nom_image = f"image_{compteur_image}.bmp"
 
         if touche == touche_voie_libre:
             cv2.imwrite(os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
