@@ -28,7 +28,9 @@ class Orientation:
                 f"mx={self.mx!r}, my={self.my!r}, mz={self.mz!r})"
             )
 
-    def __init__(self, mag_cal_seconds=5, gx_window_size=50, init_retries=6, retry_delay=0.5):
+    def __init__(
+        self, mag_cal_seconds=5, gx_window_size=50, init_retries=6, retry_delay=0.5
+    ):
         print("Initializing ICM20948 IMU...")
         self.imu = None
         # retry loop: le capteur peut répondre de façon intermittente, faire plusieurs tentatives
@@ -37,7 +39,9 @@ class Orientation:
                 self.imu = ICM20948()
                 break
             except OSError as e:
-                print(f"ICM20948 init attempt {attempt}/{init_retries} failed (OSError): {e}")
+                print(
+                    f"ICM20948 init attempt {attempt}/{init_retries} failed (OSError): {e}"
+                )
             except Exception as e:
                 print(f"ICM20948 init attempt {attempt}/{init_retries} failed: {e}")
             time.sleep(retry_delay)
@@ -55,7 +59,7 @@ class Orientation:
         time.sleep(0.05)
 
         # calibration / bias
-        """ self.calibrating = threading.Event()
+        self.calibrating = threading.Event()
         self.calibrationDone = False
         self.mx_offset = 0.0
         self.my_offset = 0.0
@@ -76,9 +80,12 @@ class Orientation:
 
         # calibrate magnetometer at startup
         self._calibrate_magnetometer(seconds=mag_cal_seconds)
-        self._thread.start() """
+        self._thread.start()
 
     def _read_imu(self):
+        if self.imu is None:
+            return Orientation.orientationData()
+
         imuwork = False
         magwork = False
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
