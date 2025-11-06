@@ -55,7 +55,7 @@ class Orientation:
         time.sleep(0.05)
 
         # calibration / bias
-        """ self.calibrating = threading.Event()
+        self.calibrating = threading.Event()
         self.calibrationDone = False
         self.mx_offset = 0.0
         self.my_offset = 0.0
@@ -76,7 +76,7 @@ class Orientation:
 
         # calibrate magnetometer at startup
         self._calibrate_magnetometer(seconds=mag_cal_seconds)
-        self._thread.start() """
+        self._thread.start()
 
     def _read_imu(self):
         imuwork = False
