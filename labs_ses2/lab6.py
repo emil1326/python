@@ -21,7 +21,7 @@ while mayContinue:  # tant qu'on peut continuer
         f"Yaw: {orientation.yaw:.2f} rad, Mag Heading: {orientation.mag_heading:.2f} rad"
     )
     raw = orientation._read_imu()
-    print("Raw data:\n" + pformat(raw, indent=2))
+    print("Raw data:\n" + pformat(vars(raw), indent=2))
 
     key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
 

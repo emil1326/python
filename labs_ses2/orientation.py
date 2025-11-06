@@ -21,11 +21,14 @@ class Orientation:
             self.my = my
             self.mz = mz
 
+        def __repr__(self):
+            return (
+                f"orientationData(ax={self.ax!r}, ay={self.ay!r}, az={self.az!r}, "
+                f"gx={self.gx!r}, gy={self.gy!r}, gz={self.gz!r}, "
+                f"mx={self.mx!r}, my={self.my!r}, mz={self.mz!r})"
+            )
+
     def __init__(self, mag_cal_seconds=5, gx_window_size=50):
-        """
-        mag_cal_seconds: durée calibration magnétomètre au démarrage
-        gx_window_size: taille fenêtre pour moyenne du biais gx quand immobile
-        """
         self.imu = ICM20948()
 
         # calibration / bias
@@ -53,17 +56,13 @@ class Orientation:
         self._thread.start()
 
     def _read_imu(self):
-        """
-        Retourne orientationData avec (ax,ay,az,gx,gy,gz,mx,my,mz).
-        S'appuie sur ICM20948 API fournie dans le prompt si disponible.
-        """
-
         try:
             ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
             mx, my, mz = self.imu.read_magnetometer_data()
             return Orientation.orientationData(ax, ay, az, gx, gy, gz, mx, my, mz)
-        except Exception:
-            pass
+        except Exception as e:
+            print(e)
+
         # fallback: zeros
         return Orientation.orientationData()
 
@@ -115,8 +114,8 @@ class Orientation:
             # Always compute magnetometer heading (radians)
             try:
                 self.mag_heading = self._compute_mag_heading(d.mx, d.my)
-            except Exception:
-                pass
+            except Exception as e:
+                print(e)
 
             if self.estImmobile:
                 # windowed average to compute gx bias
@@ -124,8 +123,8 @@ class Orientation:
                     self.gx_window.append(d.gx)
                     if len(self.gx_window) > 0:
                         self.gx_bias = sum(self.gx_window) / len(self.gx_window)
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(e)
             else:
                 # integrate gx (corrected by bias) to update relative orientation (yaw)
                 try:
@@ -136,8 +135,8 @@ class Orientation:
                     # integrate: yaw in radians
                     if dt > 0:
                         self.yaw += gx_corrected_rad * dt
-                except Exception:
-                    pass
+                except Exception as e:
+                    print(e)
 
             time.sleep(max(0.0, self.waitTime / 1000.0))
 
