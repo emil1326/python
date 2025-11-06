@@ -1,5 +1,5 @@
 from camera import Camera
-from robot import Robot
+from gab_robot import Robot
 from dictKeyValue import MapTouches
 import cv2 # type: ignore
 import time
@@ -8,7 +8,6 @@ import time
 # initialisation du robot
 robot = Robot()
 camera = Camera()
-
 
 # initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)

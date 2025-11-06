@@ -29,11 +29,11 @@ class Robot:
         self.__moteur_d.reculer(1)
         self.__moteur_g.reculer(1)
 
-    def tourner_gauche(self, vitesse):
+    def tourner_gauche(self, vitesse=1.0):
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.reculer(vitesse)
 
-    def tourner_droite(self, vitesse):
+    def tourner_droite(self, vitesse=1.0):
         self.__moteur_d.reculer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
