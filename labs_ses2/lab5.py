@@ -2,20 +2,10 @@
 # Laboratoire V | 27 octobre 2025
 #from robot import Robot
 from camera import Camera
-import numpy as np  # type: ignore
 import cv2  # type: ignore
-import threading
-import time
-from dictKeyValue import MapTouches
 
 # initialisations
-#robot = Robot()
 camera = Camera()
-
-# initialisation du mapper qui associe les touches à des actions
-mapper = MapTouches()
-
-maycontinue = True  # bool, permet d'arrêter le programme proprement
 
 choix = input('Voulez-vous créer un modèle (c) ou en détecter un (enter)? ')
 

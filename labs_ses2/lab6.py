@@ -1,5 +1,5 @@
 # Gabriel Pereira Levesque & Émilien Devauchelle
-# Laboratoire V | 27 octobre 2025
+# Laboratoire VI | 27 octobre 2025
 
 import time
 from orientation import Orientation
@@ -22,4 +22,14 @@ while mayContinue:  # tant qu'on peut continuer
     raw = orientation._read_imu()
     print("Raw data:\n" + pformat(vars(raw), indent=2))
 
-    time.sleep(0.1)
+    key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
+
+    # gestion d'erreur
+    if key == -1 or key > 255:
+        continue
+
+    t = chr(key)
+    # si on demande d'arrêter
+    if t == "x":
+        maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
+        print("arrêt")
