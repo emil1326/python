@@ -13,7 +13,7 @@ mayContinue = True  # bool, permet d'arrêter le programme proprement
 
 while mayContinue:  # tant qu'on peut continuer
     if orientation.calibrating.is_set():
-        print("Calibrating magnetometer... Please keep the robot still.")
+        print("Calibrage du magnetometre... Gardez le robot en place.")
         time.sleep(1)
         continue
 
