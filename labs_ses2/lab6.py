@@ -3,6 +3,7 @@
 
 import time
 from orientation import Orientation
+from dictKeyValue import MapTouches
 from pprint import pformat
 import cv2  # type: ignore
 
@@ -10,6 +11,7 @@ print("PreProg lab6")
 
 # initialisations
 orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
+mapper = MapTouches()
 
 mayContinue = True  # bool, permet d'arrêter le programme proprement
 
@@ -36,3 +38,5 @@ while mayContinue:  # tant qu'on peut continuer
     if t == "x":
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
+    
+    mapper.map(t)
