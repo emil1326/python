@@ -22,10 +22,8 @@ while mayContinue:  # tant qu'on peut continuer
         continue
 
     print(
-        f"Yaw: {orientation.yaw:.2f} rad, Mag Heading: {orientation.mag_heading:.2f} rad"
+        f"orientations: autour de l'axe des x: {orientation.yaw:.2f} rad | orientation magnetometre: {orientation.mag_heading:.2f} rad"
     )
-    raw = orientation._read_imu()
-    print("Raw data:\n" + pformat(vars(raw), indent=2))
 
     key = cv2.waitKeyEx(30)  # type: ignore # attendre 30ms pour l'appui d'une touche
 

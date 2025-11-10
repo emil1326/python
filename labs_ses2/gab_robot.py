@@ -24,37 +24,38 @@ class Robot:
 
     # voiture
     def avancer(self, vitesse=1.0):
-        self.orientation.set_immobile(False)
+        self.orientation.set_avance(True)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def reculer(self):
-        self.orientation.set_immobile(False)
+        self.orientation.set_avance(True)
         self.__moteur_d.reculer(1)
         self.__moteur_g.reculer(1)
 
     def tourner_gauche(self, vitesse=1.0):
-        self.orientation.set_immobile(False)
+        self.orientation.set_tourne(True)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.reculer(vitesse)
 
     def tourner_droite(self, vitesse=1.0):
-        self.orientation.set_immobile(False)
+        self.orientation.set_tourne(True)
         self.__moteur_d.reculer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def diagonale_droite(self):
-        self.orientation.set_immobile(False)
+        self.orientation.set_tourne(True)
         self.__moteur_d.avancer(0.1)
         self.__moteur_g.avancer(1)
 
     def diagonale_gauche(self):
-        self.orientation.set_immobile(False)
+        self.orientation.set_tourne(True)
         self.__moteur_d.avancer(1)
         self.__moteur_g.avancer(0.1)
 
     def arreter(self):
-        self.orientation.set_immobile(True)
+        self.orientation.set_avance(False)
+        self.orientation.set_tourne(False)
         self.__moteur_d.arreter()
         self.__moteur_g.arreter()
 
@@ -63,7 +64,8 @@ class Robot:
         self.__moteur_g.addMulSpeed(multiplicateur)
 
     def shutdown(self):
-        self.orientation.set_immobile(True)
+        self.orientation.set_tourne(False)
+        self.orientation.set_avance(False)
         if self.__del_jaune is not None:
             self.__del_jaune.shutdown()
         if self.__del_verte is not None:

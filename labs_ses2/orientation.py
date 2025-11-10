@@ -75,7 +75,8 @@ class Orientation:
         # stored in same units as gx (deg/s if gyro_in_deg_per_s True)
         self.gx_bias = 0.0
         # orientation states
-        self.estImmobile = threading.Event()
+        self.tourne = threading.Event()
+        self.avance = threading.Event()
         self.yaw = 0.0  # relative integrated yaw (radians)
         self.mag_heading = 0.0  # heading from magnetometer (radians)
 
@@ -168,17 +169,24 @@ class Orientation:
         self.calibrating.clear()
         self.calibrationDone = True
 
-    def set_immobile(self, immobile: bool):
-        if immobile:
-            self.estImmobile.set()
+    def set_tourne(self, tourne: bool):
+        if tourne:
+            self.tourne.set()
             self.gx_window.clear()
         else:
-            self.estImmobile.clear()
+            self.tourne.clear()
+    
+    def set_avance(self, avance: bool):
+        if avance:
+            self.avance.set()
+            self.gx_window.clear()
+        else:
+            self.avance.clear()
 
-    def _compute_mag_heading(self, mx, my):
-        mx_c = mx - self.mx_offset
+    def _compute_mag_heading(self, mz, my):
+        mz_c = mz - self.mz_offset
         my_c = my - self.my_offset
-        return math.atan2(my_c, mx_c)
+        return math.atan2(my_c, mz_c)
 
     def _main_loop(self):
         while not self._stop.is_set():
@@ -193,7 +201,7 @@ class Orientation:
 
             # Always compute magnetometer heading (radians)
             try:
-                self.mag_heading = self._compute_mag_heading(d.mx, d.my)
+                self.mag_heading = self._compute_mag_heading(d.mz, d.my)
             except Exception as e:
                 print(e)
 
