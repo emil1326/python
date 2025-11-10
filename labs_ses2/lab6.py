@@ -25,7 +25,7 @@ while mayContinue:  # tant qu'on peut continuer
     raw = orientation._read_imu()
     print("Raw data:\n" + pformat(vars(raw), indent=2))
 
-    key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
+    key = cv2.waitKeyEx(30)  # type: ignore # attendre 30ms pour l'appui d'une touche
 
     # gestion d'erreur
     if key == -1 or key > 255:
