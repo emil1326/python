@@ -54,9 +54,9 @@ class Robot:
         self.__moteur_g.addMulSpeed(multiplicateur)
 
     def shutdown(self):
-        if self.__del_jaune:
+        if self.__del_jaune is not None:
             self.__del_jaune.shutdown()
-        if self.__del_verte:
+        if self.__del_verte is not None:
             self.__del_verte.shutdown()
         if self.__sonar_d is not None:
             self.__sonar_d.shutdown()

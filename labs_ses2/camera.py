@@ -40,29 +40,36 @@ class Camera:
             self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
             self.__cam.read()
 
-    def sauvegarder_image_ml(self, dossier_mere, image, touche, compteur_image):
-
+    #utilisée pour capturer des images d'obstacle ou de voie libre pour le Machine Learning 
+    def sauvegarder_image_ml(self, dossier_mere, image, touche, nom_image):
+        '''
+            dossier_mere = nom du dossier a insérer les images
+            image = tableau numpy sorti de cv2
+            touche = touche appuyée pour déterminer quel type d'image est capturé (o = obstacle | l = voie libre)
+            compteur_image = nom qui doit garantir l'unicité de toutes les images capturées
+            retourne void
+        '''
         touche_obstacle = "o"
         touche_voie_libre = "l"
 
-        nom_image = f"image_{compteur_image}.png"
+        base_path = os.path.join(dossier_mere, "train")
+        nom_image = f"{nom_image}.png"
 
         if touche == touche_voie_libre:
-            cv2.imwrite(os.path.join(dossier_mere, "train", "voie_libre", nom_image), image)
-            print("image enregistree dans voie_libre")
-            compteur_image += 1
+            dossier_cible = os.path.join(base_path, "voie_libre")
         elif touche == touche_obstacle:
-            cv2.imwrite(os.path.join(dossier_mere, "train", "obstacle", nom_image), image)
-            print("image enregistree dans obstacle")
-            compteur_image += 1
-            compteur_image += 1
+            dossier_cible = os.path.join(base_path, "obstacle")
+        else:
+            return
+        os.makedirs(dossier_cible, exist_ok=True)
 
-    # nous laisse resetter la camera setting quand on veut pas ceux de base -> unused pcq literals
-    def resetCamera(self):
-        self.__cam = cv2.VideoCapture(1)
-        self.__cam.set(cv2.CAP_PROP_FRAME_WIDTH, self.LARGEUR)
-        self.__cam.set(cv2.CAP_PROP_FRAME_HEIGHT, self.HAUTEUR)
-        self.__cam.read()
+        chemin_complet = os.path.join(dossier_cible, nom_image)
+
+        try:
+            cv2.imwrite(chemin_complet, image)
+            print(f"image enregistree dans {dossier_cible}")
+        except:
+            print("Erreur en sauvegardant :", chemin_complet)
 
     # prend une touche d'arrêt pour stopper la boucle et le nom dans lequel le modèle doit être sauvegardé
     def creation_du_model(self, touche_arret, nom_fichier):
