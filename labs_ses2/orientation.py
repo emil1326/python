@@ -60,6 +60,10 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
+        self.minCachedTimeBetweenIMUReads = 0.02  # seconds
+        self.lastIMUReadTime = None
+        self.lastIMUReadData = None
+
         # calibration / bias
         self.calibrating = threading.Event()
         self.calibrationDone = False
@@ -88,10 +92,18 @@ class Orientation:
         if self.imu is None:
             return Orientation.orientationData()
 
+        # cache reads to avoid reading too frequently
+        now = time.perf_counter()
+        if (
+            self.lastIMUReadTime is not None
+            and (now - self.lastIMUReadTime) < self.minCachedTimeBetweenIMUReads
+        ):
+            return self.lastIMUReadData
+
         imuwork = False
         magwork = False
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
-        
+
         with self.lockOBJ:
             try:
                 ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
@@ -108,11 +120,23 @@ class Orientation:
                 print(e)
 
         if imuwork and magwork:
-            return Orientation.orientationData(ax, ay, az, gx, gy, gz, mx, my, mz)
+            self.lastIMUReadTime = time.perf_counter()
+            self.lastIMUReadData = Orientation.orientationData(
+                ax, ay, az, gx, gy, gz, mx, my, mz
+            )
+            return self.lastIMUReadData
         elif imuwork:
-            return Orientation.orientationData(ax, ay, az, gx, gy, gz, 0, 0, 0)
+            self.lastIMUReadTime = time.perf_counter()
+            self.lastIMUReadData = Orientation.orientationData(
+                ax, ay, az, gx, gy, gz, 0, 0, 0
+            )
+            return self.lastIMUReadData
         elif magwork:
-            return Orientation.orientationData(0, 0, 0, 0, 0, 0, mx, my, mz)
+            self.lastIMUReadTime = time.perf_counter()
+            self.lastIMUReadData = Orientation.orientationData(
+                0, 0, 0, 0, 0, 0, mx, my, mz
+            )
+            return self.lastIMUReadData
         # fallback: zeros
         return Orientation.orientationData()
 
@@ -123,6 +147,9 @@ class Orientation:
         max_mx = max_my = max_mz = float("-inf")
         while time.perf_counter() < t_end:
             d = self._read_imu()
+            if d is None:
+                print("IMU read failed during magnetometer calibration")
+                continue
             mx, my, mz = d.mx, d.my, d.mz
             if mx is None or my is None or mz is None:
                 time.sleep(0.05)
@@ -160,6 +187,9 @@ class Orientation:
             self._last_time = now
 
             d = self._read_imu()
+            if d is None:
+                print("IMU read failed in main loop")
+                continue
 
             # Always compute magnetometer heading (radians)
             try:
