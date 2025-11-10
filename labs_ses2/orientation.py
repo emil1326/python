@@ -58,6 +58,8 @@ class Orientation:
         # small delay to let device settle before first reads
         time.sleep(0.05)
 
+        self.lockOBJ = threading.Lock()
+
         # calibration / bias
         self.calibrating = threading.Event()
         self.calibrationDone = False
@@ -89,19 +91,21 @@ class Orientation:
         imuwork = False
         magwork = False
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
-        try:
-            ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
-            imuwork = True
-        except Exception as e:
-            print(e)
+        
+        with self.lockOBJ:
+            try:
+                ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
+                imuwork = True
+            except Exception as e:
+                print(e)
 
-        time.sleep(0.01)  # small delay to allow I2C bus to recover
+            time.sleep(0.05)  # small delay to allow I2C bus to recover -> usually 40ms
 
-        try:
-            mx, my, mz = self.imu.read_magnetometer_data()
-            magwork = True
-        except Exception as e:
-            print(e)
+            try:
+                mx, my, mz = self.imu.read_magnetometer_data()
+                magwork = True
+            except Exception as e:
+                print(e)
 
         if imuwork and magwork:
             return Orientation.orientationData(ax, ay, az, gx, gy, gz, mx, my, mz)
