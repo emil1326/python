@@ -20,19 +20,23 @@ class IA:
     BATCH_SIZE = 32
     NUM_EPOCHS = 10
     
-    def __init__(self):
-        self.__model = nn.Sequential(
-            nn.Conv2d(3, 16, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Conv2d(16, 32, 3, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(2),
-            nn.Flatten(),
-            nn.Linear(32 * 32 * 32, 128),
-            nn.ReLU(),
-            nn.Linear(128, self.NB_CLASSES)
-        )
+    def __init__(self, chemin_sauv_model, entrainement = False):
+        self.__chemin_model = chemin_sauv_model
+        if entrainement:
+            self.__model = nn.Sequential(
+                nn.Conv2d(3, 16, 3, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(2),
+                nn.Conv2d(16, 32, 3, padding=1),
+                nn.ReLU(),
+                nn.MaxPool2d(2),
+                nn.Flatten(),
+                nn.Linear(32 * 32 * 32, 128),
+                nn.ReLU(),
+                nn.Linear(128, self.NB_CLASSES)
+            )
+        else:
+            self.__model = torch.load(chemin_sauv_model)
     
     def entrainer(self, dossier_train):
         transform = transforms.Compose([
@@ -45,7 +49,7 @@ class IA:
         criterion = self.nn.CrossEntropyLoss()					# Fonction de coût
         optimizer = optim.Adam(self.__model.parameters(), lr=self.LEARNING_RATE)		# Descente de gradient
         
-        self.__model.to(device)
+        self.__model.to(self.__device)
         self.__model.train()
         
         for epoch in range(self.NUM_EPOCHS):
@@ -61,6 +65,8 @@ class IA:
                 correct += (outputs.argmax(1) == labels).sum().item() # Nombre de prédictions correctes dans un batch  
                 acc = 100 * correct / len(train_loader.dataset)
             print(f"Epoch {epoch+1}, Loss: {total_loss:.4f}, Accuracy: {acc:.2f}%")
+        
+        torch.save(self.__model, self.__chemin_model)
 
     def evaluer(self, dossier_eval):
         self.__model.eval()	# mode évaluation
