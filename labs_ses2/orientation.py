@@ -72,7 +72,7 @@ class Orientation:
         self.mz_offset = 0.0
 
         self.gx_window = deque(maxlen=gx_window_size)
-        # stored in same units as gx (deg/s if gyro_in_deg_per_s True)
+        # stored in same units as gx
         self.gx_bias = 0.0
         # orientation states
         self.tourne = threading.Event()
@@ -175,7 +175,7 @@ class Orientation:
             self.gx_window.clear()
         else:
             self.tourne.clear()
-    
+
     def set_avance(self, avance: bool):
         if avance:
             self.avance.set()
