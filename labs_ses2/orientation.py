@@ -205,7 +205,7 @@ class Orientation:
             except Exception as e:
                 print(e)
 
-            if self.estImmobile:
+            if not self.tourne.is_set() or not self.avance.is_set():
                 # windowed average to compute gx bias
                 try:
                     self.gx_window.append(d.gx)
