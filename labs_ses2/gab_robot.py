@@ -8,54 +8,64 @@ import time
 
 
 class Robot:
-    def __init__(self, sonar=None, dels=None):
+    def __init__(self, sonar=None, dels=None, orientation=None):
         if dels is not None:
             self.__del_jaune = Dels(8)
             self.__del_verte = Dels(10)
         if sonar is not None:
             self.__sonar_g = Sonar(25, 8)
             self.__sonar_d = Sonar(20, 21)
+        if orientation is not None:
+            self.orientation = Orientation()
 
         self.__moteur_g = Moteur(6, 5, 13)
-        self.__moteur_d = Moteur(15, 14, 18)
-        self.orientation = Orientation()
+        self.__moteur_d = Moteur(15, 14, 18)        
 
         self.__stop_sonar = True
 
     # voiture
     def avancer(self, vitesse=1.0):
-        self.orientation.set_avance(True)
+        if self.orientation is not None:
+            self.orientation.set_avance(True)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def reculer(self):
-        self.orientation.set_avance(True)
+        if self.orientation is not None:
+            self.orientation.set_avance(True)
         self.__moteur_d.reculer(1)
         self.__moteur_g.reculer(1)
 
     def tourner_gauche(self, vitesse=1.0):
-        self.orientation.set_tourne(True)
+        if self.orientation is not None:
+            self.orientation.set_tourne(True)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.reculer(vitesse)
 
     def tourner_droite(self, vitesse=1.0):
-        self.orientation.set_tourne(True)
+        if self.orientation is not None:
+            self.orientation.set_tourne(True)
         self.__moteur_d.reculer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def diagonale_droite(self):
-        self.orientation.set_tourne(True)
+        if self.orientation is not None:
+            self.orientation.set_tourne(True)
         self.__moteur_d.avancer(0.1)
         self.__moteur_g.avancer(1)
 
     def diagonale_gauche(self):
-        self.orientation.set_tourne(True)
+        
         self.__moteur_d.avancer(1)
         self.__moteur_g.avancer(0.1)
+        
+        if self.orientation is not None:
+            self.orientation.set_tourne(True)
 
     def arreter(self):
-        self.orientation.set_avance(False)
-        self.orientation.set_tourne(False)
+        if self.orientation is not None:
+            self.orientation.set_avance(False)
+            self.orientation.set_tourne(False)
         self.__moteur_d.arreter()
         self.__moteur_g.arreter()
 
@@ -63,9 +73,7 @@ class Robot:
         self.__moteur_d.addMulSpeed(multiplicateur)
         self.__moteur_g.addMulSpeed(multiplicateur)
 
-    def shutdown(self):
-        self.orientation.set_tourne(False)
-        self.orientation.set_avance(False)
+    def shutdown(self):        
         if self.__del_jaune is not None:
             self.__del_jaune.shutdown()
         if self.__del_verte is not None:
@@ -74,7 +82,10 @@ class Robot:
             self.__sonar_d.shutdown()
         if self.__sonar_g is not None:
             self.__sonar_g.shutdown()
-        self.orientation.stop()
+        if self.orientation is not None:
+            self.orientation.set_tourne(False)
+            self.orientation.set_avance(False)
+            self.orientation.stop()
 
     # sonars
     def trigger_sonars(self):

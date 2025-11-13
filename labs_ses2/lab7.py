@@ -5,10 +5,11 @@ from camera import Camera;
 from ia import IA;
 from gab_robot import Robot;
 from dictKeyValue import MapTouches;
+from os import path
 
 robot = Robot()
 camera = Camera()
-ia = IA()
+ia = IA(path.join("ia_model", "gab_ai.pt"))
 
 # initialisation du mapper qui associe les touches à des actions
 mapper = MapTouches(robot)
