@@ -39,6 +39,7 @@ class IA:
             self.__model = torch.load(chemin_sauv_model)
     
     def entrainer(self, dossier_train):
+        print("dossier train:", dossier_train)
         transform = transforms.Compose([
             transforms.Resize((128, 128)),
             transforms.ToTensor(),
@@ -46,7 +47,7 @@ class IA:
         train = datasets.ImageFolder(os.path.join(dossier_train), transform=transform)
         train_loader = DataLoader(train, self.BATCH_SIZE, shuffle=True)        
         self.__device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        criterion = self.nn.CrossEntropyLoss()					# Fonction de coût
+        criterion = nn.CrossEntropyLoss()					# Fonction de coût
         optimizer = optim.Adam(self.__model.parameters(), lr=self.LEARNING_RATE)		# Descente de gradient
         
         self.__model.to(self.__device)
@@ -56,7 +57,7 @@ class IA:
             total_loss, correct = 0, 0
             for images, labels in train_loader:
                 images, labels = images.to(self.__device), labels.to(self.__device)
-                outputs = modele(images)
+                outputs = self.__model(images)
                 loss = criterion(outputs, labels)
                 optimizer.zero_grad()
                 loss.backward()
