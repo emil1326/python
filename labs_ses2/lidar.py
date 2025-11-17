@@ -4,10 +4,10 @@ class lidar:
         def __init__(self) -> None:
             pass
         
-        def rescale(self, amount) -> "lidar.Board":
+        def rescale(self, amount) -> None:
             return amount
         
-        def displace(self, amount) -> "lidar.Board":
+        def displace(self, amount) -> None:
             return amount
         
     def __init__(self) -> None:

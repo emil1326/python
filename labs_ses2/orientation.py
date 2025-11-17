@@ -192,6 +192,7 @@ class Orientation:
         while not self._stop.is_set():
             now = time.perf_counter()
             dt = (now - self._last_time) if self._last_time is not None else 0.0
+            print(dt)
             self._last_time = now
 
             d = self._read_imu()
@@ -205,7 +206,7 @@ class Orientation:
             except Exception as e:
                 print(e)
 
-            if not self.tourne.is_set() or not self.avance.is_set():
+            if not self.tourne.is_set():
                 # windowed average to compute gx bias
                 try:
                     self.gx_window.append(d.gx)
