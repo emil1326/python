@@ -17,13 +17,27 @@ mapper = MapTouches(voiture)
 
 mayContinue = True  # bool, permet d'arrêter le programme proprement
 
-while mayContinue:  # tant qu'on peut continuer
-    if orientation.calibrating.is_set():
-        print("Calibrage du magnetometre... Gardez le robot en place.")
-        time.sleep(1)
-        continue
+if orientation.calibrating.is_set():
+    print("Calibrage du magnetometre... Gardez le robot en place.")
+    time.sleep(1)
 
-    print(orientation._read_imu().__repr__())
+print("Calibration complete. Starting main loop.")
+time.sleep(1)  # attendre un peu pour être sûr que le calibrage est fait
+while orientation.mag_heading < 0:
+    voiture.tourner_droite()
+    time.sleep(0.1)
+voiture.arreter()
+print("Robot aligné vers le nord magnétique.")
+time.sleep(1)
+while orientation.mag_heading > 0.1:
+    voiture.tourner_gauche()
+    time.sleep(0.1)
+voiture.arreter()
+print("Robot a fait un tour.")
+time.sleep(1)
+
+while mayContinue:  # tant qu'on peut continuer
+    # print(orientation._read_imu().__repr__())
 
     print(
         f"orientations: autour de l'axe des x: {orientation.yaw:.2f} rad | orientation magnetometre: {orientation.mag_heading:.2f} rad"
