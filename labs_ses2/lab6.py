@@ -6,6 +6,7 @@ from gab_robot import Robot
 from orientation import Orientation
 from dictKeyValue import MapTouches
 from pprint import pformat
+import math
 import cv2  # type: ignore
 
 print("PreProg lab6")
@@ -24,17 +25,37 @@ while orientation.calibrating.is_set():
 print("Calibration complete. Starting main loop. orientation", orientation.mag_heading)
 time.sleep(1)  
 
-while orientation.mag_heading < 0:
-    voiture.tourner_gauche(0.5)
+def _normalize_angle(a: float) -> float:
+    # ramener dans [-pi, pi]
+    return (a + math.pi) % (2 * math.pi) - math.pi
+
+target_tol = 0.05  # tolérance en radians (~3°)
+max_seconds = 10.0
+start_time = time.time()
+
+# tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
+while True:
+    heading = _normalize_angle(orientation.mag_heading)
+    if abs(heading) <= target_tol:
+        break
+
+    # si heading > 0 on veut le diminuer, donc tourner à droite ;
+    # si heading < 0 on veut l'augmenter, donc tourner à gauche.
+    if heading > 0:
+        voiture.tourner_droite(0.4)
+    else:
+        voiture.tourner_gauche(0.4)
+
     time.sleep(0.1)
-    
+
+    # sécurité : timeout pour éviter boucle infinie
+    if time.time() - start_time > max_seconds:
+        print("Timeout pendant l'alignement magnétique.")
+        break
+
 voiture.arreter()
 print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
-
-while orientation.mag_heading > 0.1:
-    voiture.tourner_droite(0.5)
-    time.sleep(0.1)
     
 voiture.arreter()
 print("Robot a fait un tour.")

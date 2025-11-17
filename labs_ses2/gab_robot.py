@@ -24,8 +24,6 @@ class Robot:
         self.__moteur_g = Moteur(6, 5, 13)
         self.__moteur_d = Moteur(15, 14, 18)
 
-        self.orientation = orientation
-
     # voiture
     def avancer(self, vitesse=1.0):
         if self.orientation is not None:
