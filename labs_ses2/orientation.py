@@ -60,7 +60,7 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
-        self.minCachedTimeBetweenIMUReads = 0.02  # seconds
+        self.minCachedTimeBetweenIMUReads = 0.05  # seconds
         self.lastIMUReadTime = None
         self.lastIMUReadData = None
 
@@ -113,7 +113,7 @@ class Orientation:
             except Exception as e:
                 print(e)
 
-            time.sleep(0.05)  # small delay to allow I2C bus to recover -> usually 40ms
+            time.sleep(0.075)  # small delay to allow I2C bus to recover -> usually 40ms
 
             try:
                 mx, my, mz = self.imu.read_magnetometer_data()
