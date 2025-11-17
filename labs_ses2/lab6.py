@@ -2,6 +2,7 @@
 # Laboratoire VI | 27 octobre 2025
 
 import time
+from gab_robot import Robot
 from orientation import Orientation
 from dictKeyValue import MapTouches
 from pprint import pformat
@@ -11,7 +12,8 @@ print("PreProg lab6")
 
 # initialisations
 orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
-mapper = MapTouches()
+voiture = Robot(orientation=orientation)
+mapper = MapTouches(voiture)
 
 mayContinue = True  # bool, permet d'arrêter le programme proprement
 
@@ -38,5 +40,5 @@ while mayContinue:  # tant qu'on peut continuer
     if t == "x":
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
-    
+
     mapper.map(t)

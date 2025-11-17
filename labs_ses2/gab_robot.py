@@ -1,10 +1,8 @@
-#gariel pereira levesque
+# gariel pereira levesque
 from gab_moteurs import Moteur
 from sonar import Sonar
 from dels import Dels
-from camera import Camera
 from orientation import Orientation
-import time
 
 
 class Robot:
@@ -26,9 +24,9 @@ class Robot:
             self.orientation = Orientation()
 
         self.__moteur_g = Moteur(6, 5, 13)
-        self.__moteur_d = Moteur(15, 14, 18)        
+        self.__moteur_d = Moteur(15, 14, 18)
 
-        self.__stop_sonar = True
+        self.orientation = orientation
 
     # voiture
     def avancer(self, vitesse=1.0):
@@ -58,16 +56,16 @@ class Robot:
     def diagonale_droite(self):
         if self.orientation is not None:
             self.orientation.set_tourne(True)
+            self.orientation.set_avance(True)
         self.__moteur_d.avancer(0.1)
         self.__moteur_g.avancer(1)
 
     def diagonale_gauche(self):
-        
-        self.__moteur_d.avancer(1)
-        self.__moteur_g.avancer(0.1)
-        
         if self.orientation is not None:
             self.orientation.set_tourne(True)
+            self.orientation.set_avance(True)
+        self.__moteur_d.avancer(1)
+        self.__moteur_g.avancer(0.1)
 
     def arreter(self):
         if self.orientation is not None:
@@ -80,7 +78,7 @@ class Robot:
         self.__moteur_d.addMulSpeed(multiplicateur)
         self.__moteur_g.addMulSpeed(multiplicateur)
 
-    def shutdown(self):        
+    def shutdown(self):
         if self.__del_jaune is not None:
             self.__del_jaune.shutdown()
         if self.__del_verte is not None:
