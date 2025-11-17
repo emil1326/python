@@ -76,6 +76,7 @@ class Orientation:
         self.gx_bias = 0.0
         # orientation states
         self.tourne = threading.Event()
+        self.tourne.set()
         self.avance = threading.Event()
         self.yaw = 0.0  # relative integrated yaw (radians)
         self.mag_heading = 0.0  # heading from magnetometer (radians)
@@ -190,11 +191,12 @@ class Orientation:
 
     def _main_loop(self):
         while not self._stop.is_set():
+           
             now = time.perf_counter()
             dt = (now - self._last_time) if self._last_time is not None else 0.0
             print(dt)
             self._last_time = now
-
+            
             d = self._read_imu()
             if d is None:
                 print("IMU read failed in main loop")
@@ -220,7 +222,11 @@ class Orientation:
                     gx = d.gx
                     gx_corrected = gx - self.gx_bias  # same units as input
                     gx_corrected_rad = math.radians(gx_corrected)
-
+                    print('')
+                    print('')
+                    print('gx_corrected_rad:', gx_corrected_rad)
+                    print('')
+                    print('')
                     # integrate: yaw in radians
                     if dt > 0:
                         self.yaw += gx_corrected_rad * dt

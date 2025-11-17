@@ -16,6 +16,7 @@ ia = IA(path.join("ia_model", "gab_ai.pt"))
 mapper = MapTouches(robot)
 
 maycontinue = True
+print("entre dans la main boucle")
 
 while maycontinue:
     img = camera.capturer_image_bgr()
@@ -24,7 +25,7 @@ while maycontinue:
     
     cv2.imshow("Labo 7", img)
 
-    key = cv2.waitKeyEx(1)
+    key = cv2.waitKeyEx(30)
 
     if key == -1:
         continue
@@ -36,6 +37,5 @@ while maycontinue:
     if key == "x":
         maycontinue = False
 
-    mapper.map(key, label=="voie_libre")
+    mapper.map(key, label=="obstacle")
 
-    time.sleep(0.05)
