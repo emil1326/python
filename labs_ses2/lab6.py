@@ -22,21 +22,25 @@ while orientation.calibrating.is_set():
     time.sleep(1)
 
 print("Calibration complete. Starting main loop.")
-time.sleep(1)  # attendre un peu pour être sûr que le calibrage est fait
+time.sleep(1)  
+
 while orientation.mag_heading < 0:
     voiture.tourner_droite()
     time.sleep(0.1)
+    
 voiture.arreter()
 print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
+
 while orientation.mag_heading > 0.1:
     voiture.tourner_gauche()
     time.sleep(0.1)
+    
 voiture.arreter()
 print("Robot a fait un tour.")
 time.sleep(1)
 
-while mayContinue:  # tant qu'on peut continuer
+while mayContinue:
     # print(orientation._read_imu().__repr__())
 
     print(
