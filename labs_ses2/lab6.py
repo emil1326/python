@@ -17,7 +17,7 @@ mapper = MapTouches(voiture)
 
 mayContinue = True  # bool, permet d'arrêter le programme proprement
 
-if orientation.calibrating.is_set():
+while orientation.calibrating.is_set():
     print("Calibrage du magnetometre... Gardez le robot en place.")
     time.sleep(1)
 
