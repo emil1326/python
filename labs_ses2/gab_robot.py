@@ -9,6 +9,13 @@ import time
 
 class Robot:
     def __init__(self, sonar=None, dels=None, orientation=None):
+        print("init robot")
+        self.orientation = orientation
+        self.__del_jaune = dels
+        self.__del_verte = dels
+        self.__sonar_d = sonar
+        self.__sonar_g = sonar
+        
         if dels is not None:
             self.__del_jaune = Dels(8)
             self.__del_verte = Dels(10)

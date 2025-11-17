@@ -22,6 +22,7 @@ class Camera:
     ROI = 50
 
     def __init__(self):
+        print("init camera")
         self.__cam = None
         self.__derniere_position_objet = None
 

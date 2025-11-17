@@ -21,6 +21,7 @@ class IA:
     NUM_EPOCHS = 10
     
     def __init__(self, chemin_sauv_model, entrainement = False):
+        print("init ia")
         self.__chemin_model = chemin_sauv_model
         if entrainement:
             self.__model = nn.Sequential(
