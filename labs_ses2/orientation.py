@@ -194,7 +194,7 @@ class Orientation:
            
             now = time.perf_counter()
             dt = (now - self._last_time) if self._last_time is not None else 0.0
-            print(dt)
+            #print(dt)
             self._last_time = now
             
             d = self._read_imu()
