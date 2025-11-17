@@ -20,8 +20,6 @@ class Robot:
         if sonar is not None:
             self.__sonar_g = Sonar(25, 8)
             self.__sonar_d = Sonar(20, 21)
-        if orientation is not None:
-            self.orientation = Orientation()
 
         self.__moteur_g = Moteur(6, 5, 13)
         self.__moteur_d = Moteur(15, 14, 18)

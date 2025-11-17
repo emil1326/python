@@ -60,7 +60,7 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
-        self.minCachedTimeBetweenIMUReads = 0.05  # seconds
+        self.minCachedTimeBetweenIMUReads = 0.2  # seconds
         self.lastIMUReadTime = None
         self.lastIMUReadData = None
 
@@ -222,11 +222,7 @@ class Orientation:
                     gx = d.gx
                     gx_corrected = gx - self.gx_bias  # same units as input
                     gx_corrected_rad = math.radians(gx_corrected)
-                    print('')
-                    print('')
-                    print('gx_corrected_rad:', gx_corrected_rad)
-                    print('')
-                    print('')
+                    
                     # integrate: yaw in radians
                     if dt > 0:
                         self.yaw += gx_corrected_rad * dt

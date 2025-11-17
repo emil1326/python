@@ -19,6 +19,7 @@ compteur_obstacle = 0
 dossier_mere_images = "dataset"
 dossier_libre = os.path.join(dossier_mere_images, "train", "voie_libre")
 dossier_obstacle = os.path.join(dossier_mere_images, "train", "obstacle")
+
 if not os.path.exists(dossier_libre):
     compteur_voie_libre = 0
 else:

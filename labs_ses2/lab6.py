@@ -21,11 +21,11 @@ while orientation.calibrating.is_set():
     print("Calibrage du magnetometre... Gardez le robot en place.")
     time.sleep(1)
 
-print("Calibration complete. Starting main loop.")
+print("Calibration complete. Starting main loop. orientation", orientation.mag_heading)
 time.sleep(1)  
 
 while orientation.mag_heading < 0:
-    voiture.tourner_droite()
+    voiture.tourner_gauche(0.5)
     time.sleep(0.1)
     
 voiture.arreter()
@@ -33,7 +33,7 @@ print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
 
 while orientation.mag_heading > 0.1:
-    voiture.tourner_gauche()
+    voiture.tourner_droite(0.5)
     time.sleep(0.1)
     
 voiture.arreter()
