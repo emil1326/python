@@ -21,3 +21,6 @@ class lidar:
     
     def getBoardDistance(self) -> float:
         return 0.0
+    
+    def mainLoop(self) -> None:
+        pass
