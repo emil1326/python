@@ -94,30 +94,37 @@ class Robot:
 
     # sonars
     def trigger_sonars(self):
-        self.__sonar_d.demarrer_trigger()
-        self.__sonar_g.demarrer_trigger()
+        if self.__sonar_d is not None:
+            self.__sonar_d.demarrer_trigger()
+        if self.__sonar_g is not None:
+            self.__sonar_g.demarrer_trigger()
 
     def arreter_sonars(self):
-        self.__sonar_d.arreter_trigger()
-        self.__sonar_g.arreter_trigger()
-
+        if self.__sonar_d is not None:
+            self.__sonar_d.arreter_trigger()
+        if self.__sonar_g is not None:
+            self.__sonar_g.arreter_trigger()
+            
     def get_distance(self, sonar):
-        if sonar == "g":  # sonar de gauche
+        if self.__sonar_g is not None and sonar == "g":  # sonar de gauche
             return self.__sonar_g.get_distance()
-        if sonar == "d":  # sonar de droite
+        if self.__sonar_d is not None and sonar == "d":  # sonar de droite
             return self.__sonar_d.get_distance()
         else:
             return -1
 
     # dels
     def clignoter_del_jaune(self, t_clign):
-        self.__del_jaune.partir_clignotement(t_clign)
+        if self.__del_jaune is not None:
+            self.__del_jaune.partir_clignotement(t_clign)
 
     def clignoter_del_verte(self, t_clign):
-        self.__del_verte.partir_clignotement(t_clign)
-
+        if self.__del_verte is not None:
+            self.__del_verte.partir_clignotement(t_clign)
     def arreter_clignoter_del_jaune(self):
-        self.__del_jaune.arreter_clignotement()
+        if self.__del_jaune is not None:
+            self.__del_jaune.arreter_clignotement()
 
     def arreter_clignoter_del_verte(self):
-        self.__del_jaune.arreter_clignotement()
+        if self.__del_verte is not None:
+            self.__del_verte.arreter_clignotement()
