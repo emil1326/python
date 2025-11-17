@@ -35,7 +35,7 @@ while maycontinue:
     
     cv2.imshow("Capt. img apprentissage", img)
 
-    key = cv2.waitKeyEx(1)
+    key = cv2.waitKeyEx(30)
 
     if key == -1:
         continue
