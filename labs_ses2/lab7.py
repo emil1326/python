@@ -6,7 +6,7 @@ from ia import IA;
 from gab_robot import Robot;
 from dictKeyValue import MapTouches;
 from os import path
-import cv2
+import cv2 # type: ignore
 
 robot = Robot()
 camera = Camera()

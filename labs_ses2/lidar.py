@@ -1,7 +1,7 @@
-import ydlidar
+import ydlidar # type: ignore
 import enum
 
-class Models(Enum):
+class Models(enum.Enum):
     X2 = 1
     X4 = 2
 
@@ -41,26 +41,39 @@ class Lidar:
         '''
             demarre le lidar. Si un problème survient, une ConnectionError est levée
         '''
+        if self.__lidar is None:
+            print("Demarrer_Le lidar n'a pas été initialisé correctement")
+            return
+        
         ret = self.__lidar.initialize()
         if(ret):
             self.__ret = self.__lidar.turnOn()
         else:
-            raise ConnectionError("Le lidar n'a pas reussi a s'ouvir")        
+            print("Demarrer_Le lidar n'a pas reussi a s'ouvrir")        
+            return
     
     def arreter(self):
-        self.__lidar.turnOff();
-        self.__lidar.disconnecting();
+        if self.__lidar is None:
+            print("Arreter_Le lidar n'a pas été initialisé correctement")
+            return
+        
+        self.__lidar.turnOff()
+        self.__lidar.disconnecting()
     
     def dessinerSurImage(self, img):
+        if self.__lidar is None:
+            print("DessinerSurImage_Le lidar n'a pas été initialisé correctement")
+            return
+        
         #1. scan
         scan = ydlidar.LaserScan()
         while self.__ret and ydlidar.os_isOk():
             r = self.__lidar.doProcessSimple(scan)
                           
-            #2. get l'angle 
+        #2. get l'angle 
         #3. get x et y grace a l'angle
         #4. 
-        if not lidar.initialize():
+        if not self.__lidar.initialize():
             pass
-        if not lidar.turnOn():
+        if not self.__lidar.turnOn():
             pass
