@@ -88,7 +88,6 @@ class Orientation:
 
         # calibrate magnetometer at startup
         threading.Thread(target=self._calibrate_magnetometer, args=(mag_cal_seconds,), daemon=True).start()
-        self._thread.start()
 
     def _read_imu(self):
         if self.imu is None:
@@ -171,6 +170,9 @@ class Orientation:
         self.mz_offset = (min_mz + max_mz) / 2.0 if max_mz > min_mz else 0.0
         self.calibrating.clear()
         self.calibrationDone = True
+        
+        self._thread.start()
+        
 
     def set_tourne(self, tourne: bool):
         if tourne:
