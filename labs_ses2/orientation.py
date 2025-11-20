@@ -87,7 +87,7 @@ class Orientation:
         self._thread = threading.Thread(target=self._main_loop, daemon=True)
 
         # calibrate magnetometer at startup
-        self._calibrate_magnetometer(seconds=mag_cal_seconds)
+        threading.Thread(target=self._calibrate_magnetometer, args=(mag_cal_seconds,), daemon=True).start()
         self._thread.start()
 
     def _read_imu(self):
