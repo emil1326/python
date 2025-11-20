@@ -7,7 +7,7 @@ from icm20948 import ICM20948  # type: ignore
 
 
 class Orientation:
-    waitTime = 50  # ms
+    waitTime = 100  # ms
 
     class orientationData:
         def __init__(self, ax=0, ay=0, az=0, gx=0, gy=0, gz=0, mx=0, my=0, mz=0):
@@ -60,7 +60,7 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
-        self.minCachedTimeBetweenIMUReads = 0.2  # seconds
+        self.minCachedTimeBetweenIMUReads = 0.1  # seconds
         self.lastIMUReadTime = None
         self.lastIMUReadData = None
 

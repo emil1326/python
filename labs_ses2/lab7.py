@@ -18,11 +18,22 @@ mapper = MapTouches(robot)
 maycontinue = True
 print("entre dans la main boucle")
 
+pt1 = (camera.LARGEUR-32, 0)
+pt2 = (camera.LARGEUR, 32)
+voie_libre_color = (0,255,0)
+obstacle_color = (0,0,255)
+
 while maycontinue:
     img = camera.capturer_image_bgr()
     
     label = ia.analyser(img)
     
+    voie_libre = label=="voie_libre"
+    
+    if not voie_libre:
+        robot.arreter()
+    
+    cv2.rectangle(img, pt1, pt2, voie_libre_color if voie_libre else obstacle_color, -1)    
     cv2.imshow("Labo 7", img)
 
     key = cv2.waitKeyEx(30)
@@ -37,5 +48,5 @@ while maycontinue:
     if key == "x":
         maycontinue = False
 
-    mapper.map(key, label=="obstacle")
+    mapper.map(key, label=="voie_libre")
 

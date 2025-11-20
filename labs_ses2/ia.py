@@ -51,7 +51,7 @@ class IA:
         criterion = nn.CrossEntropyLoss()					# Fonction de coût
         optimizer = optim.Adam(self.__model.parameters(), lr=self.LEARNING_RATE)		# Descente de gradient
         
-        self.__model.to(self.__device)
+        self.__model.to(device)
         self.__model.train()
         
         for epoch in range(self.NUM_EPOCHS):
