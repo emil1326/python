@@ -165,9 +165,9 @@ class Orientation:
             max_mz = max(max_mz, mz)
             time.sleep(0.05)
         # center offsets
-        self.mx_offset = (min_mx + max_mx) / 2.0 if max_mx > min_mx else 0.0
-        self.my_offset = (min_my + max_my) / 2.0 if max_my > min_my else 0.0
-        self.mz_offset = (min_mz + max_mz) / 2.0 if max_mz > min_mz else 0.0
+        self.mx_offset = (min_mx + max_mx) / 2.0
+        self.my_offset = (min_my + max_my) / 2.0
+        self.mz_offset = (min_mz + max_mz) / 2.0
         self.calibrating.clear()
         self.calibrationDone = True
         
@@ -229,7 +229,8 @@ class Orientation:
                     
                     # integrate: yaw in radians
                     if dt > 0:
-                        self.yaw += gx_corrected_rad * dt
+                        # self.yaw += gx_corrected_rad * dt
+                        self.yaw += gx_corrected * dt # in degrees ?
                 except Exception as e:
                     print(e)
 
