@@ -107,6 +107,8 @@ class Orientation:
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
 
         with self.lockOBJ:
+            time.sleep(0.075)  # small delay to allow I2C bus to recover -> usually 40ms
+            
             try:
                 ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
                 imuwork = True

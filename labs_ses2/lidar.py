@@ -56,6 +56,7 @@ class Lidar:
         if self.__lidar is None:
             print("Arreter_Le lidar n'a pas été initialisé correctement")
             return
+        
         self.__lidar.turnOff()
         self.__lidar.disconnecting()
     
@@ -69,7 +70,7 @@ class Lidar:
         while self.__ret and ydlidar.os_isOk():
             r = self.__lidar.doProcessSimple(scan)
                           
-            #2. get l'angle 
+        #2. get l'angle 
         #3. get x et y grace a l'angle
         #4. 
         if not self.__lidar.initialize():
