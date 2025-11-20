@@ -42,9 +42,9 @@ while True:
     # si heading > 0 on veut le diminuer, donc tourner à droite ;
     # si heading < 0 on veut l'augmenter, donc tourner à gauche.
     if heading > 0:
-        voiture.tourner_droite(0.4)
+        voiture.tourner_droite(0.8)
     else:
-        voiture.tourner_gauche(0.4)
+        voiture.tourner_gauche(0.8)
 
     time.sleep(0.1)
 
