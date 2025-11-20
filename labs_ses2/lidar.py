@@ -60,7 +60,7 @@ class Lidar:
         self.__lidar.turnOff()
         self.__lidar.disconnecting()
     
-    def dessinerSurImage(self, img):
+    def dessinerSurImage(self, img, largeur_image, hauteur_image):
         if self.__lidar is None:
             print("DessinerSurImage_Le lidar n'a pas été initialisé correctement")
             return
@@ -71,8 +71,8 @@ class Lidar:
             r = self.__lidar.doProcessSimple(scan)
                           
         #2. get l'angle 
-        #3. get x et y grace a l'angle
-        #4. 
+        #3. get x et y grace a l'angle en radian
+        #4. get 
         if not self.__lidar.initialize():
             pass
         if not self.__lidar.turnOn():
