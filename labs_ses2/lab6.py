@@ -13,7 +13,17 @@ print("PreProg lab6")
 
 # initialisations
 orientation = Orientation(mag_cal_seconds=5, gx_window_size=50)
-voiture = Robot(orientation=orientation)
+
+#fix: inversé IN1 (14) et IN2 (15)
+IN1 = 5
+IN2 = 6
+ENA = 13
+#fix: inversé IN3 (5) et IN4 (6)
+IN3 = 15
+IN4 = 14
+ENB = 18
+
+voiture = Robot(IN1, IN2, ENA, IN3, IN4, ENB, orientation=orientation)
 mapper = MapTouches(voiture)
 
 mayContinue = True  # bool, permet d'arrêter le programme proprement
