@@ -39,7 +39,7 @@ time.sleep(1)
 
 target_tol = 5
 max_seconds = 10.0
-vitesse_robot = 0.6
+vitesse_robot = 0.7
 start_time = time.time()
 
 # tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
@@ -66,12 +66,12 @@ voiture.arreter()
 print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
 
-voiture.tourner_droite(0.5)
+voiture.tourner_droite(vitesse_robot)
 time.sleep(1)
 
 keep = True
 while keep:
-    voiture.tourner_droite(0.5)
+    voiture.tourner_droite(vitesse_robot)
     
     if 90 - target_tol < orientation.mag_heading < 90 + target_tol:
         keep = False
