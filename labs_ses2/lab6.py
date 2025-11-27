@@ -55,8 +55,6 @@ while True:
     else:
         voiture.tourner_gauche(vitesse_robot)
 
-    time.sleep(0.1)
-
     # sécurité : timeout pour éviter boucle infinie
     if time.time() - start_time > max_seconds:
         print("Timeout pendant l'alignement magnétique.")
@@ -67,13 +65,13 @@ print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
 
 voiture.tourner_droite(vitesse_robot)
-time.sleep(1)
+time.sleep(0.2)
 
 keep = True
 while keep:
     voiture.tourner_droite(vitesse_robot)
-
-    if (0 - target_tol) % 360 < orientation.mag_heading < 0 + target_tol:
+    
+    if 0 - target_tol < orientation.mag_heading < 0 + target_tol:
         keep = False
 
 voiture.arreter()
