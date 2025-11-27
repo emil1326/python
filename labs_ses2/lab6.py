@@ -37,26 +37,23 @@ voiture.arreter()
 print("Calibration complete. Starting main loop. orientation", orientation.mag_heading)
 time.sleep(1)  
 
-def _normalize_angle(a: float) -> float:
-    # ramener dans [-pi, pi]
-    return (a + math.pi) % (2 * math.pi) - math.pi
-
-target_tol = 0.05  # tolérance en radians (~3°)
+target_tol = 3  #~3°
 max_seconds = 10.0
+vitesse_robot = 0.6
 start_time = time.time()
 
 # tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
 while True:
-    heading = _normalize_angle(orientation.mag_heading)
+    heading = orientation.mag_heading
     if abs(heading) <= target_tol:
         break
 
     # si heading > 0 on veut le diminuer, donc tourner à droite ;
     # si heading < 0 on veut l'augmenter, donc tourner à gauche.
     if heading > 0:
-        voiture.tourner_droite(0.8)
+        voiture.tourner_droite(vitesse_robot)
     else:
-        voiture.tourner_gauche(0.8)
+        voiture.tourner_gauche(vitesse_robot)
 
     time.sleep(0.1)
 
@@ -68,7 +65,9 @@ while True:
 voiture.arreter()
 print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
-    
+
+
+
 voiture.arreter()
 print("Robot a fait un tour.")
 time.sleep(1)
