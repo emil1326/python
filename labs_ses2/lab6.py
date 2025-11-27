@@ -39,7 +39,7 @@ time.sleep(1)
 
 target_tol = 5
 max_seconds = 10.0
-vitesse_robot = 0.6
+vitesse_robot = 0.7
 start_time = time.time()
 
 # tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
@@ -68,8 +68,8 @@ time.sleep(1)
 
 keep = True
 while keep:
-    voiture.tourner_droite(0.5)
-    if orientation.mag_heading < 10:
+    voiture.tourner_droite(vitesse_robot)
+    if 85 < orientation.mag_heading < 95:
         keep = False
 
 voiture.arreter()
