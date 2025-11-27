@@ -50,7 +50,7 @@ while True:
 
     # si heading > 0 on veut le diminuer, donc tourner à droite ;
     # si heading < 0 on veut l'augmenter, donc tourner à gauche.
-    if heading > 0:
+    if heading > 90:
         voiture.tourner_droite(vitesse_robot)
     else:
         voiture.tourner_gauche(vitesse_robot)
@@ -66,10 +66,14 @@ voiture.arreter()
 print("Robot aligné vers le nord magnétique.")
 time.sleep(1)
 
+voiture.tourner_droite(0.5)
+time.sleep(1)
+
 keep = True
 while keep:
     voiture.tourner_droite(0.5)
-    if orientation.mag_heading < 10:
+    
+    if 90 - target_tol < orientation.mag_heading < 90 + target_tol:
         keep = False
 
 voiture.arreter()
