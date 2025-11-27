@@ -1,3 +1,5 @@
+#Emillien Devauchelle
+
 from ast import main
 import threading
 import time
@@ -191,7 +193,9 @@ class Orientation:
     def _compute_mag_heading(self, mz, my):
         mz_c = mz - self.mz_offset
         my_c = my - self.my_offset
-        return math.atan2(my_c, mz_c)
+        radians = math.atan2(my_c, mz_c)
+        angle = radians * (180/math.pi) + 180
+        return angle
 
     def _main_loop(self):
         while not self._stop.is_set():

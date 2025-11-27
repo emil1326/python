@@ -2,11 +2,11 @@
 from gab_moteurs import Moteur
 from sonar import Sonar
 from dels import Dels
-from orientation import Orientation
+from gab_orientation import Orientation, Etats
 
 
 class Robot:
-    def __init__(self, sonar=None, dels=None, orientation=None):
+    def __init__(self,moteur_IN1=6, moteur_IN2=5, moteur_ENA=13, moteur_IN3=15, moteur_IN4=14, moteur_ENB=18, sonar=None, dels=None, orientation=None):
         print("init robot")
         self.orientation = orientation
         self.__del_jaune = dels
@@ -21,19 +21,19 @@ class Robot:
             self.__sonar_g = Sonar(25, 8)
             self.__sonar_d = Sonar(20, 21)
 
-        self.__moteur_g = Moteur(6, 5, 13)
-        self.__moteur_d = Moteur(15, 14, 18)
+        self.__moteur_g = Moteur(moteur_IN1, moteur_IN2, moteur_ENA)
+        self.__moteur_d = Moteur(moteur_IN3, moteur_IN4, moteur_ENB)
 
     # voiture
     def avancer(self, vitesse=1.0):
         if self.orientation is not None:
-            self.orientation.set_avance(True)
+            self.orientation.set_etat(Etats.avance)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def reculer(self):
         if self.orientation is not None:
-            self.orientation.set_avance(True)
+            self.orientation.set_etat(True)
         self.__moteur_d.reculer(1)
         self.__moteur_g.reculer(1)
 
