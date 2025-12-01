@@ -74,6 +74,7 @@ while True:
     print("orientation ", orientation_curr, " degrés")
     if (0 - target_tol)%360 < orientation_curr < target_tol:
         break
+    time.sleep(0.05)
 
 voiture.arreter()
 print("Robot a fait un tour.")
