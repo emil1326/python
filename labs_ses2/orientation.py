@@ -9,7 +9,7 @@ from icm20948 import ICM20948  # type: ignore
 
 
 class Orientation:
-    waitTime = 50  # ms
+    waitTime = 10  # ms
 
     class orientationData:
         def __init__(self, ax=0, ay=0, az=0, gx=0, gy=0, gz=0, mx=0, my=0, mz=0):
@@ -62,7 +62,7 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
-        self.minCachedTimeBetweenIMUReads = 0.05  # seconds
+        self.minCachedTimeBetweenIMUReads = 0  # seconds
         self.lastIMUReadTime = None
         self.lastIMUReadData = None
 
@@ -110,7 +110,7 @@ class Orientation:
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
 
         with self.lockOBJ:
-            time.sleep(0.075)  # small delay to allow I2C bus to recover -> usually 40ms
+            time.sleep(self.waitTime/1000)  # small delay to allow I2C bus to recover -> usually 40ms
 
             try:
                 ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
@@ -118,7 +118,7 @@ class Orientation:
             except Exception as e:
                 print(e)
 
-            time.sleep(0.075)  # small delay to allow I2C bus to recover -> usually 40ms
+            time.sleep(self.waitTime/1000)  # small delay to allow I2C bus to recover -> usually 40ms
 
             try:
                 mx, my, mz = self.imu.read_magnetometer_data()
@@ -214,10 +214,6 @@ class Orientation:
             # Always compute magnetometer heading (radians)
             try:
                 self.mag_heading = self._compute_mag_heading(d.mz, d.my)
-
-                if self.mag_heading > 350 or self.mag_heading < 10:
-                    print("Heading near north:", self.mag_heading)
-
             except Exception as e:
                 print(e)
 

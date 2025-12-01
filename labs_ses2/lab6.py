@@ -38,15 +38,21 @@ print("Calibration complete. Starting main loop. orientation", orientation.mag_h
 time.sleep(1)
 
 target_tol = 5
-max_seconds = 10.0
-vitesse_robot = 0.65
+max_seconds = 30.0
+vitesse_robot = 0.75
+min_angle = 358
+max_angle = 10
 start_time = time.time()
+wait_time = orientation.waitTime/1000 
+
+print('wait_time', wait_time)
 
 # tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
 while True:
     heading = orientation.mag_heading
     print("orientation ", heading, " degrés")
-    if abs(heading) <= target_tol:
+    if heading > min_angle or heading < max_angle:
+        print("Robot aligné vers le nord magnétique.")
         break
 
     # si heading > 0 on veut le diminuer, donc tourner à droite ;
@@ -60,21 +66,23 @@ while True:
     if time.time() - start_time > max_seconds:
         print("Timeout pendant l'alignement magnétique.")
         break
+    
+    time.sleep(wait_time)
 
 voiture.arreter()
-print("Robot aligné vers le nord magnétique.")
+
 time.sleep(1)
 
 voiture.tourner_droite(vitesse_robot)
-time.sleep(0.2)
+time.sleep(1)
 
 while True:    
     voiture.tourner_droite(vitesse_robot)
     orientation_curr = orientation.mag_heading
     print("orientation ", orientation_curr, " degrés")
-    if orientation_curr <= target_tol or abs(orientation_curr - 360) <= target_tol:
+    if orientation_curr > min_angle or orientation_curr < max_angle:
         break
-    time.sleep(0.05)
+    time.sleep(wait_time)
 
 voiture.arreter()
 print("Robot a fait un tour.")
@@ -86,7 +94,8 @@ while mayContinue:
     )
 
     key = cv2.waitKeyEx(30)  # type: ignore # attendre 30ms pour l'appui d'une touche
-
+    
+    time.sleep(5)
     # gestion d'erreur
     if key == -1 or key > 255:
         continue
@@ -98,4 +107,4 @@ while mayContinue:
         print("arrêt")
     
     mapper.map(t)
-    time.sleep(5)
+    
