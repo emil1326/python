@@ -215,7 +215,7 @@ class Orientation:
             try:
                 self.mag_heading = self._compute_mag_heading(d.mz, d.my)
 
-                if 350 < self.mag_heading < 10:
+                if self.mag_heading > 350 or self.mag_heading < 10:
                     print("Heading near north:", self.mag_heading)
 
             except Exception as e:

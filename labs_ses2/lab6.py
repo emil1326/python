@@ -72,7 +72,7 @@ while True:
     voiture.tourner_droite(vitesse_robot)
     orientation_curr = orientation.mag_heading
     print("orientation ", orientation_curr, " degrés")
-    if (0 - target_tol)%360 < orientation_curr < target_tol:
+    if orientation_curr <= target_tol or abs(orientation_curr - 360) <= target_tol:
         break
 
 voiture.arreter()
