@@ -9,7 +9,7 @@ from icm20948 import ICM20948  # type: ignore
 
 
 class Orientation:
-    waitTime = 100  # ms
+    waitTime = 50  # ms
 
     class orientationData:
         def __init__(self, ax=0, ay=0, az=0, gx=0, gy=0, gz=0, mx=0, my=0, mz=0):
@@ -62,7 +62,7 @@ class Orientation:
 
         self.lockOBJ = threading.Lock()
 
-        self.minCachedTimeBetweenIMUReads = 0.1  # seconds
+        self.minCachedTimeBetweenIMUReads = 0.05  # seconds
         self.lastIMUReadTime = None
         self.lastIMUReadData = None
 
@@ -194,7 +194,7 @@ class Orientation:
         mz_c = mz - self.mz_offset
         my_c = my - self.my_offset
         radians = math.atan2(mz_c, my_c)
-        angle = radians * (180/math.pi)
+        angle = radians * (180/math.pi) + 180
         return angle
 
     def _main_loop(self):

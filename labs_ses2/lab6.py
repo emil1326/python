@@ -45,6 +45,7 @@ start_time = time.time()
 # tourner jusqu'à ce que l'angle magnétique soit proche de 0 (nord)
 while True:
     heading = orientation.mag_heading
+    print("orientation ", heading, " degrés")
     if abs(heading) <= target_tol:
         break
 
@@ -67,22 +68,20 @@ time.sleep(1)
 voiture.tourner_droite(vitesse_robot)
 time.sleep(0.2)
 
-keep = True
-while keep:
+while True:    
     voiture.tourner_droite(vitesse_robot)
-    
-    if 0 - target_tol < orientation.mag_heading < 0 + target_tol:
-        keep = False
+    orientation_curr = orientation.mag_heading
+    print("orientation ", orientation_curr, " degrés")
+    if (0 - target_tol)%360 < orientation_curr < target_tol:
+        break
 
 voiture.arreter()
 print("Robot a fait un tour.")
 time.sleep(1)
 
 while mayContinue:
-    # print(orientation._read_imu().__repr__())
-
     print(
-        f"orientations: autour de l'axe des x: {orientation.yaw:.2f} rad | orientation magnetometre: {orientation.mag_heading:.2f} rad"
+        f"orientations: autour de l'axe des x: {orientation.yaw:.2f} degrés | orientation magnetometre: {orientation.mag_heading:.2f} degrés"
     )
 
     key = cv2.waitKeyEx(30)  # type: ignore # attendre 30ms pour l'appui d'une touche
@@ -96,5 +95,6 @@ while mayContinue:
     if t == "x":
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
-
+    
     mapper.map(t)
+    time.sleep(5)
