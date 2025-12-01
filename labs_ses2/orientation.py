@@ -1,4 +1,4 @@
-#Emillien Devauchelle
+# Emillien Devauchelle
 
 from ast import main
 import threading
@@ -89,7 +89,9 @@ class Orientation:
         self._thread = threading.Thread(target=self._main_loop, daemon=True)
 
         # calibrate magnetometer at startup
-        threading.Thread(target=self._calibrate_magnetometer, args=(mag_cal_seconds,), daemon=True).start()
+        threading.Thread(
+            target=self._calibrate_magnetometer, args=(mag_cal_seconds,), daemon=True
+        ).start()
 
     def _read_imu(self):
         if self.imu is None:
@@ -109,7 +111,7 @@ class Orientation:
 
         with self.lockOBJ:
             time.sleep(0.075)  # small delay to allow I2C bus to recover -> usually 40ms
-            
+
             try:
                 ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
                 imuwork = True
@@ -172,9 +174,8 @@ class Orientation:
         self.mz_offset = (min_mz + max_mz) / 2.0
         self.calibrating.clear()
         self.calibrationDone = True
-        
+
         self._thread.start()
-        
 
     def set_tourne(self, tourne: bool):
         if tourne:
@@ -194,17 +195,17 @@ class Orientation:
         mz_c = mz - self.mz_offset
         my_c = my - self.my_offset
         radians = math.atan2(mz_c, my_c)
-        angle = radians * (180/math.pi)
+        angle = radians * (180 / math.pi)
         return angle
 
     def _main_loop(self):
         while not self._stop.is_set():
-           
+
             now = time.perf_counter()
             dt = (now - self._last_time) if self._last_time is not None else 0.0
-            #print(dt)
+            # print(dt)
             self._last_time = now
-            
+
             d = self._read_imu()
             if d is None:
                 print("IMU read failed in main loop")
@@ -213,6 +214,10 @@ class Orientation:
             # Always compute magnetometer heading (radians)
             try:
                 self.mag_heading = self._compute_mag_heading(d.mz, d.my)
+
+                if 350 < self.mag_heading < 10:
+                    print("Heading near north:", self.mag_heading)
+
             except Exception as e:
                 print(e)
 
@@ -230,11 +235,11 @@ class Orientation:
                     gx = d.gx
                     gx_corrected = gx - self.gx_bias  # same units as input
                     gx_corrected_rad = math.radians(gx_corrected)
-                    
+
                     # integrate: yaw in radians
                     if dt > 0:
                         # self.yaw += gx_corrected_rad * dt
-                        self.yaw += gx_corrected * dt # in degrees ?
+                        self.yaw += gx_corrected * dt  # in degrees ?
                 except Exception as e:
                     print(e)
 
