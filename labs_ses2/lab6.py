@@ -49,14 +49,11 @@ while True:
     if abs(heading) <= target_tol:
         break
 
-    # si heading > 0 on veut le diminuer, donc tourner à droite ;
-    # si heading < 0 on veut l'augmenter, donc tourner à gauche.
     if heading > 0 + target_tol:
         voiture.tourner_droite(vitesse_robot)
     else:
         voiture.tourner_gauche(vitesse_robot)
 
-    # sécurité : timeout pour éviter boucle infinie
     if time.time() - start_time > max_seconds:
         print("Timeout pendant l'alignement magnétique.")
         break

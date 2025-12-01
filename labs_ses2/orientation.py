@@ -126,20 +126,18 @@ class Orientation:
             except Exception as e:
                 print(e)
 
+        self.lastIMUReadTime = time.perf_counter()
         if imuwork and magwork:
-            self.lastIMUReadTime = time.perf_counter()
             self.lastIMUReadData = Orientation.orientationData(
                 ax, ay, az, gx, gy, gz, mx, my, mz
             )
             return self.lastIMUReadData
         elif imuwork:
-            self.lastIMUReadTime = time.perf_counter()
             self.lastIMUReadData = Orientation.orientationData(
                 ax, ay, az, gx, gy, gz, 0, 0, 0
             )
             return self.lastIMUReadData
         elif magwork:
-            self.lastIMUReadTime = time.perf_counter()
             self.lastIMUReadData = Orientation.orientationData(
                 0, 0, 0, 0, 0, 0, mx, my, mz
             )
