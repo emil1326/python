@@ -96,73 +96,59 @@ class Camera:
     def rechercher_model(self, nom_model, nom_masque):
         model = cv2.imread(nom_model, cv2.IMREAD_GRAYSCALE)
         masque = cv2.imread(nom_masque, cv2.IMREAD_GRAYSCALE)
+        
+    
+        img_bgr = self.capturer_image_bgr()
+        img_gray = self.convertir_image_bgr2gray(img_bgr)
+        img_cible = img_gray
+        ymin = 0
+        ymax = self.HAUTEUR
+        xmin = 0
+        xmax = self.LARGEUR
 
-        touche_presse = ""
+        if self.__derniere_position_objet is not None:
+            ymin = self.__derniere_position_objet["y"] - self.ROI
+            ymax = (
+                self.__derniere_position_objet["y"] + model.shape[0] + self.ROI
+            )  # hauteur
+            xmin = self.__derniere_position_objet["x"] - self.ROI
+            xmax = (
+                self.__derniere_position_objet["x"] + model.shape[1] + self.ROI
+            )  # largeur
+            cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
 
-        while touche_presse != "x":
-            img_bgr = self.capturer_image_bgr()
-            img_gray = self.convertir_image_bgr2gray(img_bgr)
-            img_cible = img_gray
-            ymin = 0
-            ymax = self.HAUTEUR
-            xmin = 0
-            xmax = self.LARGEUR
+            # bornes dans les dimensions valides
+            h, w = img_gray.shape
+            ymin = max(0, ymin)
+            xmin = max(0, xmin)
+            ymax = min(h, ymax)
+            xmax = min(w, xmax)
 
-            if self.__derniere_position_objet is not None:
-                ymin = self.__derniere_position_objet["y"] - self.ROI
-                ymax = (
-                    self.__derniere_position_objet["y"] + model.shape[0] + self.ROI
-                )  # hauteur
-                xmin = self.__derniere_position_objet["x"] - self.ROI
-                xmax = (
-                    self.__derniere_position_objet["x"] + model.shape[1] + self.ROI
-                )  # largeur
-                cv2.rectangle(img_bgr, (xmin, ymin), (xmax, ymax), (255, 0, 0), 2)
+            img_cible = img_gray[ymin:ymax, xmin:xmax]
 
-                # bornes dans les dimensions valides
-                h, w = img_gray.shape
-                ymin = max(0, ymin)
-                xmin = max(0, xmin)
-                ymax = min(h, ymax)
-                xmax = min(w, xmax)
+        res_match = cv2.matchTemplate(
+            img_cible, model, cv2.TM_CCOEFF_NORMED, None, masque
+        )
+        _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
 
-                img_cible = img_gray[ymin:ymax, xmin:xmax]
+        print(f"max_val = {max_val:.3f} à {max_loc}")
 
-            res_match = cv2.matchTemplate(
-                img_cible, model, cv2.TM_CCOEFF_NORMED, None, masque
+        if self.CORRELATION_MIN < max_val:
+            x = max_loc[0] + xmin
+            y = max_loc[1] + ymin
+            self.__derniere_position_objet = {"y": y, "x": x}
+            # dessiner le rectangle autour de l'objet détecté
+            cv2.rectangle(
+                img_bgr,
+                (x, y),
+                (x + model.shape[1], y + model.shape[0]),
+                (0, 0, 255),
+                2,
             )
-            _, max_val, _, max_loc = cv2.minMaxLoc(res_match)
+        else:
+            self.__derniere_position_objet = None
+            
 
-            print(f"max_val = {max_val:.3f} à {max_loc}")
-
-            if self.CORRELATION_MIN < max_val:
-                x = max_loc[0] + xmin
-                y = max_loc[1] + ymin
-                self.__derniere_position_objet = {"y": y, "x": x}
-                # dessiner le rectangle autour de l'objet détecté
-                cv2.rectangle(
-                    img_bgr,
-                    (x, y),
-                    (x + model.shape[1], y + model.shape[0]),
-                    (0, 0, 255),
-                    2,
-                )
-            else:
-                self.__derniere_position_objet = None
-
-            # dessiner le rectangle du ROI
-
-            cv2.imshow("Lab 4 | Recherche du model", img_bgr)
-
-            key = cv2.waitKeyEx(30)  # attendre 30ms pour l'appui d'une touche
-
-            # gestion d'erreur
-            if key == -1 or key > 255:
-                continue
-
-            touche_presse = chr(key)
-
-        print("arrêt de la recherche")
 
     def convertir_image_bgr2gray(self, image_bgr):
         return cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
@@ -231,3 +217,6 @@ class Camera:
         elif platform.system() == "Windows":
             ret, image = self.__cam.read()  # type: ignore
             return image
+    
+    def get_derniere_position_objet(self):
+        return self.__derniere_position_objet
