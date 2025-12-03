@@ -9,10 +9,6 @@ class Robot:
     def __init__(self,moteur_IN1=6, moteur_IN2=5, moteur_ENA=13, moteur_IN3=15, moteur_IN4=14, moteur_ENB=18, sonar=None, dels=None, orientation=None):
         print("init robot")
         self.orientation = orientation
-        self.__del_jaune = dels
-        self.__del_verte = dels
-        self.__sonar_d = sonar
-        self.__sonar_g = sonar
         
         if dels is not None:
             self.__del_jaune = Dels(8)
