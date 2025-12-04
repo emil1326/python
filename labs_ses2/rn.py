@@ -52,7 +52,7 @@ class RadioNavigationV2:
     as a numpy array. If parsing fails, it returns `None`.
     """
 
-    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 1.0):
+    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 0.1):
         import re
 
         self._port = port
@@ -140,20 +140,52 @@ class RadioNavigationV2:
             return False
 
     def get_raw(self, timeout: float | None = None) -> str | None:
-        """Read one raw line from the device as a decoded string (or None on timeout)."""
+        """Read one raw line from the device as a decoded string (or None on timeout).
+
+        This implementation polls `in_waiting` and consumes available bytes until
+        a newline is seen or the timeout elapses. Using a small default timeout
+        avoids long blocking waits when the device doesn't immediately send data.
+        """
         if not self.is_open():
             raise RuntimeError("Serial port not open")
-        old_to = self._serial.timeout
-        if timeout is not None:
-            self._serial.timeout = timeout
-        try:
-            raw = self._serial.readline()
-            if not raw:
-                return None
-            return raw.decode(errors="replace").strip()
-        finally:
-            if timeout is not None:
-                self._serial.timeout = old_to
+
+        to = timeout if timeout is not None else self._timeout
+        end = time.time() + to
+        buf = bytearray()
+
+        while time.time() < end:
+            try:
+                n = self._serial.in_waiting  # type: ignore[attr-defined]
+            except Exception:
+                n = 0
+
+            if n and n > 0:
+                try:
+                    chunk = self._serial.read(n)
+                except Exception:
+                    chunk = b""
+                if chunk:
+                    buf.extend(chunk)
+                    if b"\n" in buf:
+                        line, _rest = buf.split(b"\n", 1)
+                        return line.decode(errors="replace").strip()
+            else:
+                # try a short non-blocking read of one byte
+                try:
+                    b = self._serial.read(1)
+                except Exception:
+                    b = b""
+                if b:
+                    buf.extend(b)
+                    if b == b"\n":
+                        return buf.decode(errors="replace").strip()
+
+            time.sleep(0.01)
+
+        # timeout reached
+        if buf:
+            return buf.decode(errors="replace").strip()
+        return None
 
     def get_position(self) -> np.ndarray | None:
         """Attempt to read a position from the radio and parse two floats (lat, lon).
