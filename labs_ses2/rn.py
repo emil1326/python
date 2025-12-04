@@ -29,13 +29,17 @@ class RadioNavigation:
         except Exception as e:
             print("Impossible de demarrer la radio navigation", e)
             return False
+        
+    def arreter(self):
+        self.__serial.close()
 
     def get_position(self) -> np.ndarray:
         time.sleep(0.1)
         data = str(self.__serial.readline())
-        print("data: ", data)
-
-        return np.array([0.0, 0.0])
+        
+        POS = data.split(",")
+        
+        print("POS: ", POS)
 
 
 class RadioNavigationV2:
