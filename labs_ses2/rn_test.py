@@ -1,4 +1,4 @@
-from rn import RadioNavigation
+from rn import RadioNavigationV2
 import cv2
 from dictKeyValue import MapTouches
 from gab_robot import Robot
@@ -11,14 +11,16 @@ IN3 = 15
 IN4 = 14
 ENB = 18
 
-robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB, orientation=orientation)
-rn = RadioNavigation()
-mapper = MapTouches()
+robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB)
+rn = RadioNavigationV2()
+mapper = MapTouches(robot)
 
 maycontinue = rn.demarrer()#part la boucle seulement si demarrer a fonctionné
 print('maycontinue: ', maycontinue)
 while maycontinue:
     pos = rn.get_position()
+    if(pos is not None):
+        print('pos', pos[0], pos[1])
     
     #attendre une touche
     key = cv2.waitKeyEx(30)

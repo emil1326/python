@@ -56,7 +56,7 @@ class RadioNavigationV2:
     as a numpy array. If parsing fails, it returns `None`.
     """
 
-    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 1.0):
+    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 0.1):
         import re
 
         self._port = port
