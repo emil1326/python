@@ -18,8 +18,8 @@ ENB = 18
 HAUTEUR = 480
 LARGEUR = 480
 
-TARGET_OBJET = np.array([100.0, 100.0])  # position de l'objet à atteindre
-TARGET_DROPOFF = np.array([120.0, 120.0])  # position où lâcher l'objet
+TARGET_OBJET = np.array([3.5, 5])  # position de l'objet à atteindre
+TARGET_DROPOFF = np.array([0, 0])  # position où lâcher l'objet
 
 # create orientation (IMU) and pass it to the Robot for closed-loop turns
 orientation = Orientation()
