@@ -261,7 +261,6 @@ class RadioNavigation:
         # cache
         self.last_line = None
         self.last_position = None
-        self.last_time = 0.0
 
         # regex to find floats
         self._float_re = re.compile(r"[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?")
@@ -285,7 +284,7 @@ class RadioNavigation:
             raise RuntimeError(f"Failed to open serial port {self.port}: {e}") from e
 
     def _reader(self):
-        while not self._stop.is_set() and self._serial is not None:
+        while not self._stop.is_set():
             try:
                 raw = self._serial.readline()
                 # print("reader raw", raw)
@@ -304,7 +303,6 @@ class RadioNavigation:
                     self.last_line = line
                     if pos is not None:
                         self.last_position = pos
-                        self.last_time = time.time()
 
             time.sleep(0.01)
 
@@ -322,10 +320,8 @@ class RadioNavigation:
     def is_open(self) -> bool:
         return self._serial is not None and getattr(self._serial, "is_open", False)
 
-    def get_position(self):
-        pos = self.last_position
-        ts = self.last_time
-        return pos
+    def get_position(self):        
+        return self.last_position
 
     def demarrer(self):
         try:
