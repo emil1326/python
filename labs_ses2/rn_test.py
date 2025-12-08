@@ -1,4 +1,4 @@
-from rn import RadioNavigationSimple as TheRadioNavigationThatIsntTheFileOrTheClass
+from rn import RadioNavigation as RNTIFOC
 import cv2 # type: ignore
 from dictKeyValue import MapTouches
 from gab_robot import Robot
@@ -13,7 +13,7 @@ IN4 = 14
 ENB = 18
 
 robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB)
-rn = TheRadioNavigationThatIsntTheFileOrTheClass()
+rn = RNTIFOC()
 mapper = MapTouches(robot)
 
 img = np.zeros((480, 480, 3), np.uint8)
@@ -36,6 +36,7 @@ while maycontinue:
     t = chr(key)
     # si on demande d'arrêter
     if t == "x":
+        rn.arreter()
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
     # mapper pour appeler les bonnes fonctions selon la touche appuyée
@@ -43,6 +44,6 @@ while maycontinue:
 
 #nettoyer le robot de tout ces processus
 cv2.destroyAllWindows()
-rn.arreter()
+
     
     

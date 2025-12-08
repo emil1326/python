@@ -10,12 +10,12 @@ class Models(enum.Enum):
 class Lidar:  
     RANGE = 3 #metres de range parce que le max (8m ou 10m) serait trop
     SCAN = None
-    MIN_DIST_Y = 0.10#m
-    MAX_DIST_Y = 0.15#m
-    MIN_DIST_X = 0.05#m
-    MAX_DIST_X = 0.10#m
+    MIN_DIST_Y = -0.20#m
+    MAX_DIST_Y = -0.50#m
+    MIN_DIST_X = 0.10#m
+    MAX_DIST_X = 0.40#m
     
-    def __init__(self, port, model, largeur_robot = 0.24, longueur_robot = 0.24) -> None:
+    def __init__(self, port, model, largeur_robot = 0.30, longueur_robot = 0.30) -> None:
         if model == Models.X2:
             self.__BAUD = 115200
             self.__SAMPLE_RATE = 4
@@ -42,8 +42,9 @@ class Lidar:
         self.LASER.setlidaropt(ydlidar.LidarPropSingleChannel, self.__SINGLE_CHANNEL)
         self.__lidar = self.LASER
         
-        self.__corridor_x = largeur_robot/2 + 0.05
-        self.__corridor_y = largeur_robot/2 + 0.05
+        self.__points = []
+        self.__corridor_x = largeur_robot/2 + 0.10
+        self.__corridor_y = largeur_robot/2 + 0.10
     
     def demarrer(self):
         '''
@@ -86,7 +87,9 @@ class Lidar:
                 x_lidar = -d*sin(a)
                 y_lidar = d*cos(a)
                 points.append((x_lidar, y_lidar))
-            if(points.count()>0):
+
+            if(len(points)>0):
+                self.__points = points
                 return points
             else:
                 print('aucuns points trouvé')
@@ -104,7 +107,7 @@ class Lidar:
         ex = largeur_image/self.RANGE
         ey = hauteur_image/self.RANGE
         
-        points = self.getPointsObstacle()
+        points = self.__points
         
         if(points is not None):        
             for (x,y) in points:
@@ -120,11 +123,24 @@ class Lidar:
                     img[int(y_img), int(x_img)] = (255, 255, 255)
                 
     def obstacleEnAvant(self, point_x, point_y):
-        dans_zone_y = self.MIN_DIST_Y < point_y < self.MAX_DIST_Y
+        dans_zone = self.MAX_DIST_Y < point_y < self.MIN_DIST_Y #point y est dans les negatif
         dans_corridor = abs(point_x) < self.__corridor_x
-        
-        return dans_zone_y and dans_corridor
+        #print('dans corridor', dans_corridor)
+        #print('dans zone y', dans_zone_y, point_y)
+        return dans_zone and dans_corridor
     
-    def obstacleGauche(self, point_x, min_dist_x, max_dist_x):
-        return True
+    def obstacleGauche(self, point_x, point_y):
+        dans_zone = -self.MAX_DIST_X < point_x < -self.MIN_DIST_X #point_x est dans les negatif
+        dans_corridor = abs(point_y) < self.__corridor_y
+        #print('dans corridor', dans_corridor)
+        #print('dans zone y', dans_zone_y, point_y)
+        return dans_zone and dans_corridor
+
+    def obstacleDroite(self, point_x, point_y):
+        dans_zone = self.MIN_DIST_X < point_x < self.MAX_DIST_X #point x est dans les positif
+        dans_corridor = abs(point_y) < self.__corridor_y
+        #print('dans corridor', dans_corridor)
+        #print('dans zone y', dans_zone_y, point_y)
+        return dans_zone and dans_corridor
         
+

@@ -69,5 +69,5 @@ class MapTouches:
 # cd Documents/pyfile/labs_ses2
 # cd C:\Users\emili\OneDrive - Collège Lionel-Groulx\SharedProjects\python
 # scp labs_ses2\*.py pi@192.168.137.183:~/Documents/pyfile/
-# scp ./*.py pi@172.20.10.2:~/Documents/pyfile/
+# scp ./labs_ses2/*.py pi@172.20.10.2:~/Documents/pyfile/
 # robot1234
