@@ -236,7 +236,7 @@ class RadioNavigation:
     - Use `send_cmd()` to trigger a response from the device if it supports that.
     """
 
-    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 0.1):
+    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout = 1):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -261,6 +261,7 @@ class RadioNavigation:
             self._serial.parity = ser.PARITY_NONE
             self._serial.stopbits = ser.STOPBITS_ONE
             self._serial.timeout = self.timeout
+            
             if not self._serial.is_open:
                 self._serial.open()                
             
@@ -275,6 +276,7 @@ class RadioNavigation:
         while not self._stop.is_set():
             try:
                 raw = self._serial.readline()
+                #print("reader raw", raw)
             except Exception:
                 raw = b""
 
@@ -322,7 +324,7 @@ class RadioNavigation:
             
             time.sleep(1)
             
-            if(len(data)==7):
+            if(len(data)==3):
                 self._serial.write(b"\r\r")
                 
                 time.sleep(1)
