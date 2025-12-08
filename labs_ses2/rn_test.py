@@ -1,4 +1,4 @@
-from rn import RadioNavigation, RadioNavigationV2
+from rn import RadioNavigationSimple as TheRadioNavigationThatIsntTheFileOrTheClass
 import cv2
 from dictKeyValue import MapTouches
 from gab_robot import Robot
@@ -13,7 +13,7 @@ IN4 = 14
 ENB = 18
 
 robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB)
-rn = RadioNavigationV2()
+rn = TheRadioNavigationThatIsntTheFileOrTheClass()
 mapper = MapTouches(robot)
 
 img = np.zeros((480, 480, 3), np.uint8)

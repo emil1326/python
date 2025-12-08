@@ -280,7 +280,8 @@ class RadioNavigationSimple:
             if raw:
                 try:
                     line = raw.decode(errors="replace").strip()
-                except Exception:
+                except Exception as e:
+                    print("reader en erreur:", e)
                     line = None
 
                 if line:
@@ -290,8 +291,8 @@ class RadioNavigationSimple:
                         if pos is not None:
                             self.last_position = pos
                             self.last_time = time.time()
-            else:
-                time.sleep(0.01)
+            
+            time.sleep(0.01)
 
     def _parse_line(self, line: str):
         # return numpy array of first two floats if present
@@ -306,35 +307,32 @@ class RadioNavigationSimple:
     def is_open(self) -> bool:
         return self._serial is not None and getattr(self._serial, "is_open", False)
 
-    def send_cmd(self, cmd: bytes) -> None:
-        if not self.is_open():
-            raise RuntimeError("Serial port not open")
-        try:
-            try:
-                self._serial.reset_input_buffer()
-            except Exception:
-                pass
-            self._serial.write(cmd)
-        except Exception:
-            pass
-
-    def get_position(self, max_age: float = 0.5):
+    def get_position(self, max_age = 0.05):
         with self._lock:
             pos = self.last_position
             ts = self.last_time
-        if pos is None:
-            return None
-        if (time.time() - ts) > max_age:
-            return None
         return pos
+    
+    def demarrer(self):
+        try:
+            self._serial.write(b"\r\r")
 
-    def close(self):
+            time.sleep(1)
+
+            self._serial.write(b"lep\r")
+            return True
+        except Exception as e:
+            print("Impossible de demarrer la radio navigation", e)
+            return False
+    
+    def arreter(self):
         self._stop.set()
         if self._thread is not None:
             self._thread.join(timeout=0.5)
         try:
             if self._serial is not None and self._serial.is_open:
                 self._serial.close()
+            print("serial ferme", not self._serial.is_open())
         except Exception:
             pass
 

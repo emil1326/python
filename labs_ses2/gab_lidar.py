@@ -10,8 +10,12 @@ class Models(enum.Enum):
 class Lidar:  
     RANGE = 3 #metres de range parce que le max (8m ou 10m) serait trop
     SCAN = None
+    MIN_DIST_Y = 0.10#m
+    MAX_DIST_Y = 0.15#m
+    MIN_DIST_X = 0.05#m
+    MAX_DIST_X = 0.10#m
     
-    def __init__(self, port, model) -> None:
+    def __init__(self, port, model, largeur_robot = 0.24, longueur_robot = 0.24) -> None:
         if model == Models.X2:
             self.__BAUD = 115200
             self.__SAMPLE_RATE = 4
@@ -37,6 +41,9 @@ class Lidar:
         self.LASER.setlidaropt(ydlidar.LidarPropScanFrequency, self.__SCAN_FREQ)
         self.LASER.setlidaropt(ydlidar.LidarPropSingleChannel, self.__SINGLE_CHANNEL)
         self.__lidar = self.LASER
+        
+        self.__corridor_x = largeur_robot/2 + 0.05
+        self.__corridor_y = largeur_robot/2 + 0.05
     
     def demarrer(self):
         '''
@@ -62,15 +69,8 @@ class Lidar:
         self.__lidar.turnOff()
         self.__lidar.disconnecting()
     
-    def dessinerSurImage(self, img, largeur_image, hauteur_image):
-        if self.__lidar is None:
-            print("DessinerSurImage_Le lidar n'a pas été initialisé correctement")
-            return    
-            
-        #mise a l'échelle px/metres
-        ex = largeur_image/self.RANGE
-        ey = hauteur_image/self.RANGE
-        
+    def getPointsObstacle(self):
+        points = []
         #1. scan
         scan = ydlidar.LaserScan()
         r = self.__lidar.doProcessSimple(scan)
@@ -85,9 +85,31 @@ class Lidar:
                 #3. get x et y grace a l'angle en radian
                 x_lidar = -d*sin(a)
                 y_lidar = d*cos(a)
-                
-                x_pixel = x_lidar * ex
-                y_pixel = y_lidar * ey
+                points.append((x_lidar, y_lidar))
+            if(points.count()>0):
+                return points
+            else:
+                print('aucuns points trouvé')
+                return None
+        
+        print('un problème est survenu dans le scan')
+        return None
+    
+    def dessinerSurImage(self, img, largeur_image, hauteur_image):
+        if self.__lidar is None:
+            print("DessinerSurImage_Le lidar n'a pas été initialisé correctement")
+            return    
+            
+        #mise a l'échelle px/metres
+        ex = largeur_image/self.RANGE
+        ey = hauteur_image/self.RANGE
+        
+        points = self.getPointsObstacle()
+        
+        if(points is not None):        
+            for (x,y) in points:
+                x_pixel = x * ex
+                y_pixel = y * ey
                 #5. recentrer les points
                 x_img = x_pixel + largeur_image/2
                 y_img = hauteur_image/2 + y_pixel
@@ -97,4 +119,12 @@ class Lidar:
                 if dessiner:                        
                     img[int(y_img), int(x_img)] = (255, 255, 255)
                 
+    def obstacleEnAvant(self, point_x, point_y):
+        dans_zone_y = self.MIN_DIST_Y < point_y < self.MAX_DIST_Y
+        dans_corridor = abs(point_x) < self.__corridor_x
+        
+        return dans_zone_y and dans_corridor
+    
+    def obstacleGauche(self, point_x, min_dist_x, max_dist_x):
+        return True
         
