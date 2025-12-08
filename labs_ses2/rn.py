@@ -5,7 +5,7 @@ import threading
 import re
 
 
-class RadioNavigation:
+class RadioNavigationDep:
     def __init__(self):
         # configurer le serial
         serial = ser.Serial()
@@ -27,10 +27,10 @@ class RadioNavigation:
         request = bytes([0x03, 0x04, 0x64, 0x00, 0x64, 0x00])
 
         # Send the request
-        ser.write(request)
+        serial.write(request)
 
         # Read the response (expect 3 bytes: Type=0x40, Length=0x01, Value=0x00 for success)
-        response = ser.read(3)
+        response = serial.read(3)
         print("Response:", response)
         
         self.__serial = serial
@@ -227,7 +227,7 @@ class RadioNavigationV2:
             pass
 
 
-class RadioNavigationSimple:
+class RadioNavigation:
     """Simple, readable radio navigation class with a background reader thread.
 
     - Reader thread calls blocking `readline()` with a short timeout and caches
@@ -262,13 +262,14 @@ class RadioNavigationSimple:
             self._serial.stopbits = ser.STOPBITS_ONE
             self._serial.timeout = self.timeout
             if not self._serial.is_open:
-                self._serial.open()
+                self._serial.open()                
+            
+            # set le reader thread
+            self._thread = threading.Thread(target=self._reader, daemon=True)
         except Exception as e:
             raise RuntimeError(f"Failed to open serial port {self.port}: {e}") from e
 
-        # start background reader
-        self._thread = threading.Thread(target=self._reader, daemon=True)
-        self._thread.start()
+        
 
     def _reader(self):
         while not self._stop.is_set():
@@ -314,12 +315,24 @@ class RadioNavigationSimple:
         return pos
     
     def demarrer(self):
-        try:
-            self._serial.write(b"\r\r")
-
+        try:            
+            data = str(self._serial.readline())
+            
+            print("demarrer data", data, "len", len(data))
+            
             time.sleep(1)
+            
+            if(len(data)==7):
+                self._serial.write(b"\r\r")
+                
+                time.sleep(1)
 
-            self._serial.write(b"lep\r")
+                self._serial.write(b"lep\r")
+                
+                time.sleep(1)
+
+            self._thread.start()
+            
             return True
         except Exception as e:
             print("Impossible de demarrer la radio navigation", e)
@@ -332,12 +345,7 @@ class RadioNavigationSimple:
         try:
             if self._serial is not None and self._serial.is_open:
                 self._serial.close()
-            print("serial ferme", not self._serial.is_open())
-        except Exception:
+            print("serial ferme", not self._serial.is_open)
+        except Exception as ex:
+            print('impossible de fermer le serial', ex)
             pass
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc, tb):
-        self.close()
