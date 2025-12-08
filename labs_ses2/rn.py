@@ -1,5 +1,5 @@
-import numpy as np
-import serial as ser #type: ignore
+import numpy as np  # type: ignore
+import serial as ser  # type: ignore
 import time
 import threading
 import re
@@ -32,7 +32,7 @@ class RadioNavigationDep:
         # Read the response (expect 3 bytes: Type=0x40, Length=0x01, Value=0x00 for success)
         response = serial.read(3)
         print("Response:", response)
-        
+
         self.__serial = serial
 
     def demarrer(self):
@@ -46,16 +46,16 @@ class RadioNavigationDep:
         except Exception as e:
             print("Impossible de demarrer la radio navigation", e)
             return False
-        
+
     def arreter(self):
         self.__serial.close()
 
     def get_position(self) -> np.ndarray:
         time.sleep(0.1)
         data = str(self.__serial.readline())
-        
+
         POS = data.split(",")
-        
+
         print("POS: ", POS)
         print("data: ", data)
 
@@ -76,13 +76,14 @@ class RadioNavigationV2:
     as a numpy array. If parsing fails, it returns `None`.
     """
 
-    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 0):
+    def __init__(
+        self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout: float = 0
+    ):
         import re
 
         self._port = port
         self._baudrate = baudrate
         self._timeout = timeout
-        self._serial = None
         self._re_float = re.compile(r"[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?")
 
         try:
@@ -93,7 +94,7 @@ class RadioNavigationV2:
             self._serial.parity = ser.PARITY_NONE
             self._serial.stopbits = ser.STOPBITS_ONE
             self._serial.timeout = self._timeout
-            
+
             # open only when requested to avoid exceptions during import
             if not self._serial.is_open:
                 self._serial.open()
@@ -111,6 +112,11 @@ class RadioNavigationV2:
                 response = self._serial.read(3)
                 print("Response:", response)
 
+                if self._serial is None:
+                    raise RuntimeError(
+                        f"Serial port {self._port} not open after initialization"
+                    )
+
         except Exception as e:
             # if open failed, leave _serial as None and raise a descriptive error
             self._serial = None
@@ -126,7 +132,12 @@ class RadioNavigationV2:
         except Exception:
             pass
 
-    def send_cmd(self, cmd: bytes, expect_response: bool = False, read_timeout: float | None = None) -> str | None:
+    def send_cmd(
+        self,
+        cmd: bytes,
+        expect_response: bool = False,
+        read_timeout: float | None = None,
+    ) -> str | None:
         """Send raw bytes to the radio and optionally read one response line."""
         if not self.is_open():
             raise RuntimeError("Serial port not open")
@@ -263,17 +274,16 @@ class RadioNavigation:
             self._serial.timeout = self.timeout
             
             if not self._serial.is_open:
-                self._serial.open()                
-            
+                self._serial.open()
+
             # set le reader thread
             self._thread = threading.Thread(target=self._reader, daemon=True)
+
         except Exception as e:
             raise RuntimeError(f"Failed to open serial port {self.port}: {e}") from e
 
-        
-
     def _reader(self):
-        while not self._stop.is_set():
+        while not self._stop.is_set() and self._serial is not None:
             try:
                 raw = self._serial.readline()
                 #print("reader raw", raw)
@@ -294,7 +304,7 @@ class RadioNavigation:
                         if pos is not None:
                             self.last_position = pos
                             self.last_time = time.time()
-            
+
             time.sleep(0.01)
 
     def _parse_line(self, line: str):
@@ -310,36 +320,41 @@ class RadioNavigation:
     def is_open(self) -> bool:
         return self._serial is not None and getattr(self._serial, "is_open", False)
 
-    def get_position(self, max_age = 0.05):
+    def get_position(self, max_age=0.05):
         with self._lock:
             pos = self.last_position
             ts = self.last_time
         return pos
-    
+
     def demarrer(self):
-        try:            
+        try:
+            if self._serial is None:
+                raise RuntimeError("Serial port not open")
+            if self._thread is None:
+                raise RuntimeError("Reader thread not initialized")
+
             data = str(self._serial.readline())
-            
+
             print("demarrer data", data, "len", len(data))
-            
+
             time.sleep(1)
             
             if(len(data)==3):
                 self._serial.write(b"\r\r")
-                
+
                 time.sleep(1)
 
                 self._serial.write(b"lep\r")
-                
+
                 time.sleep(1)
 
             self._thread.start()
-            
+
             return True
         except Exception as e:
             print("Impossible de demarrer la radio navigation", e)
             return False
-    
+
     def arreter(self):
         self._stop.set()
         if self._thread is not None:
@@ -347,7 +362,7 @@ class RadioNavigation:
         try:
             if self._serial is not None and self._serial.is_open:
                 self._serial.close()
-            print("serial ferme", not self._serial.is_open)
+                print("serial ferme", not self._serial.is_open)
         except Exception as ex:
-            print('impossible de fermer le serial', ex)
+            print("impossible de fermer le serial", ex)
             pass
