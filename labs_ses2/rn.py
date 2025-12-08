@@ -258,7 +258,6 @@ class RadioNavigation:
         self._lock = threading.Lock()
 
         # cache
-        self.last_line = None
         self.last_position = None
 
         # regex to find floats
@@ -286,8 +285,9 @@ class RadioNavigation:
         while not self._stop.is_set():
             try:
                 raw = self._serial.readline()
-                #print("reader raw", raw)
-            except Exception:
+                print("reader raw", raw)
+            except Exception as e:
+                print("probleme dans readline", e)
                 raw = b""
 
             if raw:
@@ -299,9 +299,14 @@ class RadioNavigation:
 
                 if line:
                     pos = self._parse_line(line)
-                    self.last_line = line
                     if pos is not None:
                         self.last_position = pos
+                    else:
+                        print("!!! reader -- no pos")
+                else:
+                    print("!!! reader - no line")
+            else:
+                print("!!! reader - no raw")
 
             time.sleep(0.01)
 
