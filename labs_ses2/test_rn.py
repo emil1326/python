@@ -13,13 +13,13 @@ The script is defensive and prints errors instead of raising.
 """
 import time
 
-from labs_ses2 import rn
+from rn import DWM1001Tag as rn
 
 
 def run_test():
     print("Testing DWM1001Tag using defaults from rn.DWM1001Tag")
     try:
-        tag = rn.DWM1001Tag()  # uses defaults declared in rn.py
+        tag = rn()  # uses defaults declared in rn.py
         print("Default port:", tag.port, "baudrate:", tag.baudrate)
 
         print("\n-- One-shot get_position() --")

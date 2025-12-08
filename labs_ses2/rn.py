@@ -1,4 +1,5 @@
 import struct
+from urllib import request
 import numpy as np  # type: ignore
 import serial as ser  # type: ignore
 import time
@@ -248,7 +249,7 @@ class RadioNavigation:
     - Use `send_cmd()` to trigger a response from the device if it supports that.
     """
 
-    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout = 1):
+    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout=1):
         self.port = port
         self.baudrate = baudrate
         self.timeout = timeout
@@ -273,7 +274,7 @@ class RadioNavigation:
             self._serial.parity = ser.PARITY_NONE
             self._serial.stopbits = ser.STOPBITS_ONE
             self._serial.timeout = self.timeout
-            
+
             if not self._serial.is_open:
                 self._serial.open()
 
@@ -287,7 +288,7 @@ class RadioNavigation:
         while not self._stop.is_set() and self._serial is not None:
             try:
                 raw = self._serial.readline()
-                #print("reader raw", raw)
+                # print("reader raw", raw)
             except Exception:
                 raw = b""
 
@@ -321,7 +322,7 @@ class RadioNavigation:
     def is_open(self) -> bool:
         return self._serial is not None and getattr(self._serial, "is_open", False)
 
-    def get_position(self):        
+    def get_position(self):
         pos = self.last_position
         ts = self.last_time
         return pos
@@ -338,8 +339,8 @@ class RadioNavigation:
             print("demarrer data", data, "len", len(data))
 
             time.sleep(1)
-            
-            if(len(data)==3):
+
+            if len(data) == 3:
                 self._serial.write(b"\r\r")
 
                 time.sleep(1)
@@ -366,6 +367,7 @@ class RadioNavigation:
         except Exception as ex:
             print("impossible de fermer le serial", ex)
             pass
+
 
 class DWM1001Tag:
     def __init__(self, port="/dev/ttyACM0", baudrate=115200, poll_interval=0.1):
@@ -421,7 +423,9 @@ class DWM1001Tag:
                     pos = np.array([x / 1000.0, y / 1000.0, z / 1000.0])
                     with self._lock:
                         self._last_position = pos
-                    print(f"Position: X={x/1000:.2f} m, Y={y/1000:.2f} m, Z={z/1000:.2f} m")
+                    print(
+                        f"Position: X={x/1000:.2f} m, Y={y/1000:.2f} m, Z={z/1000:.2f} m"
+                    )
 
             except Exception as e:
                 print("Error polling position:", e)
@@ -502,3 +506,133 @@ class DWM1001Tag:
 
     def close(self) -> None:
         self.disconnect()
+
+
+class TLVRadioNavigation:
+    """Simple, readable radio navigation class with a background reader thread.
+
+    - Reader thread calls blocking `readline()` with a short timeout and caches
+      the latest parsed position.
+    - `get_position()` returns the cached value immediately (or None if stale).
+    - Use `send_cmd()` to trigger a response from the device if it supports that.
+    """
+
+    def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout=1):
+        self.port = port
+        self.baudrate = baudrate
+        self.timeout = timeout
+        self._serial = None
+        self._thread = None
+        self._stop = threading.Event()
+        self._lock = threading.Lock()
+
+        # cache
+        self.last_line = None
+        self.last_position = None
+        self.last_time = 0.0
+
+        # regex to find floats
+        self._float_re = re.compile(r"[-+]?[0-9]*\.?[0-9]+(?:[eE][-+]?[0-9]+)?")
+
+        try:
+            self._serial = ser.Serial()
+            self._serial.port = self.port
+            self._serial.baudrate = self.baudrate
+            self._serial.bytesize = ser.EIGHTBITS
+            self._serial.parity = ser.PARITY_NONE
+            self._serial.stopbits = ser.STOPBITS_ONE
+            self._serial.timeout = self.timeout
+
+            if not self._serial.is_open:
+                self._serial.open()
+
+            # set le reader thread
+            self._thread = threading.Thread(target=self._reader, daemon=True)
+
+        except Exception as e:
+            raise RuntimeError(f"Failed to open serial port {self.port}: {e}") from e
+
+    def _reader(self):
+        while not self._stop.is_set() and self._serial is not None:
+            try:
+                request = bytes([0x02, 0x00])
+                self._serial.write(request)
+
+                time.sleep(0.2)
+
+                raw = self._serial.readline()
+                # print("reader raw", raw)
+            except Exception:
+                raw = b""
+
+            if raw:
+                try:
+                    line = raw.decode(errors="replace").strip()
+                except Exception as e:
+                    print("reader en erreur:", e)
+                    line = None
+
+                if line:
+                    pos = self._parse_line(line)
+                    self.last_line = line
+                    if pos is not None:
+                        self.last_position = pos
+                        self.last_time = time.time()
+
+            time.sleep(0.01)
+
+    def _parse_line(self, line: str):
+        # return numpy array of first two floats if present
+        vals = [m.group(0) for m in self._float_re.finditer(line)]
+        if len(vals) >= 2:
+            try:
+                print("_parse_line -- vals", str(vals))
+                return np.array([float(vals[0]), float(vals[1])])
+            except Exception:
+                return None
+        return None
+
+    def is_open(self) -> bool:
+        return self._serial is not None and getattr(self._serial, "is_open", False)
+
+    def get_position(self):
+        pos = self.last_position
+        ts = self.last_time
+        return pos
+
+    def demarrer(self):
+        try:
+            if self._serial is None:
+                raise RuntimeError("Serial port not open")
+            if self._thread is None:
+                raise RuntimeError("Reader thread not initialized")
+
+            # try to quit shell mode
+            self._serial.write(b"quit \r")
+
+            time.sleep(1)
+            request = bytes([0x02, 0x00])
+            self._serial.write(request)
+
+            time.sleep(0.2)
+
+            print("pos is", self._serial.read_all())
+
+            self._thread.start()
+
+            return True
+        except Exception as e:
+            print("Impossible de demarrer la radio navigation", e)
+            return False
+
+    def arreter(self):
+        self._stop.set()
+        if self._thread is not None:
+            self._thread.join(timeout=0.5)
+        try:
+            if self._serial is not None and self._serial.is_open:
+                self._serial.close()
+                print("serial ferme", not self._serial.is_open)
+        except Exception as ex:
+            print("impossible de fermer le serial", ex)
+            pass
