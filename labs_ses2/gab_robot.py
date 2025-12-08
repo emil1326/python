@@ -3,10 +3,15 @@ from gab_moteurs import Moteur
 from sonar import Sonar
 from dels import Dels
 from gab_orientation import Orientation, Etats
+from enum import Enum
+
+class ModelsRobot(Enum):
+    lynx = 0
+    normal = 1
 
 
 class Robot:
-    def __init__(self,moteur_IN1=6, moteur_IN2=5, moteur_ENA=13, moteur_IN3=15, moteur_IN4=14, moteur_ENB=18, sonar=None, dels=None, orientation=None):
+    def __init__(self,model: ModelsRobot,  sonar=None, dels=None, orientation=None):
         print("init robot")
         self.orientation = orientation
         
@@ -16,7 +21,25 @@ class Robot:
         if sonar is not None:
             self.__sonar_g = Sonar(25, 8)
             self.__sonar_d = Sonar(20, 21)
+        if model == ModelsRobot.normal:
+            moteur_IN1=6 
+            moteur_IN2=5 
+            moteur_ENA=13
+            moteur_IN3=15
+            moteur_IN4=14
+            moteur_ENB=18
+        elif model == ModelsRobot.lynx:
+            moteur_IN1 = 5
+            moteur_IN2 = 6
+            moteur_ENA = 13
+            moteur_IN3 = 15
+            moteur_IN4 = 14
+            moteur_ENB = 18
+        else:
+            raise Exception("model invalide", model)
 
+        self.__model = model
+        
         self.__moteur_g = Moteur(moteur_IN1, moteur_IN2, moteur_ENA)
         self.__moteur_d = Moteur(moteur_IN3, moteur_IN4, moteur_ENB)
 
@@ -24,12 +47,16 @@ class Robot:
     def avancer(self, vitesse=1.0):
         if self.orientation is not None:
             self.orientation.set_etat(Etats.avance)
+        if self.__model == ModelsRobot.lynx:
+            vitesse = 0.8
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
     def reculer(self):
         if self.orientation is not None:
             self.orientation.set_etat(True)
+        if self.__model == ModelsRobot.lynx:
+            vitesse = 0.8
         self.__moteur_d.reculer(1)
         self.__moteur_g.reculer(1)
 

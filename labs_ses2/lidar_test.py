@@ -1,8 +1,8 @@
 #Gabriel Pereira Levesque 
 #Laboratoire VIII
 
-from gab_robot import Robot
-from gab_lidar import (Lidar, Models)
+from gab_robot import Robot, ModelsRobot
+from gab_lidar import Lidar, Models
 import numpy as np  # type: ignore
 import cv2  # type: ignore
 
@@ -16,16 +16,9 @@ MODEL = Models.X4 # a changer selon le model quon tombe dessus
 
 # initialisation du robot
 
-#fix: inversé IN1 (14) et IN2 (15)
-IN1 = 5
-IN2 = 6
-ENA = 13
-#fix: inversé IN3 (5) et IN4 (6)
-IN3 = 15
-IN4 = 14
-ENB = 18
 
-robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB)
+
+robot = Robot(ModelsRobot.lynx)
 lidar = Lidar(PORT_LIDAR, MODEL)
 
 # initialisation du mapper qui associe les touches à des actions
