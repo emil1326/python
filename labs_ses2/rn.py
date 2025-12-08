@@ -1,4 +1,4 @@
-import numpy as np
+import numpy as np # type: ignore
 import serial as ser #type: ignore
 import time
 import threading
@@ -27,10 +27,10 @@ class RadioNavigation:
         request = bytes([0x03, 0x04, 0x64, 0x00, 0x64, 0x00])
 
         # Send the request
-        ser.write(request)
+        serial.write(request)
 
         # Read the response (expect 3 bytes: Type=0x40, Length=0x01, Value=0x00 for success)
-        response = ser.read(3)
+        response = serial.read(3)
         print("Response:", response)
         
         self.__serial = serial

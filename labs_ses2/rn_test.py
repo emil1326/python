@@ -1,8 +1,8 @@
 from rn import RadioNavigationSimple as TheRadioNavigationThatIsntTheFileOrTheClass
-import cv2
+import cv2 # type: ignore
 from dictKeyValue import MapTouches
 from gab_robot import Robot
-import numpy as np
+import numpy as np # type: ignore
 
 IN1 = 5
 IN2 = 6
