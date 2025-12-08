@@ -1,3 +1,4 @@
+import struct
 import numpy as np  # type: ignore
 import serial as ser  # type: ignore
 import time
@@ -366,3 +367,139 @@ class RadioNavigation:
         except Exception as ex:
             print("impossible de fermer le serial", ex)
             pass
+
+class DWM1001Tag:
+    def __init__(self, port="/dev/ttyACM0", baudrate=115200, poll_interval=0.1):
+        self.port = port
+        self.baudrate = baudrate
+        self.poll_interval = poll_interval  # seconds between polls
+        self._serial = None
+        self._thread = None
+        self._running = False
+        self._lock = threading.Lock()
+        self._last_position = None
+
+    def connect(self):
+        """Open the serial port if not already open."""
+        if self._serial is None or not getattr(self._serial, "is_open", False):
+            # Construct Serial with explicit args to avoid ambiguous initialization
+            self._serial = ser.Serial(self.port, self.baudrate, timeout=1)
+
+    def disconnect(self):
+        """Close the serial port if open."""
+        try:
+            if self._serial and getattr(self._serial, "is_open", False):
+                self._serial.close()
+        except Exception:
+            pass
+        finally:
+            self._serial = None
+
+    def _poll_position(self):
+        """Internal loop to poll dwm_loc_get (TLV Type=0x0A)."""
+        while self._running:
+            try:
+                if not self._serial or not getattr(self._serial, "is_open", False):
+                    time.sleep(self.poll_interval)
+                    continue
+
+                # TLV request: Type=0x0A, Length=0x00
+                request = bytes([0x0A, 0x00])
+                self._serial.write(request)
+
+                # Read response header first (Type + Length)
+                header = self._serial.read(2)
+                if len(header) < 2:
+                    time.sleep(self.poll_interval)
+                    continue
+
+                resp_type, resp_len = header[0], header[1]
+                payload = self._serial.read(resp_len)
+
+                # dwm_loc_get response contains position in first 12 bytes (X,Y,Z as int32)
+                if resp_type == 0x40 and resp_len >= 12 and len(payload) >= 12:
+                    x, y, z = struct.unpack("<iii", payload[:12])
+                    pos = np.array([x / 1000.0, y / 1000.0, z / 1000.0])
+                    with self._lock:
+                        self._last_position = pos
+                    print(f"Position: X={x/1000:.2f} m, Y={y/1000:.2f} m, Z={z/1000:.2f} m")
+
+            except Exception as e:
+                print("Error polling position:", e)
+
+            time.sleep(self.poll_interval)
+
+    def start(self) -> bool:
+        """Start continuous position polling in background thread (compat wrapper: demarrer)."""
+        try:
+            # ensure serial is open
+            self.connect()
+
+            if not self._running:
+                self._running = True
+                self._thread = threading.Thread(target=self._poll_position, daemon=True)
+                self._thread.start()
+
+            print("Started position polling.")
+            return True
+        except Exception as e:
+            print("Impossible de demarrer DWM1001Tag:", e)
+            return False
+
+    def stop(self) -> bool:
+        """Stop continuous position polling (compat wrapper: arreter)."""
+        try:
+            self._running = False
+            if self._thread:
+                self._thread.join(timeout=1.0)
+                self._thread = None
+            self.disconnect()
+            print("Stopped position polling.")
+            return True
+        except Exception as e:
+            print("Impossible d'arreter DWM1001Tag:", e)
+            return False
+
+    def get_position(self):
+        """Perform a single dwm_loc_get request and return position as numpy array [x,y,z] in meters or None.
+
+        If device is being polled in background, returns the most recently cached position.
+        """
+        try:
+            # If background polling is active, return cached value immediately
+            with self._lock:
+                if self._last_position is not None:
+                    return self._last_position
+
+            # one-shot request
+            self.connect()
+            request = bytes([0x0A, 0x00])
+            self._serial.write(request)
+
+            header = self._serial.read(2)
+            if len(header) < 2:
+                return None
+
+            resp_type, resp_len = header[0], header[1]
+            payload = self._serial.read(resp_len)
+
+            if resp_type == 0x40 and resp_len >= 12 and len(payload) >= 12:
+                x, y, z = struct.unpack("<iii", payload[:12])
+                return np.array([x / 1000.0, y / 1000.0, z / 1000.0])
+            return None
+        except Exception as e:
+            print("Error getting DWM1001Tag position:", e)
+            return None
+
+    # Compatibility methods matching other classes in this file
+    def demarrer(self) -> bool:
+        return self.start()
+
+    def arreter(self) -> bool:
+        return self.stop()
+
+    def is_open(self) -> bool:
+        return self._serial is not None and getattr(self._serial, "is_open", False)
+
+    def close(self) -> None:
+        self.disconnect()
