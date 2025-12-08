@@ -1,18 +1,10 @@
 from rn import RadioNavigation as RNTIFOC
 import cv2 # type: ignore
 from dictKeyValue import MapTouches
-from gab_robot import Robot
+from gab_robot import Robot, ModelsRobot
 import numpy as np # type: ignore
 
-IN1 = 5
-IN2 = 6
-ENA = 13
-
-IN3 = 15
-IN4 = 14
-ENB = 18
-
-robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB)
+robot = Robot(ModelsRobot.lynx)
 rn = RNTIFOC()
 mapper = MapTouches(robot)
 

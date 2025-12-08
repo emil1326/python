@@ -1,6 +1,6 @@
 import time
 from rn import RadioNavigation
-from gab_robot import Robot
+from gab_robot import Robot, ModelsRobot
 from labs_ses2.orientation import Orientation
 import numpy as np  # type: ignore
 import cv2  # type: ignore
@@ -39,7 +39,7 @@ def wrap_to_180(a_deg: float) -> float:
 
 # initialiser les objets
 orientation = Orientation()
-robot = Robot(IN1, IN2, ENA, IN3, IN4, ENB, orientation=orientation)
+robot = Robot(ModelsRobot.lynx, orientation=orientation)
 lidar = Lidar(PORT_LIDAR, MODEL)
 rn = RadioNavigation()
 camera = Camera()

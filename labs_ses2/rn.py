@@ -299,11 +299,10 @@ class RadioNavigation:
 
                 if line:
                     pos = self._parse_line(line)
-                    with self._lock:
-                        self.last_line = line
-                        if pos is not None:
-                            self.last_position = pos
-                            self.last_time = time.time()
+                    self.last_line = line
+                    if pos is not None:
+                        self.last_position = pos
+                        self.last_time = time.time()
 
             time.sleep(0.01)
 
@@ -312,6 +311,7 @@ class RadioNavigation:
         vals = [m.group(0) for m in self._float_re.finditer(line)]
         if len(vals) >= 2:
             try:
+                print("_parse_line -- vals", str(vals))
                 return np.array([float(vals[0]), float(vals[1])])
             except Exception:
                 return None
@@ -320,10 +320,9 @@ class RadioNavigation:
     def is_open(self) -> bool:
         return self._serial is not None and getattr(self._serial, "is_open", False)
 
-    def get_position(self, max_age=0.05):
-        with self._lock:
-            pos = self.last_position
-            ts = self.last_time
+    def get_position(self):        
+        pos = self.last_position
+        ts = self.last_time
         return pos
 
     def demarrer(self):
