@@ -126,6 +126,23 @@ while may_continue:
 
     # vérifier pour des obstacles
     points_obstacles = lidar.getPointsObstacle()  # [(x, y), ...]
+    if(points_obstacles is not None):
+        for (x, y) in points_obstacles:
+            if(lidar.obstacleEnAvant(x, y)):
+                if(lidar.obstacleDroite(x, y)):
+                    angle_init = orientation.yaw
+                    robot.tourner_gauche() 
+                    #a 90 degres
+                    
+                    #avancer jusqua ce que l<obstacle a droite (etait en face) ne soit plus la 
+                    while lidar.obstacleDroite(x, y):
+                        robot.avancer()
+                elif(lidar.obstacleGauche(x, y)):
+                    robot.tourner_droite()
+            if():
+                print('!!! obstacle a DROITE !!!')
+            if(lidar.obstacleGauche(x,y)):
+                print('!!! obstacle a GAUCHE !!!')
 
     cv2.imshow("PFI", img)
     # attendre une touche
