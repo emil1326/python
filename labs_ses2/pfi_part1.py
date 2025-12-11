@@ -23,7 +23,7 @@ LARGEUR = 480
 PORT_LIDAR = "/dev/ttyUSB0"
 MODEL = Models.X4  # a changer selon le model quon tombe dessus
 
-DISTANCE_TRAVEL = 0.15 #m | distance a avancer avant de tourner
+DISTANCE_TRAVEL = 0.15  # m | distance a avancer avant de tourner
 distance_avancee = 0.0
 
 NB_POINTS = 4  # checkpoints a atteindre | 4 sommets du rectangle
@@ -69,27 +69,37 @@ while may_continue:
 
     # 2. obtenir la distance avancee jusqua present
     pos_avancee = rn.get_position()
-    distance_courante = rn.get_distance(posInit, pos_avancee)
-    posInit = pos_avancee
-    
-    if distance_courante is not None:
-        distance_avancee += distance_courante
+    # Only compute distance when we have a valid previous and current position
+    if posInit is not None and pos_avancee is not None:
+        distance_courante = rn.get_distance(posInit, pos_avancee)
+        if distance_courante is not None:
+            distance_avancee += distance_courante
+        # update last-known-good position
+        posInit = pos_avancee
+    else:
+        # if we don't have a new valid position, skip distance integration
+        distance_courante = None
 
     # 2.A avancer en ligne droite vers le prochain point juste quand on a une position correcte
     if pos_avancee is not None and peut_avancer:
-        robot.avancer() 
-    
-    #3 si la distance est plus grande ou egale a celle a parcourir
+        robot.avancer()
+
+    # 3 si la distance est plus grande ou egale a celle a parcourir
     if distance_avancee >= DISTANCE_TRAVEL:
         print("distance avancee: ", distance_avancee)
+        # stop the robot before turning and disable forward motion
         robot.arreter()
-    
-        #on incremente le nombre de points atteints
+        peut_avancer = False
+
+        # on incremente le nombre de points atteints
         nb_points_atteints += 1
-        #tourner de 90 degres vers la gauche  
+        # tourner de 90 degres vers la gauche
         orientation.turnByYaw(robot, 90)
+
+        # reset travelled distance and re-enable forward movement
         distance_avancee = 0
-    
+        peut_avancer = True
+
     cv2.imshow("PFI p.1", img)
     # attendre une touche
     key = cv2.waitKeyEx(30)
