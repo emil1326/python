@@ -10,8 +10,8 @@ class Models(enum.Enum):
 class Lidar:  
     RANGE = 3 #metres de range parce que le max (8m ou 10m) serait trop
     SCAN = None
-    MIN_DIST_Y = -0.20#m
-    MAX_DIST_Y = -0.50#m
+    MIN_DIST_Y = -0.01#m
+    MAX_DIST_Y = -0.60#m
     MIN_DIST_X = 0.10#m
     MAX_DIST_X = 0.40#m
     
@@ -43,8 +43,8 @@ class Lidar:
         self.__lidar = self.LASER
         
         self.__points = []
-        self.__corridor_x = largeur_robot/2 + 0.10
-        self.__corridor_y = largeur_robot/2 + 0.10
+        self.__corridor_x = largeur_robot/2 
+        self.__corridor_y = largeur_robot/2 
     
     def demarrer(self):
         '''
@@ -107,6 +107,7 @@ class Lidar:
         ex = largeur_image/self.RANGE
         ey = hauteur_image/self.RANGE
         
+        
         points = self.__points
         
         if(points is not None):        
@@ -122,12 +123,20 @@ class Lidar:
                 if dessiner:                        
                     img[int(y_img), int(x_img)] = (255, 255, 255)
                 
-    def obstacleEnAvant(self, point_x, point_y):
-        dans_zone = self.MAX_DIST_Y < point_y < self.MIN_DIST_Y #point y est dans les negatif
-        dans_corridor = abs(point_x) < self.__corridor_x
-        #print('dans corridor', dans_corridor)
-        #print('dans zone y', dans_zone_y, point_y)
-        return dans_zone and dans_corridor
+    def obstacleEnAvant(self, points):
+        obstacle_detecte = 0
+        for (x, y) in points:
+            dans_zone = self.MAX_DIST_Y < y < self.MIN_DIST_Y #point y est dans les negatif
+            dans_corridor = abs(x) < self.__corridor_x
+            #print('dans corridor', dans_corridor)
+            #print('dans zone y', dans_zone, point_y)
+            if dans_zone and dans_corridor:
+                obstacle_detecte += 1
+        
+        return obstacle_detecte > 3
+                
+            
+        
     
     def obstacleGauche(self, point_x, point_y):
         dans_zone = -self.MAX_DIST_X < point_x < -self.MIN_DIST_X #point_x est dans les negatif

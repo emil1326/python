@@ -11,6 +11,7 @@ class ModelsRobot(Enum):
 
 
 class Robot:
+    VITESSE_LYNX = 0.4
     def __init__(self,model: ModelsRobot,  sonar=None, dels=None, orientation=None):
         print("init robot")
         self.orientation = orientation
@@ -46,28 +47,32 @@ class Robot:
     # voiture
     def avancer(self, vitesse=1.0):
         if self.orientation is not None:
-            self.orientation.set_etat(Etats.avance)
+            self.orientation.set_tourne(False)
+            self.orientation.set_avance(True)
         if self.__model == ModelsRobot.lynx:
-            vitesse = 0.8
+            vitesse = self.VITESSE_LYNX
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.avancer(vitesse)
 
-    def reculer(self):
+    def reculer(self, vitesse=1.0):
         if self.orientation is not None:
-            self.orientation.set_etat(True)
+            self.orientation.set_tourne(False)
+            self.orientation.set_avance(True)
         if self.__model == ModelsRobot.lynx:
-            vitesse = 0.8
-        self.__moteur_d.reculer(1)
-        self.__moteur_g.reculer(1)
+            vitesse = self.VITESSE_LYNX
+        self.__moteur_d.reculer(vitesse)
+        self.__moteur_g.reculer(vitesse)
 
     def tourner_gauche(self, vitesse=1.0):
         if self.orientation is not None:
+            self.orientation.set_avance(False)
             self.orientation.set_tourne(True)
         self.__moteur_d.avancer(vitesse)
         self.__moteur_g.reculer(vitesse)
 
     def tourner_droite(self, vitesse=1.0):
         if self.orientation is not None:
+            self.orientation.set_avance(False)
             self.orientation.set_tourne(True)
         self.__moteur_d.reculer(vitesse)
         self.__moteur_g.avancer(vitesse)

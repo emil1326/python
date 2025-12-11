@@ -8,13 +8,7 @@ import re
 import math
 
 class RadioNavigation:
-    """Simple, readable radio navigation class with a background reader thread.
-
-    - Reader thread calls blocking `readline()` with a short timeout and caches
-      the latest parsed position.
-    - `get_position()` returns the cached value immediately (or None if stale).
-    - Use `send_cmd()` to trigger a response from the device if it supports that.
-    """
+    #fait par Gabriel PEreira Levesque
 
     def __init__(self, port: str = "/dev/ttyACM0", baudrate: int = 115200, timeout=1):
         self.port = port
@@ -76,7 +70,7 @@ class RadioNavigation:
             else:
                 print("!!! reader - no raw")
 
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     def _parse_line(self, line: str):
         # return numpy array of first two floats if present
@@ -104,15 +98,20 @@ class RadioNavigation:
             
             retourne un distance en m
         '''
-        try:
-            x1 = posA[0]
-            x2 = posB[0]
-            y1 = posA[1]
-            y2 = posB[1]
-            distance = math.sqrt(math.pow((x2-x1), 2)+math.pow((y2-y1),2))
-            return distance
-        except Exception as e:
-            print("get_distance: ", e)
+        if posA is not None or posB is not None:
+            try:
+                x1 = posA[0]
+                x2 = posB[0]
+                y1 = posA[1]
+                y2 = posB[1]
+                distance = math.sqrt(math.pow((x2-x1), 2)+math.pow((y2-y1),2))
+                #print("distance parcourue: ", distance, "m")
+                return distance
+            except Exception as e:
+                print("!!! error get_distance: ", e)
+                return None
+        else:
+            #print('posA ou B sont None | posA: ', posA, 'posB: ', posB)
             return None
 
     def demarrer(self):
@@ -121,23 +120,21 @@ class RadioNavigation:
                 raise RuntimeError("Serial port not open")
             if self._thread is None:
                 raise RuntimeError("Reader thread not initialized")
-
-            data = str(self._serial.readline())
-
-            print("demarrer data", data, "len", len(data))
+            
+            self._serial.write(b"\r\r")
 
             time.sleep(1)
 
-            if len(data) == 3:
-                self._serial.write(b"\r\r")
+            data = str(self._serial.readline())
+            
+            print("demarrer data", data, "len", len(data))
+            
+            time.sleep(1)
+            
+            if not data.__contains__("POS"):  
+                self._serial.write(b"lep\n")
 
-                time.sleep(1)
-
-                self._serial.write(b"lep\r")
-
-                time.sleep(1)
-
-            self._thread.start()
+                self._thread.start()
 
             return True
         except Exception as e:

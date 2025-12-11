@@ -5,6 +5,7 @@ from gab_robot import Robot, ModelsRobot
 from gab_lidar import Lidar, Models
 import numpy as np  # type: ignore
 import cv2  # type: ignore
+import time
 
 
 from dictKeyValue import MapTouches
@@ -29,6 +30,8 @@ img = np.zeros((HAUTEUR, LARGEUR, 3), np.uint8)
 #comme demarrer retourne un bool (True si reussite | False si echec)
 maycontinue = lidar.demarrer() #part la boucle seulement si demarrer a fonctionné
 print('maycontinue: ', maycontinue)
+peut_avancer = True
+
 
 while maycontinue:    
     points = lidar.getPointsObstacle()
@@ -36,13 +39,15 @@ while maycontinue:
     lidar.dessinerSurImage(img, LARGEUR, HAUTEUR)
     
     if(points is not None):
-        for (x, y) in points:
-            if(lidar.obstacleEnAvant(x, y)):
-                print('!!! obstacle en AVANT !!!')
-            if(lidar.obstacleDroite(x, y)):
-                print('!!! obstacle a DROITE !!!')
-            if(lidar.obstacleGauche(x,y)):
-                print('!!! obstacle a GAUCHE !!!')
+        if(lidar.obstacleEnAvant(points)):
+            print('!!! obstacle en AVANT !!!')
+            if peut_avancer:
+                robot.reculer()
+                time.sleep(0.2)
+                robot.arreter()
+            peut_avancer = False
+        else:
+            peut_avancer = True
             
     
     #montrer notre beau travail
@@ -64,7 +69,7 @@ while maycontinue:
         maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
     # mapper pour appeler les bonnes fonctions selon la touche appuyée
-    mapper.map(t)
+    mapper.map(t, peut_avancer)
 
 #nettoyer le robot de tout ces processus
 cv2.destroyAllWindows()
