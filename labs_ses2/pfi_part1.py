@@ -81,6 +81,7 @@ while may_continue:
     if (distance_courante is not None) and (distance_avancee >= DISTANCE_TRAVEL - 0.10):
         print("distance avancee: ", distance_avancee)
         robot.arreter()
+        
         may_continue = False #pour tester le controle par rn
         
         #on incremente le nombre de points atteints
