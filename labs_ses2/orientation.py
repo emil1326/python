@@ -10,7 +10,6 @@ from icm20948 import ICM20948  # type: ignore
 
 class Orientation:
     waitTime = 10  # ms
-    VITESSE_VIRAGE = 0.7
 
     class orientationData:
         def __init__(self, ax=0, ay=0, az=0, gx=0, gy=0, gz=0, mx=0, my=0, mz=0):
@@ -249,7 +248,7 @@ class Orientation:
         if self._thread is not None and self._thread.is_alive():
             self._thread.join(timeout=1.0)
 
-    def turnByYaw(self, robot, turningAmount, give=2.5):
+    def turnByYaw(self, robot, turningAmount, give=5.0):
 
         targetYaw = self.yaw + turningAmount
         
@@ -260,8 +259,6 @@ class Orientation:
                 robot.arreter()
                 break
             elif self.yaw < targetYaw - give:
-                robot.tourner_gauche(self.VITESSE_VIRAGE)
+                robot.tourner_gauche()
             elif self.yaw > targetYaw + give:
-                robot.tourner_droite(self.VITESSE_VIRAGE)
-                
-            time.sleep(0.01)
+                robot.tourner_droite()
