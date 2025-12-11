@@ -106,6 +106,7 @@ while may_continue:
         if nb_points_atteints >= NB_POINTS:
             print("!!! nb_points atteint")
             may_continue = False
+            
     cv2.imshow("PFI p.1", img)
     # attendre une touche
     key = cv2.waitKeyEx(30)
