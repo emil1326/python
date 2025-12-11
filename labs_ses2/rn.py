@@ -47,7 +47,7 @@ class RadioNavigation:
         while not self._stop.is_set():
             try:
                 raw = self._serial.readline()
-                print("reader raw", raw)
+                #print("reader raw", raw)
             except Exception as e:
                 print("probleme dans readline", e)
                 raw = b""
@@ -77,7 +77,7 @@ class RadioNavigation:
         vals = [m.group(0) for m in self._float_re.finditer(line)]
         if len(vals) >= 2:
             try:
-                print("_parse_line -- vals", str(vals))
+                #print("_parse_line -- vals", str(vals))
                 return np.array([float(vals[0]), float(vals[1])])
             except Exception:
                 return None
@@ -125,16 +125,17 @@ class RadioNavigation:
 
             time.sleep(1)
 
-            data = str(self._serial.readline())
+            data = self._serial.readline().decode(errors="replace").strip()            
             
             print("demarrer data", data, "len", len(data))
             
             time.sleep(1)
             
             if not data.__contains__("POS"):  
-                self._serial.write(b"lep\n")
+                #self._serial.write(b"lep\n")
+                print("data ne contient pas POS")
 
-                self._thread.start()
+            self._thread.start()
 
             return True
         except Exception as e:
