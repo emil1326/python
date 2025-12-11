@@ -60,11 +60,7 @@ class RadioNavigation:
                     line = None
 
                 if line:
-                    pos = self._parse_line(line)
-                    if pos is not None:
-                        self.last_position = pos
-                    else:
-                        print("!!! reader -- no pos")
+                    self.last_position = self._parse_line(line)
                 else:
                     print("!!! reader - no line")
             else:
@@ -90,6 +86,7 @@ class RadioNavigation:
         '''
             retourne un tableau [x, y]
         '''       
+        
         return self.last_position
     
     def get_distance(self, posA, posB):
