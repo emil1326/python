@@ -253,7 +253,7 @@ class Orientation:
 
         targetYaw = self.yaw + turningAmount
         
-        print("YAW", self.yaw, "AMOUNT", turningAmount, "TARGET", targetYaw)
+        #print("YAW", self.yaw, "AMOUNT", turningAmount, "TARGET", targetYaw)
 
         while True:
             if targetYaw - give < self.yaw < targetYaw + give:

@@ -23,7 +23,7 @@ LARGEUR = 480
 PORT_LIDAR = "/dev/ttyUSB0"
 MODEL = Models.X4  # a changer selon le model quon tombe dessus
 
-DISTANCE_TRAVEL = 0.15  # m | distance a avancer avant de tourner
+DISTANCE_TRAVEL = 0.50 #m | distance a avancer avant de tourner
 distance_avancee = 0.0
 
 NB_POINTS = 4  # checkpoints a atteindre | 4 sommets du rectangle
@@ -93,6 +93,8 @@ while may_continue:
 
         # on incremente le nombre de points atteints
         nb_points_atteints += 1
+        print("nb points", nb_points_atteints)
+
         # tourner de 90 degres vers la gauche
         orientation.turnByYaw(robot, 90)
 
@@ -100,6 +102,10 @@ while may_continue:
         distance_avancee = 0
         peut_avancer = True
 
+        # If we've reached all checkpoints, stop the main loop
+        if nb_points_atteints >= NB_POINTS:
+            print("!!! nb_points atteint")
+            may_continue = False
     cv2.imshow("PFI p.1", img)
     # attendre une touche
     key = cv2.waitKeyEx(30)
@@ -110,8 +116,9 @@ while may_continue:
 
     t = chr(key)
     # si on demande d'arrêter ou si le robot a effectue sa tache
-    if t == "x" or nb_points_atteints == NB_POINTS:
-        maycontinue = False  # mettre le flag de la boucle a False pour l'arrêter
+    
+    if t == "x":
+        may_continue = False  # mettre le flag de la boucle a False pour l'arrêter
         print("arrêt")
     # mapper pour appeler les bonnes fonctions selon la touche appuyée
     mapper.map(t, peut_avancer)
