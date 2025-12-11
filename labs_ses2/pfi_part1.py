@@ -23,7 +23,7 @@ LARGEUR = 480
 PORT_LIDAR = "/dev/ttyUSB0"
 MODEL = Models.X4  # a changer selon le model quon tombe dessus
 
-DISTANCE_TRAVEL = 0.2 #m | distance a avancer avant de tourner
+DISTANCE_TRAVEL = 0.1 #m | distance a avancer avant de tourner
 distance_avancee = 0.0
 
 NB_POINTS = 4 #checkpoints a atteindre | 4 sommets du rectangle
@@ -70,6 +70,7 @@ while may_continue:
     pos_avancee = rn.get_position()    
     distance_courante = rn.get_distance(posInit, pos_avancee)    
     posInit = pos_avancee
+    
     if distance_courante is not None:
         distance_avancee += distance_courante
     
@@ -78,7 +79,7 @@ while may_continue:
         robot.avancer() 
     
     #3 si la distance est plus grande ou egale a celle a parcourir
-    if (distance_courante is not None) and (distance_avancee >= DISTANCE_TRAVEL - 0.10):
+    if (distance_courante is not None) and (distance_avancee >= DISTANCE_TRAVEL):
         print("distance avancee: ", distance_avancee)
         robot.arreter()
         may_continue = False #pour tester le controle par rn

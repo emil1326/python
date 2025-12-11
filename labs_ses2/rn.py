@@ -121,8 +121,6 @@ class RadioNavigation:
             if self._thread is None:
                 raise RuntimeError("Reader thread not initialized")
             
-            self._serial.write(b"\r\r")
-
             time.sleep(1)
 
             data = self._serial.readline().decode(errors="replace").strip()            
@@ -132,7 +130,11 @@ class RadioNavigation:
             time.sleep(1)
             
             if not data.__contains__("POS"):  
-                #self._serial.write(b"lep\n")
+                self._serial.write(b"\r\r")   
+                
+                time.sleep(1)
+                             
+                self._serial.write(b"lep\n")
                 print("data ne contient pas POS")
 
             self._thread.start()
