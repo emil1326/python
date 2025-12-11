@@ -1,4 +1,4 @@
-#fait par Gabriel
+# fait par Gabriel
 
 import time
 from rn import RadioNavigation
@@ -23,10 +23,10 @@ LARGEUR = 480
 PORT_LIDAR = "/dev/ttyUSB0"
 MODEL = Models.X4  # a changer selon le model quon tombe dessus
 
-DISTANCE_TRAVEL = 0.2 #m | distance a avancer avant de tourner
+DISTANCE_TRAVEL = 0.2  # m | distance a avancer avant de tourner
 distance_avancee = 0.0
 
-NB_POINTS = 4 #checkpoints a atteindre | 4 sommets du rectangle
+NB_POINTS = 4  # checkpoints a atteindre | 4 sommets du rectangle
 nb_points_atteints = 0
 
 peut_avancer = True
@@ -53,41 +53,44 @@ may_continue = rn.demarrer() and lidar.demarrer()
 # 1. obtenir la position du robot
 posInit = rn.get_position()
 
-while may_continue:    
-    #verifier pour des obstacles
+while may_continue:
+    # verifier pour des obstacles
     points_obstacles = lidar.getPointsObstacle()  # [(x, y), ...]
-    if(lidar.obstacleEnAvant(points_obstacles)):
-        print('!!! obstacle en AVANT !!!')
+    if lidar.obstacleEnAvant(points_obstacles):
+        print("!!! obstacle en AVANT !!!")
         if peut_avancer:
             robot.reculer()
             time.sleep(0.2)
             robot.arreter()
         peut_avancer = False
     else:
-        peut_avancer = True           
-   
+        peut_avancer = True
+
     # 2. obtenir la distance avancee jusqua present
-    pos_avancee = rn.get_position()    
-    distance_courante = rn.get_distance(posInit, pos_avancee)    
+    pos_avancee = rn.get_position()
+    distance_courante = rn.get_distance(posInit, pos_avancee)
     posInit = pos_avancee
     if distance_courante is not None:
         distance_avancee += distance_courante
-    
+
     # 2.A avancer en ligne droite vers le prochain point juste quand on a une position correcte
     if pos_avancee is not None and peut_avancer:
-        robot.avancer() 
-    
-    #3 si la distance est plus grande ou egale a celle a parcourir
+        robot.avancer()
+
+    # 3 si la distance est plus grande ou egale a celle a parcourir
     if (distance_courante is not None) and (distance_avancee >= DISTANCE_TRAVEL - 0.10):
         print("distance avancee: ", distance_avancee)
         robot.arreter()
-        
-        may_continue = False #pour tester le controle par rn
-        
-        #on incremente le nombre de points atteints
-        #nb_points_atteints += 1
-        #tourner de 90 degres vers la gauche  
-    
+
+        nb_points_atteints += 1
+        orientation.turnByYaw(robot, 90.0)  # tourner de 90 degres vers la gauche
+
+        may_continue = False  # pour tester le controle par rn
+
+        # on incremente le nombre de points atteints
+        # nb_points_atteints += 1
+        # tourner de 90 degres vers la gauche
+
     cv2.imshow("PFI p.1", img)
     # attendre une touche
     key = cv2.waitKeyEx(30)
