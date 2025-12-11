@@ -110,7 +110,9 @@ class Orientation:
         ax = ay = az = gx = gy = gz = mx = my = mz = 0
 
         with self.lockOBJ:
-            time.sleep(self.waitTime/1000)  # small delay to allow I2C bus to recover -> usually 40ms
+            time.sleep(
+                self.waitTime / 1000
+            )  # small delay to allow I2C bus to recover -> usually 40ms
 
             try:
                 ax, ay, az, gx, gy, gz = self.imu.read_accelerometer_gyro_data()
@@ -118,7 +120,9 @@ class Orientation:
             except Exception as e:
                 print(e)
 
-            time.sleep(self.waitTime/1000)  # small delay to allow I2C bus to recover -> usually 40ms
+            time.sleep(
+                self.waitTime / 1000
+            )  # small delay to allow I2C bus to recover -> usually 40ms
 
             try:
                 mx, my, mz = self.imu.read_magnetometer_data()
@@ -193,7 +197,7 @@ class Orientation:
         mz_c = mz - self.mz_offset
         my_c = my - self.my_offset
         radians = math.atan2(mz_c, my_c)
-        angle = radians * (180/math.pi) + 180
+        angle = radians * (180 / math.pi) + 180
         return angle
 
     def _main_loop(self):
@@ -243,3 +247,16 @@ class Orientation:
         self._stop.set()
         if self._thread is not None and self._thread.is_alive():
             self._thread.join(timeout=1.0)
+
+    def turnByYaw(self, robot, turningAmount, give=5.0):
+
+        targetYaw = self.yaw + turningAmount
+
+        while True:
+            if targetYaw - give < self.yaw < targetYaw + give:
+                robot.arreter()
+                break
+            elif self.yaw < targetYaw - give:
+                robot.tourner_gauche()
+            elif self.yaw > targetYaw + give:
+                robot.tourner_droite()
