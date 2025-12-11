@@ -130,11 +130,11 @@ class RadioNavigation:
             time.sleep(1)
             
             if not data.__contains__("POS"):  
-                self._serial.write(b"\r\r")   
+                #self._serial.write(b"\r\r")   
                 
                 time.sleep(1)
                              
-                self._serial.write(b"lep\n")
+                #self._serial.write(b"lep\n")
                 print("data ne contient pas POS")
 
             self._thread.start()

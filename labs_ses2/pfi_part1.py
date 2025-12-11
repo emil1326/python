@@ -23,7 +23,7 @@ LARGEUR = 480
 PORT_LIDAR = "/dev/ttyUSB0"
 MODEL = Models.X4  # a changer selon le model quon tombe dessus
 
-DISTANCE_TRAVEL = 0.1 #m | distance a avancer avant de tourner
+DISTANCE_TRAVEL = 0.15 #m | distance a avancer avant de tourner
 distance_avancee = 0.0
 
 NB_POINTS = 4 #checkpoints a atteindre | 4 sommets du rectangle
@@ -60,9 +60,10 @@ while may_continue:
         print('!!! obstacle en AVANT !!!')
         if peut_avancer:
             robot.reculer()
-            time.sleep(0.2)
+            time.sleep(0.1)
             robot.arreter()
         peut_avancer = False
+        continue
     else:
         peut_avancer = True           
    
@@ -79,15 +80,15 @@ while may_continue:
         robot.avancer() 
     
     #3 si la distance est plus grande ou egale a celle a parcourir
-    if (distance_courante is not None) and (distance_avancee >= DISTANCE_TRAVEL):
+    if distance_avancee >= DISTANCE_TRAVEL:
         print("distance avancee: ", distance_avancee)
         robot.arreter()
-        
-        may_continue = False #pour tester le controle par rn
-        
+    
         #on incremente le nombre de points atteints
-        #nb_points_atteints += 1
+        nb_points_atteints += 1
         #tourner de 90 degres vers la gauche  
+        orientation.turnByYaw(robot, 90)
+        distance_avancee = 0
     
     cv2.imshow("PFI p.1", img)
     # attendre une touche
