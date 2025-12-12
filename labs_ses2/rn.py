@@ -98,7 +98,7 @@ class RadioNavigation:
             
             retourne un distance en m
         '''
-        if posA is not None or posB is not None:
+        if posA is not None and posB is not None:
             try:
                 x1 = posA[0]
                 x2 = posB[0]
